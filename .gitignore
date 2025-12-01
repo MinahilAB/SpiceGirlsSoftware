@@ -1,0 +1,6 @@
+*.mod
+*.o
+*.nc
+model
+/build/
+/docs/
