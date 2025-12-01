@@ -4,6 +4,7 @@ FC					:= mpifort
 DEBUG       		?= 1
 USE_OPENACC 		?= 0
 USE_OPENMP  		?= 0
+USE_NVTX            ?= 1
 
 # Development/release flags
 # 
@@ -12,7 +13,7 @@ RELFLAGS			:= -O3 -march=native -mtune=native -ffast -ffast-math -funroll-loops
 
 # Base flags
 CPPFLAGS			= -I. -I$(NETCDF_FORTRAN_INC)
-FCFLAGS				= -fpic
+FCFLAGS				= -fpic -cpp
 LDFLAGS				= -L$(NETCDF_FORTRAN_LIB) -lnetcdff -lnetcdf
 
 # Apply flags according to specified options
@@ -34,11 +35,20 @@ ifeq ($(USE_OPENMP),1)
   CPPFLAGS += -D_OMP
 endif
 
+# NVTX support
+ifeq ($(USE_NVTX),1)
+  CPPFLAGS += -DUSE_NVTX -I$(CUDA_HOME)/include
+  LDFLAGS  += -L$(CUDA_HOME)/lib64 -lnvToolsExt
+endif
+
 # Build rules
 all: model
 
-model : model.f90 module_parameters.o module_types.F90 module_physics.o module_output.o
+model : model.f90 module_nvtx.F90 module_nvtx.o module_parameters.o module_types.F90 module_physics.o module_output.o
 	$(FC) $(FCFLAGS) $(CPPFLAGS) $< -o $@ *.o $(LDFLAGS)
+
+module_nvtx.o : module_nvtx.F90
+	$(FC) $(FCFLAGS) $(CPPFLAGS) $< -c
 
 module_parameters.o : module_parameters.f90
 	$(FC) $(FCFLAGS) $(CPPFLAGS) $< -c
