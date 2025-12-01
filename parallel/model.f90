@@ -6,6 +6,7 @@ program atmosphere_model
   use module_output, only : create_output, write_record, close_output
   use dimensions , only : sim_time, output_freq
   use iodir, only : stdout
+  use module_nvtx
   implicit none
 
   real(wp) :: etime
