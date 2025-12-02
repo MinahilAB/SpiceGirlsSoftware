@@ -76,7 +76,6 @@ module module_physics
 #if defined(_OPENMP)
   !$omp parallel do collapse(2) private(i,k,ii,kk,x,z,r,u,w,t,hr,ht)
 #endif
-
 #if defined(_OPENACC)
   !$acc parallel loop gang vector collapse(2) private(i,k,ii,kk,x,z,r,u,w,t,hr,ht)
 #endif
@@ -106,11 +105,9 @@ module module_physics
 #if defined(_OPENMP)
   !$omp parallel do collapse(2) private(k,kk,z,hr,ht) 
 #endif
-
 #if defined(_OPENACC)
   !$acc parallel loop gang vector collapse(2) private(k,kk,z,hr,ht)
 #endif
-
     do k = 1-hs, nz+hs
       do kk = 1, nqpoints
         z = (k_beg-1 + k-0.5_wp) * dz + (qpoints(kk)-0.5_wp)*dz
@@ -128,9 +125,6 @@ module module_physics
       ref%idenstheta(k) = hr*ht
       ref%pressure(k) = c0*(hr*ht)**cdocv
     end do
-    
-    ! if (rank == 0) write(stdout,*) 'MODEL STATUS INITIALIZED.'
-
   end subroutine init
 
   subroutine rungekutta(s0,s1,fl,tend,dt)
@@ -142,8 +136,6 @@ module module_physics
     real(wp), intent(in) :: dt
     real(wp) :: dt1, dt2, dt3
     logical, save :: dimswitch = .true.
-
-    call mytimer_create(t, "Runge-Kutta Step")
 
     dt1 = dt/1.0_wp
     dt2 = dt/2.0_wp
@@ -164,10 +156,6 @@ module module_physics
       call step(s0, s1, s0, dt1, DIR_X, fl, tend)
     end if
     dimswitch = .not. dimswitch
-
-    call mytimer_destroy(t)
-    ! call mytimer_print()
-    call mytimer_gather_stats()
   end subroutine rungekutta
 
   ! Semi-discretized step in time:
@@ -253,7 +241,6 @@ module module_physics
 #if defined(_OPENMP)
   !$omp parallel do collapse(2) private(i,k,r, u,w,th,p,t,ke,ie) reduction(+:mass,te) 
 #endif
-
 #if defined(_OPENACC)
   !$acc parallel loop gang vector collapse(2) private(i,k,r, u,w,th,p,t,ke,ie) reduction(+:mass,te)
 #endif

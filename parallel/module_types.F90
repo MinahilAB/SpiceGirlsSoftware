@@ -97,13 +97,13 @@ module module_types
       stop
     end if
 #if defined(_OACC)
-!$acc kernels present(atmo)
+  !$acc kernels present(atmo)
 ! #elif defined(_OMP)
-! !$omp parallel do collapse(3) default(none) shared(atmo, xval, nx, nz, NVARS, hs)
+  ! $omp parallel do collapse(3) default(none) shared(atmo, xval, nx, nz, NVARS, hs)
 #endif
     atmo%mem(1-hs:nx+hs, 1-hs:nz+hs, :) = xval
 #if defined(_OACC)
-!$acc end kernels
+  !$acc end kernels
 #endif
   end subroutine set_state
 
@@ -126,9 +126,9 @@ module module_types
     integer :: ll, k, i
 
 #if defined(_OACC)
-!$acc parallel loop collapse(3) present(s2, s0, tend)
+    !$acc parallel loop collapse(3) present(s2, s0, tend)
 #elif defined(_OMP)
-!$omp parallel do collapse(3) default(none) shared(s2, s0, tend, dt) private(ll, k, i)
+    !$omp parallel do collapse(3) default(none) shared(s2, s0, tend, nx_loc, nz, dt) private(ll, k, i)
 #endif
     do ll = 1, NVARS
       do k = 1, nz
@@ -138,7 +138,7 @@ module module_types
       end do
     end do
 #if defined(_OMP)
-!$omp end parallel do
+    !$omp end parallel do
 #endif
   end subroutine update
 
@@ -159,11 +159,11 @@ module module_types
 
     hv_coef = -hv_beta * dx / (16.0_wp*dt)
 #if defined(_OACC)
-!$acc parallel loop collapse(2) present(flux, ref, atmostat) &
-!$acc& private(i, k, ll, s, r, u, w, t, p, stencil, d3_vals, vals)
+    !$acc parallel loop collapse(2) present(flux, ref, atmostat) &
+    !$acc& private(i, k, ll, s, r, u, w, t, p, stencil, d3_vals, vals)
 #elif defined(_OMP)
-!$omp parallel do collapse(2) default(none) shared(flux, ref, atmostat, dx, dt, hv_coef) &
-!$omp& private(i, k, ll, s, r, u, w, t, p, stencil, d3_vals, vals)
+    !$omp parallel do collapse(2) default(none) shared(flux, ref, atmostat, dx, dt, hv_coef, nx_loc, nz) &
+    !$omp& private(i, k, ll, s, r, u, w, t, p, stencil, d3_vals, vals)
 #endif
     do k = 1, nz
       do i = 1, nx_loc+1
@@ -192,14 +192,14 @@ module module_types
       end do
     end do
 #if defined(_OMP)
-!$omp end parallel do
+  !$omp end parallel do
 #endif
 
-    ! Second loop for tendency calculation
+  ! Second loop for tendency calculation
 #if defined(_OACC)
-!$acc parallel loop collapse(3) present(tendency, flux)
+  !$acc parallel loop collapse(3) present(tendency, flux)
 #elif defined(_OMP)
-!$omp parallel do collapse(3) default(none) shared(tendency, flux, dx) private(ll, k, i)
+  !$omp parallel do collapse(3) default(none) shared(tendency, flux, dx, nx_loc, nz) private(ll, k, i)
 #endif
     do ll = 1, NVARS
       do k = 1, nz
@@ -210,7 +210,7 @@ module module_types
       end do
     end do
 #if defined(_OMP)
-!$omp end parallel do
+  !$omp end parallel do
 #endif
   end subroutine xtend
 
@@ -231,11 +231,11 @@ module module_types
 
     hv_coef = -hv_beta * dz / (16.0_wp*dt)
 #if defined(_OACC)
-!$acc parallel loop collapse(2) present(flux, ref, atmostat) &
-!$acc& private(i, k, ll, s, r, u, w, t, p, stencil, d3_vals, vals)
+  !$acc parallel loop collapse(2) present(flux, ref, atmostat) &
+  !$acc& private(i, k, ll, s, r, u, w, t, p, stencil, d3_vals, vals)
 #elif defined(_OMP)
-!$omp parallel do collapse(2) default(none) shared(flux, ref, atmostat, dz, dt, hv_coef) &
-!$omp& private(i, k, ll, s, r, u, w, t, p, stencil, d3_vals, vals)
+  !$omp parallel do collapse(2) default(none) shared(flux, ref, atmostat, dz, dt, hv_coef, nx_loc, nz) &
+  !$omp& private(i, k, ll, s, r, u, w, t, p, stencil, d3_vals, vals)
 #endif
     do k = 1, nz+1
       do i = 1, nx_loc
@@ -268,14 +268,14 @@ module module_types
       end do
     end do
 #if defined(_OMP)
-!$omp end parallel do
+  !$omp end parallel do
 #endif
 
     ! Second loop for tendency calculation
 #if defined(_OACC)
-!$acc parallel loop collapse(3) present(tendency, flux, atmostat)
+    !$acc parallel loop collapse(3) present(tendency, flux, atmostat)
 #elif defined(_OMP)
-!$omp parallel do collapse(3) default(none) shared(tendency, flux, atmostat, dz) private(ll, k, i)
+    !$omp parallel do collapse(3) default(none) shared(tendency, flux, atmostat, dz, nx_loc, nz) private(ll, k, i)
 #endif
     do ll = 1, NVARS
       do k = 1, nz
@@ -290,9 +290,10 @@ module module_types
       end do
     end do
 #if defined(_OMP)
-!$omp end parallel do
+  !$omp end parallel do
 #endif
   end subroutine ztend
+
 
   subroutine exchange_halo_x(s)
     use mpi
@@ -328,12 +329,7 @@ module module_types
     real(wp), intent(out) :: buffer(:)
     integer :: ll, k, i, pos
     pos = 0
-    
-    #if defined(_OACC)
-!$acc parallel loop collapse(2) present(s)
-#elif defined(_OMP)
-!$omp parallel do private(ll, k) shared(s)
-#endif
+
     do ll = 1, NVARS
       do k = k_start, k_start+nz-1
         do i = i_start, i_start+width-1
@@ -342,11 +338,8 @@ module module_types
         end do
       end do
     end do
-    
- #if defined(_OMP)
-!$omp end parallel do
-#endif
   end subroutine pack_strip
+
 
   subroutine unpack_strip(buffer, mem, i_start, k_start)
     real(wp), intent(in) :: buffer(:)
@@ -354,6 +347,7 @@ module module_types
     integer, intent(in) :: i_start, k_start
     integer :: ll, k, i, pos
     pos = 0
+
     do ll = 1, NVARS
       do k = k_start, k_start+nz-1
         do i = i_start, i_start+hs-1
@@ -371,9 +365,9 @@ module module_types
     class(reference_state), intent(in) :: ref
     integer :: i, ll
 #if defined(_OACC)
-!$acc parallel loop collapse(2) present(s, ref)
+    !$acc parallel loop collapse(2) present(s, ref)
 #elif defined(_OMP)
-!$omp parallel do private(ll, i) shared(s, ref)
+    !$omp parallel do private(ll, i) shared(s, ref)
 #endif
     do ll = 1, NVARS
       do i = 1-hs,nx_loc+hs
@@ -400,7 +394,7 @@ module module_types
       end do
     end do
 #if defined(_OMP)
-!$omp end parallel do
+  !$omp end parallel do
 #endif
   end subroutine exchange_halo_z
 
@@ -444,13 +438,13 @@ module module_types
       stop
     end if
 #if defined(_OACC)
-!$acc kernels present(flux)
+  !$acc kernels present(flux)
 ! #elif defined(_OMP)
 ! !$omp parallel do collapse(3) default(none) shared(flux, xval, nx, nz, NVARS)
 #endif
-    flux%mem(:,:,:) = xval
+  flux%mem(:,:,:) = xval
 #if defined(_OACC)
-!$acc end kernels
+  !$acc end kernels
 #endif
   end subroutine set_flux
 
@@ -484,13 +478,13 @@ module module_types
       stop
     end if
 #if defined(_OACC)
-!$acc kernels present(tend)
+    !$acc kernels present(tend)
 ! #elif defined(_OMP)
 ! !$omp parallel do collapse(3) default(none) shared(tend, xval, nx, nz, NVARS)
 #endif
     tend%mem(:,:,:) = xval
 #if defined(_OACC)
-!$acc end kernels
+    !$acc end kernels
 #endif
   end subroutine set_tendency
 

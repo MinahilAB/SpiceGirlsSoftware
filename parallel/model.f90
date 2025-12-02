@@ -10,6 +10,7 @@ program atmosphere_model
   use module_nvtx
   use mpi
   use parallel_parameters, only : rank, csize, left_rank, right_rank
+  use parallel_timer
   implicit none
 
   real(wp) :: etime
@@ -23,6 +24,7 @@ program atmosphere_model
   integer :: ierr
   integer :: n_args
   character(len=32) :: arg
+  type(timer_type) :: t
 
   n_args = command_argument_count()
   if (n_args == 2) then
@@ -56,22 +58,20 @@ program atmosphere_model
 
   call system_clock(t1)
 
+  call mytimer_create(t, "Runge Kutta")
+
 #if defined(_OACC)
   !$acc data present(oldstat, newstat, flux, tend, ref)
 #endif
 
- ! Use NVTX to mark the main computational region for profiling
+  ! Use NVTX to mark the main computational region for profiling
   ! call nvtxRangeStartA('Main Time Loop')
 
   ptime = int(sim_time/10.0)
   do while (etime < sim_time)
 
     if (etime + dt > sim_time) dt = sim_time - etime
-    
-  
       call rungekutta(oldstat,newstat,flux,tend,dt)
-
-    call rungekutta(oldstat,newstat,flux,tend,dt)
     
     if ( (rank == 0) .and. (mod(etime,ptime) < dt) ) then
       pctime = (etime/sim_time)*100.0_wp
@@ -88,7 +88,7 @@ program atmosphere_model
 
   end do
 
-   ! call nvtxRangeEnd()
+  ! call nvtxRangeEnd()
 
   ! Exit the OpenACC data region.
 #if defined(_OACC)
@@ -116,6 +116,10 @@ program atmosphere_model
   end if
 
   call finalize()
+  
+  call mytimer_destroy(t)
+  call mytimer_gather_stats()
+
   call system_clock(t2,rate)
 
   if (rank == 0) then

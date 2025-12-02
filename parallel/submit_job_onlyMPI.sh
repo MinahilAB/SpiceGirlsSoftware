@@ -1,8 +1,8 @@
 #!/bin/bash
 #SBATCH --job-name=ATM_Model_MPIonly
 #SBATCH --time=00:05:00
-#SBATCH --nodes=2
-#SBATCH --ntasks-per-node=8
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=14
 #SBATCH --partition=dcgp_usr_prod
 #SBATCH --qos=dcgp_qos_dbg
@@ -21,17 +21,17 @@ SPG_DIR=${HOME}/MHPC_repos/SpiceGirlsSoftware/parallel
 OUTDIR=${HOME}/Jobs/ATM_Model_MPIonly
 
 # Set nx gtidsize and the simulation time
-NX_SIZE=500
-SIM_TIME=1500.0
+NX_SIZE=100
+SIM_TIME=1000.0
 
 # Set Makefile flags
 DEBUG=0
 USE_OPENACC=0
-USE_OPENMP=0
+USE_OPENMP=1
 USE_NVTX=1
 
 # Set the number of OMP threads for CPU thread parallelisation
-export OMP_NUM_THREADS=1
+export OMP_NUM_THREADS=${SLURM_CPUS_PER_TASK}
 
 echo " ==== Loading modules... ===== "
 module purge
