@@ -3,6 +3,7 @@
 *.nc
 *.nsys-rep
 *.sqlite
+*.sh
 model
 /build/
 /docs/
