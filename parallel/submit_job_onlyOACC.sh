@@ -27,8 +27,8 @@ SIM_TIME=1000.0
 
 # Set Makefile flags
 DEBUG=1
-USE_OPENACC=0
-USE_OPENMP=1
+USE_OPENACC=1
+USE_OPENMP=0
 USE_NVTX=1
 
 # Set the number of OMP threads for CPU thread parallelisation

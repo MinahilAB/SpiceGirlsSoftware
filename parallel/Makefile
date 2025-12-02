@@ -15,13 +15,13 @@ USE_NVTX     			?= 1
 # ================================
 CPPFLAGS 				= -I. -I$(NETCDF_FORTRAN_INC)
 FCFLAGS  				= -fpic -cpp
-LDFLAGS  				= -L$(NETCDF_FORTRAN_LIB) -lnetcdff -lnetcdf -lstdc++
+LDFLAGS  				= -L$(NETCDF_FORTRAN_LIB) -lnetcdff -lnetcdf -lstdc++ -lm
 
 
 # ================================
 #       DEBUG / RELEASE FLAGS
 # ================================
-DEVFLAGS 				= -O0 -g -Wall -Wextra -fcheck=all -fbacktrace -fimplicit-none
+DEVFLAGS 				= -O0 -g -Wall -Wextra -fimplicit-none -fcheck=all -fbacktrace
 RELFLAGS 				= -O3 -march=native -mtune=native -Ofast -ffast-math -funroll-loops
 
 ifeq ($(DEBUG),1)
@@ -29,6 +29,7 @@ ifeq ($(DEBUG),1)
 	
 	ifeq ($(USE_OPENACC),1)
 		FCFLAGS += -fopt-info-all
+		FCFLAGS  := $(filter-out -fcheck=all -fbacktrace,$(FCFLAGS))
 	else ifeq ($(USE_OPENMP),1)
 		FCFLAGS += -fopt-info-optimized-omp
 	endif
@@ -41,7 +42,7 @@ endif
 #       OPENACC SUPPORT (GNU)
 # ================================
 ifeq ($(USE_OPENACC),1)
-	FCFLAGS  += -fopenacc
+	FCFLAGS  += -fopenacc -foffload=nvptx-none=-lm
 	CPPFLAGS += -D_OACC
 endif
 
