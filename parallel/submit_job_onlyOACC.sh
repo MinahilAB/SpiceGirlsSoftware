@@ -1,16 +1,17 @@
 #!/bin/bash
-#SBATCH --job-name=ATM_Model_MPIonly
+#SBATCH --job-name=ATM_Model_onlyOACC
 #SBATCH --time=00:05:00
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=14
-#SBATCH --partition=dcgp_usr_prod
-#SBATCH --qos=dcgp_qos_dbg
+#SBATCH --partition=boost_usr_prod
+#SBATCH --qos=boost_qos_dbg
+#SBATCH --gres=gpu:1
 #SBATCH --exclusive
 #SBATCH --mem=0
-#SBATCH --output=/leonardo/home/userexternal/%u/Jobs/ATM_Model_MPIonly/%j.out
-#SBATCH --error=/leonardo/home/userexternal/%u/Jobs/ATM_Model_MPIonly/%j.err
-#SBATCH --account=ICT25_MHPC
+#SBATCH --output=/leonardo/home/userexternal/%u/Jobs/ATM_Model_onlyOACC/%j.out
+#SBATCH --error=/leonardo/home/userexternal/%u/Jobs/ATM_Model_onlyOACC/%j.err
+#SBATCH --account=ICT25_MHPC_0
 
 set -euo pipefail
 
@@ -18,14 +19,14 @@ set -euo pipefail
 SPG_DIR=${HOME}/MHPC_repos/SpiceGirlsSoftware/parallel
 
 # Where ou want the output to go (can leave unchanged)
-OUTDIR=${HOME}/Jobs/ATM_Model_MPIonly
+OUTDIR=${HOME}/Jobs/ATM_Model_onlyOACC
 
 # Set nx gtidsize and the simulation time
 NX_SIZE=100
 SIM_TIME=1000.0
 
 # Set Makefile flags
-DEBUG=0
+DEBUG=1
 USE_OPENACC=0
 USE_OPENMP=1
 USE_NVTX=1

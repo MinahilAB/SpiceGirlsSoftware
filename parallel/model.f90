@@ -10,7 +10,6 @@ program atmosphere_model
   use module_nvtx
   use mpi
   use parallel_parameters, only : rank, csize, left_rank, right_rank
-  use parallel_timer
   implicit none
 
   real(wp) :: etime
@@ -24,7 +23,6 @@ program atmosphere_model
   integer :: ierr
   integer :: n_args
   character(len=32) :: arg
-  type(timer_type) :: t
 
   n_args = command_argument_count()
   if (n_args == 2) then
@@ -58,8 +56,6 @@ program atmosphere_model
 
   call system_clock(t1)
 
-  call mytimer_create(t, "Runge Kutta")
-
 #if defined(_OACC)
   !$acc data present(oldstat, newstat, flux, tend, ref)
 #endif
@@ -88,7 +84,6 @@ program atmosphere_model
 
   end do
 
-  ! call nvtxRangeEnd()
 
   ! Exit the OpenACC data region.
 #if defined(_OACC)
@@ -116,9 +111,6 @@ program atmosphere_model
   end if
 
   call finalize()
-  
-  call mytimer_destroy(t)
-  call mytimer_gather_stats()
 
   call system_clock(t2,rate)
 

@@ -7,8 +7,7 @@ module module_physics
   use legendre_quadrature
   use dimensions
   use iodir
-  use module_types 
-  use parallel_timer
+  use module_types
 
   implicit none
 
@@ -27,7 +26,6 @@ module module_physics
   type(atmospheric_tendency), public :: tend
   type(atmospheric_flux), public :: flux
   type(reference_state), public :: ref
-  type(timer_type) :: t
 
   contains
 
