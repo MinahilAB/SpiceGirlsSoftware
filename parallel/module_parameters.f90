@@ -78,9 +78,10 @@ module iodir
 end module iodir
 
 module parallel_parameters
+  use mpi
   implicit none
   public
-  integer, parameter :: i_beg = 1
+  integer :: rank, csize, left_rank, right_rank, i_beg, i_end, cart_comm = MPI_COMM_WORLD
   integer, parameter :: k_beg = 1
   integer, parameter :: hs = 2
 end module parallel_parameters
@@ -104,10 +105,11 @@ module dimensions
   use calculation_types, only : wp
   use physical_parameters, only : zlen, xlen
   use indexing
+  use parallel_parameters, only : csize
   implicit none
   public
-  integer , parameter :: nx = 100
-  integer , parameter :: nz = int(nx * zlen/xlen)
-  real(wp), parameter :: sim_time = 1000.0_wp
+  integer :: nx = 100
+  integer :: nz, rest, nx_loc
+  real(wp) :: sim_time = 1000.0_wp
   real(wp), parameter :: output_freq = 10.0_wp
 end module dimensions

@@ -35,6 +35,18 @@ module module_physics
     integer :: i, k, ii, kk
     real(wp) :: x, z, r, u, w, t, hr, ht
 
+    ! MPI params get initialised here!
+    rest = mod(nx, csize)
+    nx_loc = nx / csize
+
+    if (rank < rest) then
+      nx_loc = nx_loc + 1
+      i_beg = rank * nx_loc + 1
+    else
+      i_beg = rank * nx_loc + rest + 1
+    end if
+    i_end = i_beg + nx_loc - 1
+    
     dx = xlen / nx
     dz = zlen / nz
 
@@ -48,18 +60,19 @@ module module_physics
     etime = 0.0_wp
     output_counter = 0.0_wp
 
-    write(stdout,*) 'INITIALIZING MODEL STATUS.'
-    write(stdout,*) 'nx         : ', nx
-    write(stdout,*) 'nz         : ', nz
-    write(stdout,*) 'dx         : ', dx
-    write(stdout,*) 'dz         : ', dz
-    write(stdout,*) 'dt         : ', dt
-    write(stdout,*) 'final time : ', sim_time
+    write(stdout,'(/, A, I0, A)')  'R', rank, ': INITIALIZING MODEL STATUS.'
+    write(stdout,'(A, I0)')        'nx         : ', nx
+    write(stdout,'(A, I0)')        'nx_loc     : ', nx_loc
+    write(stdout,'(A, I0)')        'nz         : ', nz
+    write(stdout,'(A, F0.18)')     'dx         : ', dx
+    write(stdout,'(A, F0.18)')     'dz         : ', dz
+    write(stdout,'(A, F0.18)')     'dt         : ', dt
+    write(stdout,'(A, F0.18, /)')  'final time : ', sim_time
 
     call oldstat%set_state(0.0_wp)
 
     do k = 1-hs, nz+hs
-      do i = 1-hs, nx+hs
+      do i = 1-hs, nx_loc+hs
         do kk = 1, nqpoints
           do ii = 1, nqpoints
             x = (i_beg-1 + i-0.5_wp) * dx + (qpoints(ii)-0.5_wp)*dx
@@ -95,7 +108,9 @@ module module_physics
       ref%idenstheta(k) = hr*ht
       ref%pressure(k) = c0*(hr*ht)**cdocv
     end do
-    write(stdout,*) 'MODEL STATUS INITIALIZED.'
+    
+    ! if (rank == 0) write(stdout,*) 'MODEL STATUS INITIALIZED.'
+
   end subroutine init
 
   subroutine rungekutta(s0,s1,fl,tend,dt)
@@ -206,7 +221,7 @@ module module_physics
     mass = 0.0_wp
     te = 0.0_wp
     do k = 1, nz
-      do i = 1, nx
+      do i = 1, nx_loc
         r = oldstat%dens(i,k) + ref%density(k)
         u = oldstat%umom(i,k) / r
         w = oldstat%wmom(i,k) / r
