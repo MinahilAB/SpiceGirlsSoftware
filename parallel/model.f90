@@ -4,10 +4,12 @@ program atmosphere_model
   use module_physics, only : init, finalize
   use module_physics, only : rungekutta, total_mass_energy
   use module_output, only : create_output, write_record, close_output
-  use dimensions , only : sim_time, output_freq
+  use dimensions , only : sim_time, output_freq, nx, nz
+  use physical_parameters, only : xlen, zlen
   use iodir, only : stdout
+  use module_nvtx
   use mpi
-  use parallel_timer
+  use parallel_parameters, only : rank, csize, left_rank, right_rank
   implicit none
 
   real(wp) :: etime
@@ -16,18 +18,39 @@ program atmosphere_model
   real(wp) :: pctime
   real(wp) :: mass0, te0
   real(wp) :: mass1, te1
+  real(wp) :: mass_buf(2)
   integer(8) :: t1, t2, rate
-  ! type(timer_type) :: t
-  integer :: rank, size
-  integer :: ierror
+  integer :: ierr
+  integer :: n_args
+  character(len=32) :: arg
 
-  call MPI_INIT(ierror)
-  call MPI_COMM_RANK(MPI_COMM_WORLD, rank, ierror)
-  call MPI_COMM_SIZE(MPI_COMM_WORLD, size, ierror)
+  n_args = command_argument_count()
+  if (n_args == 2) then
+    call get_command_argument(1, arg)
+    read(arg, *) nx
+    call get_command_argument(2, arg)
+    read(arg, *) sim_time
+  end if
 
-  write(stdout, *) 'SIMPLE ATMOSPHERIC MODEL STARTING.'
+  nz = int(nx * zlen/xlen)
+
+  ! MPI initialisation
+  call MPI_Init(ierr)
+  call MPI_Comm_rank(MPI_COMM_WORLD, rank, ierr)
+  call MPI_Comm_size(MPI_COMM_WORLD, csize, ierr)
+
+  left_rank = mod(rank-1+csize,csize)
+  right_rank = mod(rank+1,csize)
+  
+  if (rank == 0) write(stdout, '(/,A,/)') 'SIMPLE ATMOSPHERIC MODEL STARTING.'
+
   call init(etime,output_counter,dt)
   call total_mass_energy(mass0,te0)
+  mass_buf(1) = mass0
+  mass_buf(2) = te0
+  call MPI_Allreduce(MPI_IN_PLACE, mass_buf, 2, MPI_DOUBLE_PRECISION, MPI_SUM, MPI_COMM_WORLD, ierr)
+  mass0 = mass_buf(1)
+  te0 = mass_buf(2)
   call create_output( )
   call write_record(oldstat,ref,etime)
 
@@ -48,8 +71,9 @@ program atmosphere_model
   
       call rungekutta(oldstat,newstat,flux,tend,dt)
 
-
-    if ( mod(etime,ptime) < dt ) then
+    call rungekutta(oldstat,newstat,flux,tend,dt)
+    
+    if ( (rank == 0) .and. (mod(etime,ptime) < dt) ) then
       pctime = (etime/sim_time)*100.0_wp
       write(stdout,'(1x,a,i2,a)') 'TIME PERCENT : ', int(pctime), '%'
     end if
@@ -77,18 +101,28 @@ program atmosphere_model
 #endif
 
   call total_mass_energy(mass1,te1)
+  mass_buf(1) = mass1
+  mass_buf(2) = te1
+  call MPI_Allreduce(MPI_IN_PLACE, mass_buf, 2, MPI_DOUBLE_PRECISION, MPI_SUM, MPI_COMM_WORLD, ierr)
+  mass1 = mass_buf(1)
+  te1 = mass_buf(2)
   call close_output( )
 
-  write(stdout,*) "----------------- Atmosphere check ----------------"
-  write(stdout,*) "Fractional Delta Mass  : ", (mass1-mass0)/mass0
-  write(stdout,*) "Fractional Delta Energy: ", (te1-te0)/te0
-  write(stdout,*) "---------------------------------------------------"
+  if (rank == 0) then
+    write(stdout,'(/,A)') "----------------- Atmosphere check ----------------"
+    write(stdout,*) "Fractional Delta Mass  : ", (mass1-mass0)/mass0
+    write(stdout,*) "Fractional Delta Energy: ", (te1-te0)/te0
+    write(stdout,'(A,/)') "---------------------------------------------------"
+  end if
 
   call finalize()
   call system_clock(t2,rate)
 
-  write(stdout,*) "SIMPLE ATMOSPHERIC MODEL RUN COMPLETED."
-  write(stdout,*) "USED CPU TIME: ", dble(t2-t1)/dble(rate)
+  if (rank == 0) then
+    write(stdout,'(A)') "SIMPLE ATMOSPHERIC MODEL RUN COMPLETED."
+    write(stdout,'(A, F0.18, /)') "USED CPU TIME: ", dble(t2-t1)/dble(rate)
+  end if
 
-  call MPI_FINALIZE(ierror)
+  call MPI_Finalize(ierr)
+  
 end program atmosphere_model

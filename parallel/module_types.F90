@@ -81,7 +81,7 @@ module module_types
     implicit none
     class(atmospheric_state), intent(inout) :: atmo
     if ( associated(atmo%mem) ) deallocate(atmo%mem)
-    allocate(atmo%mem(1-hs:nx+hs, 1-hs:nz+hs, NVARS))
+    allocate(atmo%mem(1-hs:nx_loc+hs, 1-hs:nz+hs, NVARS))
     atmo%dens(1-hs:,1-hs:) => atmo%mem(:,:,I_DENS)
     atmo%umom(1-hs:,1-hs:) => atmo%mem(:,:,I_UMOM)
     atmo%wmom(1-hs:,1-hs:) => atmo%mem(:,:,I_WMOM)
@@ -132,7 +132,7 @@ module module_types
 #endif
     do ll = 1, NVARS
       do k = 1, nz
-        do i = 1, nx
+        do i = 1, nx_loc
           s2%mem(i,k,ll) = s0%mem(i,k,ll) + dt * tend%mem(i,k,ll)
         end do
       end do
@@ -166,7 +166,7 @@ module module_types
 !$omp& private(i, k, ll, s, r, u, w, t, p, stencil, d3_vals, vals)
 #endif
     do k = 1, nz
-      do i = 1, nx+1
+      do i = 1, nx_loc+1
         do ll = 1, NVARS
           do s = 1, STEN_SIZE
             stencil(s) = atmostat%mem(i-hs-1+s,k,ll)
@@ -203,7 +203,7 @@ module module_types
 #endif
     do ll = 1, NVARS
       do k = 1, nz
-        do i = 1, nx
+        do i = 1, nx_loc
           tendency%mem(i,k,ll) = &
               -( flux%mem(i+1,k,ll) - flux%mem(i,k,ll) ) / dx
         end do
@@ -238,7 +238,7 @@ module module_types
 !$omp& private(i, k, ll, s, r, u, w, t, p, stencil, d3_vals, vals)
 #endif
     do k = 1, nz+1
-      do i = 1, nx
+      do i = 1, nx_loc
         do ll = 1, NVARS
           do s = 1, STEN_SIZE
             stencil(s) = atmostat%mem(i,k-hs-1+s,ll)
@@ -279,7 +279,7 @@ module module_types
 #endif
     do ll = 1, NVARS
       do k = 1, nz
-        do i = 1, nx
+        do i = 1, nx_loc
           tendency%mem(i,k,ll) = &
               -( flux%mem(i,k+1,ll) - flux%mem(i,k,ll) ) / dz
           ! Source term application (gravity)
@@ -295,29 +295,75 @@ module module_types
   end subroutine ztend
 
   subroutine exchange_halo_x(s)
-    implicit none
+    use mpi
+    use dimensions, only : nz, nx_loc
     class(atmospheric_state), intent(inout) :: s
-    integer :: k, ll
+    integer :: ierr, ncount
+    integer :: reqs(4)
+    real(wp), allocatable :: send_left(:), send_right(:), recv_left(:), recv_right(:)
 
-    ! This loop applies periodic boundary conditions in x, which is a common
-    ! parallel pattern (though often replaced by MPI/library calls in larger codes).
-#if defined(_OACC)
+    ncount = hs * nz * NVARS
+    allocate(send_left(ncount), send_right(ncount), recv_left(ncount), recv_right(ncount))
+    
+    call pack_strip(s%mem, 1, 1, nx_loc, hs, send_left)
+    call pack_strip(s%mem, nx_loc-hs+1, 1, nx_loc, hs, send_right)
+    
+    call MPI_Irecv(recv_left, ncount, MPI_DOUBLE_PRECISION, left_rank, 102, MPI_COMM_WORLD, reqs(1), ierr)
+    call MPI_Irecv(recv_right, ncount, MPI_DOUBLE_PRECISION, right_rank, 101, MPI_COMM_WORLD, reqs(2), ierr)
+    call MPI_Isend(send_right, ncount, MPI_DOUBLE_PRECISION, right_rank, 102, MPI_COMM_WORLD, reqs(3), ierr)
+    call MPI_Isend(send_left, ncount, MPI_DOUBLE_PRECISION, left_rank, 101, MPI_COMM_WORLD, reqs(4), ierr)
+    
+    call MPI_Waitall(4, reqs, MPI_STATUSES_IGNORE, ierr)
+    
+    call unpack_strip(recv_left, s%mem, 1-hs, 1)
+    call unpack_strip(recv_right, s%mem, nx_loc+1, 1)
+    
+    deallocate(send_left, send_right, recv_left, recv_right)
+  end subroutine exchange_halo_x
+
+
+  subroutine pack_strip(mem, i_start, k_start, nx_loc, width, buffer)
+    real(wp), intent(in) :: mem(1-hs:nx_loc+hs,1-hs:nz+hs,NVARS)
+    integer, intent(in) :: i_start, k_start, nx_loc, width
+    real(wp), intent(out) :: buffer(:)
+    integer :: ll, k, i, pos
+    pos = 0
+    
+    #if defined(_OACC)
 !$acc parallel loop collapse(2) present(s)
 #elif defined(_OMP)
 !$omp parallel do private(ll, k) shared(s)
 #endif
     do ll = 1, NVARS
-      do k = 1, nz
-        s%mem(-1,k,ll)   = s%mem(nx-1,k,ll)
-        s%mem(0,k,ll)    = s%mem(nx,k,ll)
-        s%mem(nx+1,k,ll) = s%mem(1,k,ll)
-        s%mem(nx+2,k,ll) = s%mem(2,k,ll)
+      do k = k_start, k_start+nz-1
+        do i = i_start, i_start+width-1
+          pos = pos + 1
+          buffer(pos) = mem(i,k,ll)
+        end do
       end do
     end do
-#if defined(_OMP)
+    
+ #if defined(_OMP)
 !$omp end parallel do
 #endif
-  end subroutine exchange_halo_x
+  end subroutine pack_strip
+
+  subroutine unpack_strip(buffer, mem, i_start, k_start)
+    real(wp), intent(in) :: buffer(:)
+    real(wp), intent(inout) :: mem(1-hs:nx_loc+hs,1-hs:nz+hs,NVARS)
+    integer, intent(in) :: i_start, k_start
+    integer :: ll, k, i, pos
+    pos = 0
+    do ll = 1, NVARS
+      do k = k_start, k_start+nz-1
+        do i = i_start, i_start+hs-1
+          pos = pos + 1
+          mem(i,k,ll) = buffer(pos)
+        end do
+      end do
+    end do
+  end subroutine unpack_strip
+
 
   subroutine exchange_halo_z(s,ref)
     implicit none
@@ -330,7 +376,7 @@ module module_types
 !$omp parallel do private(ll, i) shared(s, ref)
 #endif
     do ll = 1, NVARS
-      do i = 1-hs,nx+hs
+      do i = 1-hs,nx_loc+hs
         if (ll == I_WMOM) then
           s%mem(i,-1,ll) = 0.0_wp
           s%mem(i,0,ll) = 0.0_wp
@@ -382,7 +428,7 @@ module module_types
     implicit none
     class(atmospheric_flux), intent(inout) :: flux
     if ( associated(flux%mem) ) deallocate(flux%mem)
-    allocate(flux%mem(1:nx+1, 1:nz+1,NVARS))
+    allocate(flux%mem(1:nx_loc+1, 1:nz+1,NVARS))
     flux%dens => flux%mem(:,:,I_DENS)
     flux%umom => flux%mem(:,:,I_UMOM)
     flux%wmom => flux%mem(:,:,I_WMOM)
@@ -422,7 +468,7 @@ module module_types
     implicit none
     class(atmospheric_tendency), intent(inout) :: tend
     if ( associated(tend%mem) ) deallocate(tend%mem)
-    allocate(tend%mem(nx, nz,NVARS))
+    allocate(tend%mem(nx_loc, nz,NVARS))
     tend%dens => tend%mem(:,:,I_DENS)
     tend%umom => tend%mem(:,:,I_UMOM)
     tend%wmom => tend%mem(:,:,I_WMOM)

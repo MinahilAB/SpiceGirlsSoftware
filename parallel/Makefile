@@ -9,7 +9,7 @@ USE_NVTX            ?= 1
 # Development/release flags
 # 
 DEVFLAGS 			:= -O0 -g -Wall -Wextra -fcheck=all -fbacktrace -fimplicit-none
-RELFLAGS			:= -O3 -march=native -mtune=native -ffast -ffast-math -funroll-loops
+RELFLAGS			:= -O3 -march=native -mtune=native -Ofast -ffast-math -funroll-loops
 
 # Base flags
 CPPFLAGS			= -I. -I$(NETCDF_FORTRAN_INC)

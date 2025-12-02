@@ -1,11 +1,12 @@
 module module_output
   use calculation_types, only : wp, iowp
-  use parallel_parameters, only : i_beg, k_beg
-  use dimensions, only : nx, nz
+  use parallel_parameters, only : i_beg, k_beg, cart_comm, rank
+  use dimensions, only : nx, nx_loc, nz
   use module_types, only : atmospheric_state, reference_state
   use iodir, only : stderr
   use netcdf
-
+  use mpi
+  
   implicit none
 
   private
@@ -28,11 +29,17 @@ module module_output
   subroutine create_output
     implicit none
     integer :: t_dimid, x_dimid, z_dimid
-    allocate(dens(nx,nz))
-    allocate(uwnd(nx,nz))
-    allocate(wwnd(nx,nz))
-    allocate(theta(nx,nz))
-    call ncwrap(nf90_create('output.nc',nf90_clobber,ncid), __LINE__)
+    integer :: nc_comm, ierr
+
+    allocate(dens(nx_loc,nz))
+    allocate(uwnd(nx_loc,nz))
+    allocate(wwnd(nx_loc,nz))
+    allocate(theta(nx_loc,nz))
+
+    call mpi_comm_dup(cart_comm, nc_comm, ierr)
+    call ncwrap(nf90_create_par('output.nc', nf90_clobber, nc_comm, MPI_INFO_NULL, ncid), __LINE__)
+    
+    
     call ncwrap(nf90_def_dim(ncid,'time',nf90_unlimited,t_dimid), __LINE__)
     call ncwrap(nf90_def_dim(ncid,'x',nx,x_dimid), __LINE__)
     call ncwrap(nf90_def_dim(ncid,'z',nz,z_dimid), __LINE__)
@@ -68,7 +75,7 @@ module module_output
 #endif
 
     do k = 1, nz
-      do i = 1, nx
+      do i = 1, nx_loc
         dens(i,k) = atmostat%dens(i,k)
         uwnd(i,k) = atmostat%umom(i,k)/(ref%density(k)+dens(i,k))
         wwnd(i,k) = atmostat%wmom(i,k)/(ref%density(k)+dens(i,k))
@@ -78,16 +85,18 @@ module module_output
     end do
 
     st3 = [ i_beg, k_beg, rec_out ]
-    ct3 = [ nx, nz, 1 ]
+    ct3 = [ nx_loc, nz, 1 ]
     call ncwrap(nf90_put_var(ncid,dens_varid,dens,st3,ct3), __LINE__)
     call ncwrap(nf90_put_var(ncid,uwnd_varid,uwnd,st3,ct3), __LINE__)
     call ncwrap(nf90_put_var(ncid,wwnd_varid,wwnd,st3,ct3), __LINE__)
     call ncwrap(nf90_put_var(ncid,theta_varid,theta,st3,ct3), __LINE__)
 
-    st1 = [ rec_out ]
-    ct1 = [ 1 ]
-    etimearr(1) = etime
-    call ncwrap(nf90_put_var(ncid,t_varid,etimearr,st1,ct1), __LINE__)
+    if (rank == 0) then
+      st1 = [ rec_out ]
+      ct1 = [ 1 ]
+      etimearr(1) = etime
+      call ncwrap(nf90_put_var(ncid,t_varid,etimearr,st1,ct1), __LINE__)
+    end if
 
     rec_out = rec_out + 1
   end subroutine write_record
