@@ -66,6 +66,14 @@ module module_output
     integer, dimension(3) :: st3, ct3
     real(wp), dimension(1) :: etimearr
 
+#if defined(_OPENMP)
+  !$omp parallel do collapse(2) private(i,k) 
+#endif
+
+#if defined(_OPENACC)
+  !$acc parallel loop gang vector collapse(2) private(i,k) 
+#endif
+
     do k = 1, nz
       do i = 1, nx_loc
         dens(i,k) = atmostat%dens(i,k)

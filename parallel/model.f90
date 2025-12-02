@@ -56,10 +56,20 @@ program atmosphere_model
 
   call system_clock(t1)
 
+#if defined(_OACC)
+  !$acc data present(oldstat, newstat, flux, tend, ref)
+#endif
+
+ ! Use NVTX to mark the main computational region for profiling
+  ! call nvtxRangeStartA('Main Time Loop')
+
   ptime = int(sim_time/10.0)
   do while (etime < sim_time)
 
     if (etime + dt > sim_time) dt = sim_time - etime
+    
+  
+      call rungekutta(oldstat,newstat,flux,tend,dt)
 
     call rungekutta(oldstat,newstat,flux,tend,dt)
     
@@ -77,6 +87,18 @@ program atmosphere_model
     end if
 
   end do
+
+   ! call nvtxRangeEnd()
+
+  ! Exit the OpenACC data region.
+#if defined(_OACC)
+  !$acc end data
+#endif
+
+  ! Ensure all device operations are complete before diagnostics
+#if defined(_OACC)
+  !$acc wait
+#endif
 
   call total_mass_energy(mass1,te1)
   mass_buf(1) = mass1

@@ -96,7 +96,15 @@ module module_types
       write(stderr,*) 'NOT ALLOCATED STATE ERROR AT LINE ', __LINE__
       stop
     end if
-    atmo%mem(:,:,:) = xval
+#if defined(_OACC)
+!$acc kernels present(atmo)
+! #elif defined(_OMP)
+! !$omp parallel do collapse(3) default(none) shared(atmo, xval, nx, nz, NVARS, hs)
+#endif
+    atmo%mem(1-hs:nx+hs, 1-hs:nz+hs, :) = xval
+#if defined(_OACC)
+!$acc end kernels
+#endif
   end subroutine set_state
 
   subroutine del_state(atmo)
@@ -116,6 +124,12 @@ module module_types
     class(atmospheric_tendency), intent(in) :: tend
     real(wp), intent(in) :: dt
     integer :: ll, k, i
+
+#if defined(_OACC)
+!$acc parallel loop collapse(3) present(s2, s0, tend)
+#elif defined(_OMP)
+!$omp parallel do collapse(3) default(none) shared(s2, s0, tend, dt) private(ll, k, i)
+#endif
     do ll = 1, NVARS
       do k = 1, nz
         do i = 1, nx_loc
@@ -123,6 +137,9 @@ module module_types
         end do
       end do
     end do
+#if defined(_OMP)
+!$omp end parallel do
+#endif
   end subroutine update
 
   subroutine xtend(tendency,flux,ref,atmostat,dx,dt)
@@ -137,9 +154,17 @@ module module_types
     real(wp), dimension(STEN_SIZE) :: stencil
     real(wp), dimension(NVARS) :: d3_vals, vals
 
+    ! Halo exchange must complete before flux calculation
     call atmostat%exchange_halo_x( )
 
     hv_coef = -hv_beta * dx / (16.0_wp*dt)
+#if defined(_OACC)
+!$acc parallel loop collapse(2) present(flux, ref, atmostat) &
+!$acc& private(i, k, ll, s, r, u, w, t, p, stencil, d3_vals, vals)
+#elif defined(_OMP)
+!$omp parallel do collapse(2) default(none) shared(flux, ref, atmostat, dx, dt, hv_coef) &
+!$omp& private(i, k, ll, s, r, u, w, t, p, stencil, d3_vals, vals)
+#endif
     do k = 1, nz
       do i = 1, nx_loc+1
         do ll = 1, NVARS
@@ -166,6 +191,16 @@ module module_types
         flux%rhot(i,k) = r*u*t - hv_coef*d3_vals(I_RHOT)
       end do
     end do
+#if defined(_OMP)
+!$omp end parallel do
+#endif
+
+    ! Second loop for tendency calculation
+#if defined(_OACC)
+!$acc parallel loop collapse(3) present(tendency, flux)
+#elif defined(_OMP)
+!$omp parallel do collapse(3) default(none) shared(tendency, flux, dx) private(ll, k, i)
+#endif
     do ll = 1, NVARS
       do k = 1, nz
         do i = 1, nx_loc
@@ -174,6 +209,9 @@ module module_types
         end do
       end do
     end do
+#if defined(_OMP)
+!$omp end parallel do
+#endif
   end subroutine xtend
 
   subroutine ztend(tendency,flux,ref,atmostat,dz,dt)
@@ -188,9 +226,17 @@ module module_types
     real(wp), dimension(STEN_SIZE) :: stencil
     real(wp), dimension(NVARS) :: d3_vals, vals
 
+    ! Halo exchange must complete before flux calculation
     call atmostat%exchange_halo_z(ref)
 
     hv_coef = -hv_beta * dz / (16.0_wp*dt)
+#if defined(_OACC)
+!$acc parallel loop collapse(2) present(flux, ref, atmostat) &
+!$acc& private(i, k, ll, s, r, u, w, t, p, stencil, d3_vals, vals)
+#elif defined(_OMP)
+!$omp parallel do collapse(2) default(none) shared(flux, ref, atmostat, dz, dt, hv_coef) &
+!$omp& private(i, k, ll, s, r, u, w, t, p, stencil, d3_vals, vals)
+#endif
     do k = 1, nz+1
       do i = 1, nx_loc
         do ll = 1, NVARS
@@ -221,18 +267,31 @@ module module_types
         flux%rhot(i,k) = r*w*t - hv_coef*d3_vals(I_RHOT)
       end do
     end do
+#if defined(_OMP)
+!$omp end parallel do
+#endif
 
+    ! Second loop for tendency calculation
+#if defined(_OACC)
+!$acc parallel loop collapse(3) present(tendency, flux, atmostat)
+#elif defined(_OMP)
+!$omp parallel do collapse(3) default(none) shared(tendency, flux, atmostat, dz) private(ll, k, i)
+#endif
     do ll = 1, NVARS
       do k = 1, nz
         do i = 1, nx_loc
           tendency%mem(i,k,ll) = &
               -( flux%mem(i,k+1,ll) - flux%mem(i,k,ll) ) / dz
+          ! Source term application (gravity)
           if (ll == I_WMOM) then
             tendency%wmom(i,k) = tendency%wmom(i,k) - atmostat%dens(i,k)*grav
           end if
         end do
       end do
     end do
+#if defined(_OMP)
+!$omp end parallel do
+#endif
   end subroutine ztend
 
   subroutine exchange_halo_x(s)
@@ -269,6 +328,12 @@ module module_types
     real(wp), intent(out) :: buffer(:)
     integer :: ll, k, i, pos
     pos = 0
+    
+    #if defined(_OACC)
+!$acc parallel loop collapse(2) present(s)
+#elif defined(_OMP)
+!$omp parallel do private(ll, k) shared(s)
+#endif
     do ll = 1, NVARS
       do k = k_start, k_start+nz-1
         do i = i_start, i_start+width-1
@@ -277,6 +342,10 @@ module module_types
         end do
       end do
     end do
+    
+ #if defined(_OMP)
+!$omp end parallel do
+#endif
   end subroutine pack_strip
 
   subroutine unpack_strip(buffer, mem, i_start, k_start)
@@ -301,6 +370,11 @@ module module_types
     class(atmospheric_state), intent(inout) :: s
     class(reference_state), intent(in) :: ref
     integer :: i, ll
+#if defined(_OACC)
+!$acc parallel loop collapse(2) present(s, ref)
+#elif defined(_OMP)
+!$omp parallel do private(ll, i) shared(s, ref)
+#endif
     do ll = 1, NVARS
       do i = 1-hs,nx_loc+hs
         if (ll == I_WMOM) then
@@ -325,6 +399,9 @@ module module_types
         end if
       end do
     end do
+#if defined(_OMP)
+!$omp end parallel do
+#endif
   end subroutine exchange_halo_z
 
   subroutine new_ref(ref)
@@ -366,7 +443,15 @@ module module_types
       write(stderr,*) 'NOT ALLOCATED FLUX ERROR AT LINE ', __LINE__
       stop
     end if
+#if defined(_OACC)
+!$acc kernels present(flux)
+! #elif defined(_OMP)
+! !$omp parallel do collapse(3) default(none) shared(flux, xval, nx, nz, NVARS)
+#endif
     flux%mem(:,:,:) = xval
+#if defined(_OACC)
+!$acc end kernels
+#endif
   end subroutine set_flux
 
   subroutine del_flux(flux)
@@ -398,7 +483,15 @@ module module_types
       write(stderr,*) 'NOT ALLOCATED FLUX ERROR AT LINE ', __LINE__
       stop
     end if
+#if defined(_OACC)
+!$acc kernels present(tend)
+! #elif defined(_OMP)
+! !$omp parallel do collapse(3) default(none) shared(tend, xval, nx, nz, NVARS)
+#endif
     tend%mem(:,:,:) = xval
+#if defined(_OACC)
+!$acc end kernels
+#endif
   end subroutine set_tendency
 
   subroutine del_tendency(tend)
@@ -415,7 +508,15 @@ module module_types
     implicit none
     type(atmospheric_state), intent(inout) :: x
     type(atmospheric_state), intent(in) :: y
-    x%mem(:,:,:) = y%mem(:,:,:)
+#if defined(_OACC)
+!$acc kernels present(x, y)
+! #elif defined(_OMP)
+! !$omp parallel do collapse(3) default(none) shared(x, y, nx, nz, NVARS, hs)
+#endif
+    x%mem(1-hs:nx+hs, 1-hs:nz+hs, :) = y%mem(1-hs:nx+hs, 1-hs:nz+hs, :)
+#if defined(_OACC)
+!$acc end kernels
+#endif
   end subroutine state_equal_to_state
 
 end module module_types
