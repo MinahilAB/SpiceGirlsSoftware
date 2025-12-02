@@ -1,8 +1,8 @@
 #!/bin/bash
 #SBATCH --job-name=ATM_Model_MPIonly
 #SBATCH --time=00:10:00
-#SBATCH --nodes=1
-#SBATCH --ntasks-per-node=1
+#SBATCH --nodes=2
+#SBATCH --ntasks-per-node=8
 #SBATCH --cpus-per-task=1
 #SBATCH --partition=dcgp_usr_prod
 #SBATCH --qos=dcgp_qos_dbg

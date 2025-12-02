@@ -9,8 +9,7 @@ program atmosphere_model
   use iodir, only : stdout
   use module_nvtx
   use mpi
-  use parallel_parameters, only : rank, csize, left_rank, right_rank
-  use parallel_timer
+  use parallel_parameters, only : rank, csize, left_rank, right_rank, cart_comm
   implicit none
 
   real(wp) :: etime
@@ -24,7 +23,11 @@ program atmosphere_model
   integer :: ierr
   integer :: n_args
   character(len=32) :: arg
-  type(timer_type) :: t
+  integer, dimension(1) :: dims
+  logical, dimension(1) :: periods
+  logical :: reorder
+
+
 
   n_args = command_argument_count()
   if (n_args == 2) then
@@ -41,8 +44,13 @@ program atmosphere_model
   call MPI_Comm_rank(MPI_COMM_WORLD, rank, ierr)
   call MPI_Comm_size(MPI_COMM_WORLD, csize, ierr)
 
-  left_rank = mod(rank-1+csize,csize)
-  right_rank = mod(rank+1,csize)
+  dims(1) = csize
+  periods(1) = .true.
+  reorder = .true.
+  call MPI_Cart_create(MPI_COMM_WORLD, 1, dims, periods, reorder, cart_comm, ierr)
+
+  call MPI_Cart_shift(cart_comm, 0, -1, ierr, left_rank, ierr)
+  call MPI_Cart_shift(cart_comm, 0, 1, ierr, right_rank, ierr)
   
   if (rank == 0) write(stdout, '(/,A,/)') 'SIMPLE ATMOSPHERIC MODEL STARTING.'
 

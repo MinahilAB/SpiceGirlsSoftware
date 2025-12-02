@@ -23,13 +23,14 @@ module module_output
   integer :: ncid
   integer :: dens_varid, uwnd_varid, wwnd_varid, theta_varid, t_varid
   integer :: rec_out
+  integer :: nc_comm
 
   contains
 
   subroutine create_output
     implicit none
     integer :: t_dimid, x_dimid, z_dimid
-    integer :: nc_comm, ierr
+    integer :: ierr
 
     allocate(dens(nx_loc,nz))
     allocate(uwnd(nx_loc,nz))
@@ -55,6 +56,8 @@ module module_output
     call ncwrap(nf90_enddef(ncid), __LINE__)
     rec_out = 1
   end subroutine create_output
+
+
 
   subroutine write_record(atmostat,ref,etime)
     implicit none
@@ -101,16 +104,24 @@ module module_output
     rec_out = rec_out + 1
   end subroutine write_record
 
+
+
   subroutine close_output
     implicit none
+    integer :: ierr
+
     if ( allocated(dens) ) then
       deallocate(dens)
       deallocate(uwnd)
       deallocate(wwnd)
       deallocate(theta)
     end if
+
     call ncwrap(nf90_close(ncid), __LINE__)
+    call mpi_comm_free(nc_comm, ierr)
   end subroutine close_output
+
+
 
   subroutine ncwrap(ierr,line)
     implicit none

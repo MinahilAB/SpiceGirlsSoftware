@@ -104,7 +104,7 @@ module module_types
 ! #elif defined(_OMP)
   ! $omp parallel do collapse(3) default(none) shared(atmo, xval, nx, nz, NVARS, hs)
 #endif
-    atmo%mem(1-hs:nx+hs, 1-hs:nz+hs, :) = xval
+    atmo%mem(1-hs:nx_loc+hs, 1-hs:nz+hs, :) = xval
 #if defined(_OACC)
   !$acc end kernels
 #endif
@@ -323,10 +323,10 @@ module module_types
     call pack_strip(s%mem, 1, 1, nx_loc, hs, send_left)
     call pack_strip(s%mem, nx_loc-hs+1, 1, nx_loc, hs, send_right)
     
-    call MPI_Irecv(recv_left, ncount, MPI_DOUBLE_PRECISION, left_rank, 102, MPI_COMM_WORLD, reqs(1), ierr)
-    call MPI_Irecv(recv_right, ncount, MPI_DOUBLE_PRECISION, right_rank, 101, MPI_COMM_WORLD, reqs(2), ierr)
-    call MPI_Isend(send_right, ncount, MPI_DOUBLE_PRECISION, right_rank, 102, MPI_COMM_WORLD, reqs(3), ierr)
-    call MPI_Isend(send_left, ncount, MPI_DOUBLE_PRECISION, left_rank, 101, MPI_COMM_WORLD, reqs(4), ierr)
+    call MPI_Irecv(recv_left, ncount, MPI_DOUBLE_PRECISION, left_rank, 102, cart_comm, reqs(1), ierr)
+    call MPI_Irecv(recv_right, ncount, MPI_DOUBLE_PRECISION, right_rank, 101, cart_comm, reqs(2), ierr)
+    call MPI_Isend(send_right, ncount, MPI_DOUBLE_PRECISION, right_rank, 102, cart_comm, reqs(3), ierr)
+    call MPI_Isend(send_left, ncount, MPI_DOUBLE_PRECISION, left_rank, 101, cart_comm, reqs(4), ierr)
     
     call MPI_Waitall(4, reqs, MPI_STATUSES_IGNORE, ierr)
     
@@ -545,7 +545,7 @@ module module_types
 ! #elif defined(_OMP)
 ! !$omp parallel do collapse(3) default(none) shared(x, y, nx, nz, NVARS, hs)
 #endif
-    x%mem(1-hs:nx+hs, 1-hs:nz+hs, :) = y%mem(1-hs:nx+hs, 1-hs:nz+hs, :)
+    x%mem(1-hs:nx_loc+hs, 1-hs:nz+hs, :) = y%mem(1-hs:nx_loc+hs, 1-hs:nz+hs, :)
 #if defined(_OACC)
 !$acc end kernels
 #endif
