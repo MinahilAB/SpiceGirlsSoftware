@@ -117,7 +117,6 @@ module module_physics
       end do
     end do
 
-    ! DO we need to collapse here?
     do k = 1, nz+1
       z = (k_beg-1 + k-1) * dz
       call thermal(0.0_wp,z,r,u,w,t,hr,ht)
@@ -194,6 +193,7 @@ module module_physics
   end subroutine thermal
 
   subroutine hydrostatic_const_theta(z,r,t)
+    !$acc routine seq
     implicit none
     real(wp), intent(in) :: z
     real(wp), intent(out) :: r, t
@@ -207,6 +207,7 @@ module module_physics
 
   elemental function ellipse(x,z,amp,x0,z0,x1,z1) result(val)
     implicit none
+    !$acc routine seq
     real(wp), intent(in) :: x, z
     real(wp), intent(in) :: amp
     real(wp), intent(in) :: x0, z0
