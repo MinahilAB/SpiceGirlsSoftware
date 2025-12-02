@@ -72,13 +72,13 @@ inline CTimer::~CTimer()
 }
 
 inline void CTimer::print_timing_results()
-{
-    for (const auto& [fst, snd] : times)
+{ 
+    for (const auto& [fst, snd] : times){
         //save to file
-        std::ofstream file("timing_results.txt", std::ios::app);
-        file  << "Function: " << std::setw(15) << std::left << fst  << " Time (ms): " <<  std::setw(8) << std::left  << snd.total_time / 1000 <<" Total calls: " << snd.calls << std::endl;
-        //std::cout  << "Function: " << std::setw(15) << std::left << fst  << " Time (ms): " <<  std::setw(8) << std::left  << snd.total_time / 1000 <<" Total calls: " << snd.calls << std::endl;
-}
+        //out  << "Function: " << std::setw(15) << std::left << fst  << " Time (ms): " <<  std::setw(8) << std::left  << snd.total_time / 1000 <<" Total calls: " << snd.calls << std::endl;
+        std::cout  << "Function: " << std::setw(15) << std::left << fst  << " Time (ms): " <<  std::setw(8) << std::left  << snd.total_time / 1000 <<" Total calls: " << snd.calls << std::endl;
+    }
+    }
 
 inline void CTimer::gather_and_print(const int root, std::vector<TimerData>& all_timings)
 {
@@ -89,6 +89,7 @@ inline void CTimer::gather_and_print(const int root, std::vector<TimerData>& all
 
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
 
     if (rank == root)
         all_timings.resize(world_size * times_size);
@@ -107,6 +108,7 @@ inline void CTimer::gather_and_print(const int root, std::vector<TimerData>& all
 
     //Gather data on root
     MPI_Gather(timings.data(), sizeof(TimerData) * times.size(), MPI_BYTE, all_timings.data(), sizeof(TimerData) * times.size(), MPI_BYTE, root, MPI_COMM_WORLD );
+
 
     if (rank == 0)
         CTimer::print_statistics(all_timings);
@@ -172,9 +174,9 @@ for (const auto& pair : times)
     file << std::string(100, '-') << std::endl;
     file << std::setprecision(12);
     file << "Function : " << std::setw(20) << std::left << key
-         << " Max time: " << std::setw(5) << std::right << max_time / 1000 << "ms "
-         << "Min time: " << std::setw(5) << std::right << min_time / 1000 << "ms "
-         << "Avg time : " << std::setw(5) << std::right << avg_time /1000 << "ms"
+         << " Max time: " << std::setw(10) << std::right << max_time / 1000 << "ms "
+         << "Min time: " << std::setw(10) << std::right << min_time / 1000 << "ms "
+         << "Avg time : " << std::setw(10) << std::right << avg_time /1000 << "ms"
          << std::endl;
 
     counter++;

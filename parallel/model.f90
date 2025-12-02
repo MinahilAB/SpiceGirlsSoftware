@@ -6,6 +6,8 @@ program atmosphere_model
   use module_output, only : create_output, write_record, close_output
   use dimensions , only : sim_time, output_freq
   use iodir, only : stdout
+  use mpi
+  use parallel_timer
   implicit none
 
   real(wp) :: etime
@@ -15,6 +17,13 @@ program atmosphere_model
   real(wp) :: mass0, te0
   real(wp) :: mass1, te1
   integer(8) :: t1, t2, rate
+  ! type(timer_type) :: t
+  integer :: rank, size
+  integer :: ierror
+
+  call MPI_INIT(ierror)
+  call MPI_COMM_RANK(MPI_COMM_WORLD, rank, ierror)
+  call MPI_COMM_SIZE(MPI_COMM_WORLD, size, ierror)
 
   write(stdout, *) 'SIMPLE ATMOSPHERIC MODEL STARTING.'
   call init(etime,output_counter,dt)
@@ -24,12 +33,21 @@ program atmosphere_model
 
   call system_clock(t1)
 
+#if defined(_OACC)
+  !$acc data present(oldstat, newstat, flux, tend, ref)
+#endif
+
+ ! Use NVTX to mark the main computational region for profiling
+  ! call nvtxRangeStartA('Main Time Loop')
+
   ptime = int(sim_time/10.0)
   do while (etime < sim_time)
 
     if (etime + dt > sim_time) dt = sim_time - etime
+    
+  
+      call rungekutta(oldstat,newstat,flux,tend,dt)
 
-    call rungekutta(oldstat,newstat,flux,tend,dt)
 
     if ( mod(etime,ptime) < dt ) then
       pctime = (etime/sim_time)*100.0_wp
@@ -46,6 +64,18 @@ program atmosphere_model
 
   end do
 
+   ! call nvtxRangeEnd()
+
+  ! Exit the OpenACC data region.
+#if defined(_OACC)
+  !$acc end data
+#endif
+
+  ! Ensure all device operations are complete before diagnostics
+#if defined(_OACC)
+  !$acc wait
+#endif
+
   call total_mass_energy(mass1,te1)
   call close_output( )
 
@@ -60,4 +90,5 @@ program atmosphere_model
   write(stdout,*) "SIMPLE ATMOSPHERIC MODEL RUN COMPLETED."
   write(stdout,*) "USED CPU TIME: ", dble(t2-t1)/dble(rate)
 
+  call MPI_FINALIZE(ierror)
 end program atmosphere_model

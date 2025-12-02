@@ -14,7 +14,8 @@ RELFLAGS			:= -O3 -march=native -mtune=native -ffast -ffast-math -funroll-loops
 # Base flags
 CPPFLAGS			= -I. -I$(NETCDF_FORTRAN_INC)
 FCFLAGS				= -fpic -cpp
-LDFLAGS				= -L$(NETCDF_FORTRAN_LIB) -lnetcdff -lnetcdf -fopenacc -fopenmp
+LDFLAGS				= -L$(NETCDF_FORTRAN_LIB) -lnetcdff -lnetcdf -fopenacc -fopenmp -lstdc++
+
 
 # Apply flags according to specified options
 ifeq ($(DEBUG),1)
@@ -44,11 +45,17 @@ endif
 # Build rules
 all: model
 
-model : model.f90 module_nvtx.F90 module_nvtx.o module_parameters.o module_types.F90 module_physics.o module_output.o
+model : model.f90 module_nvtx.F90 module_nvtx.o module_parameters.o module_types.F90 module_physics.o module_output.o parallel_timer.o parallel_timer_c.o
 	$(FC) $(FCFLAGS) $(CPPFLAGS) $< -o $@ *.o $(LDFLAGS)
 
 module_nvtx.o : module_nvtx.F90
 	$(FC) $(FCFLAGS) $(CPPFLAGS) $< -c
+
+parallel_timer.o : parallel_timer.f90
+	$(FC) $(FCFLAGS) $(CPPFLAGS) $< -c
+
+parallel_timer_c.o : parallel_timer_c.cpp
+	$(CC) $(CFLAGS) -c $<
 
 module_parameters.o : module_parameters.f90
 	$(FC) $(FCFLAGS) $(CPPFLAGS) $< -c
@@ -58,8 +65,8 @@ module_types.o : module_types.F90 module_parameters.o
 
 module_output.o : module_output.F90 module_physics.o
 	$(FC) $(FCFLAGS) $(CPPFLAGS) $< -c
-
-module_physics.o : module_physics.f90 module_types.o
+  
+module_physics.o : module_physics.f90 module_types.o parallel_timer.o
 	$(FC) $(FCFLAGS) $(CPPFLAGS) $< -c
 
 clean :

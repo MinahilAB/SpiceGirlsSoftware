@@ -2,26 +2,29 @@ module parallel_timer
   use iso_c_binding
   implicit none
   private
-  public :: timer_type, mytimer_create, mytimer_destroy, mytimer_print
+  public :: timer_type, mytimer_create, mytimer_destroy, mytimer_print, mytimer_gather_stats
 
   type, bind(C) :: timer_type
      type(c_ptr) :: handle = c_null_ptr
   end type timer_type
 
   interface
-     function mytimer_create_c(name) bind(C, name="mytimer_create")
+     function mytimer_create_c(name) bind(C, name="mytimer_start")
         import :: c_ptr, c_char
         type(c_ptr) :: mytimer_create_c
         character(kind=c_char), intent(in) :: name(*)
      end function mytimer_create_c
 
-     subroutine mytimer_destroy_c(handle) bind(C, name="mytimer_destroy")
+     subroutine mytimer_destroy_c(handle) bind(C, name="mytimer_stop")
         import :: c_ptr
         type(c_ptr), value :: handle
      end subroutine mytimer_destroy_c
 
      subroutine mytimer_print_c() bind(C, name="mytimer_print")
      end subroutine mytimer_print_c
+
+     subroutine mytimer_gather_c() bind(C, name="mytimer_gather_and_print")
+     end subroutine mytimer_gather_c
   end interface
 
 contains
@@ -49,5 +52,9 @@ contains
   subroutine mytimer_print()
     call mytimer_print_c()
   end subroutine mytimer_print
+
+  subroutine mytimer_gather_stats()
+    call mytimer_gather_c()
+  end subroutine mytimer_gather_stats
 
 end module parallel_timer

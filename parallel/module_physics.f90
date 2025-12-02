@@ -8,6 +8,7 @@ module module_physics
   use dimensions
   use iodir
   use module_types 
+  use parallel_timer
 
   implicit none
 
@@ -26,6 +27,7 @@ module module_physics
   type(atmospheric_tendency), public :: tend
   type(atmospheric_flux), public :: flux
   type(reference_state), public :: ref
+  type(timer_type) :: t
 
   contains
 
@@ -89,7 +91,7 @@ module module_physics
     ref%denstheta(:) = 0.0_wp
 
 #if defined(_OPENMP)
-  !$omp parallel do collapse(2) private(k,kk,z,hr,ht)
+  !$omp parallel do collapse(2) private(k,kk,z,hr,ht) 
 #endif
 
 #if defined(_OPENACC)
@@ -126,6 +128,8 @@ module module_physics
     real(wp) :: dt1, dt2, dt3
     logical, save :: dimswitch = .true.
 
+    call mytimer_create(t, "Runge-Kutta Step")
+
     dt1 = dt/1.0_wp
     dt2 = dt/2.0_wp
     dt3 = dt/3.0_wp
@@ -145,6 +149,10 @@ module module_physics
       call step(s0, s1, s0, dt1, DIR_X, fl, tend)
     end if
     dimswitch = .not. dimswitch
+
+    call mytimer_destroy(t)
+    ! call mytimer_print()
+    call mytimer_gather_stats()
   end subroutine rungekutta
 
   ! Semi-discretized step in time:
@@ -167,6 +175,9 @@ module module_physics
   end subroutine step
 
   subroutine thermal(x,z,r,u,w,t,hr,ht)
+#if defined(_OPENACC)
+  !$acc routine seq
+#endif
     implicit none
     real(wp), intent(in) :: x, z
     real(wp), intent(out) :: r, u, w, t
@@ -225,11 +236,11 @@ module module_physics
     te = 0.0_wp
 
 #if defined(_OPENMP)
-  !$omp parallel do private(i,k,r, u,w,th,p,t,ke,ie) reduction(+:mass,te) 
+  !$omp parallel do collapse(2) private(i,k,r, u,w,th,p,t,ke,ie) reduction(+:mass,te) 
 #endif
 
 #if defined(_OPENACC)
-  !$acc parallel loop gang vector collapse(2) private(i,k,r, u,w,th,p,t,ke, ie) reduction(+:mass,te)
+  !$acc parallel loop gang vector collapse(2) private(i,k,r, u,w,th,p,t,ke,ie) reduction(+:mass,te)
 #endif
     do k = 1, nz
       do i = 1, nx

@@ -60,11 +60,11 @@ module module_output
     real(wp), dimension(1) :: etimearr
 
 #if defined(_OPENMP)
-  !$omp parallel do collapse(2) private(i,k)
+  !$omp parallel do collapse(2) private(i,k) 
 #endif
 
 #if defined(_OPENACC)
-  !$acc parallel loop gang vector collapse(2) private(i,k)
+  !$acc parallel loop gang vector collapse(2) private(i,k) 
 #endif
 
     do k = 1, nz

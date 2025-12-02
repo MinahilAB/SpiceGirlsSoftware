@@ -2,21 +2,26 @@
 #include <map>
 #include <string>
 #include <memory>
+#include <fstream>
+
 extern "C" {
+    typedef void* timer_handle;
 
-  typedef void* timer_handle;
+    timer_handle mytimer_start(const char* name) {
+        return new CTimer(std::string(name));
+    }
 
-  timer_handle mytimer_create(const char* name) {
-      std::string sname(name);
-      return new CTimer(sname);
-  }
+    void mytimer_stop(timer_handle h) {
+        delete static_cast<CTimer*>(h);
+    }
 
-  void mytimer_destroy(timer_handle handle) {
-      delete static_cast<CTimer*>(handle);
-  }
-
-  void mytimer_print() {
-      CTimer::print_timing_results();
-  }
-
+    void mytimer_print() {
+        CTimer::print_timing_results();
+    }
+    
+    void mytimer_gather_and_print() {
+        
+        std::vector<TimerData> all_timings;
+        CTimer::gather_and_print(0, all_timings); // Root is 0
+    }
 }
