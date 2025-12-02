@@ -98,7 +98,7 @@ module module_physics
     write(stdout,*) 'MODEL STATUS INITIALIZED.'
   end subroutine init
 
-  subroutine rungekutta(s0,s1,fl,tend,dt)
+  subroutine rungekutta(s0,s1,fl,tend,dt)    ! this is where 
     implicit none
     type(atmospheric_state), intent(inout) :: s0
     type(atmospheric_state), intent(inout) :: s1

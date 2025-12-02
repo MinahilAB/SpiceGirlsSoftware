@@ -1,3 +1,5 @@
+! Include only necessary headers. The parallel symbols are now defined by the Makefile.
+
 program atmosphere_model
   use calculation_types, only : wp
   use module_physics, only : dt, oldstat, newstat, flux, tend, ref
@@ -6,7 +8,7 @@ program atmosphere_model
   use module_output, only : create_output, write_record, close_output
   use dimensions , only : sim_time, output_freq
   use iodir, only : stdout
-  use module_nvtx
+  use module_nvtx, only : nvtxRangeStartA, nvtxRangeEnd
   implicit none
 
   real(wp) :: etime
@@ -19,11 +21,20 @@ program atmosphere_model
 
   write(stdout, *) 'SIMPLE ATMOSPHERIC MODEL STARTING.'
   call init(etime,output_counter,dt)
+  
   call total_mass_energy(mass0,te0)
   call create_output( )
   call write_record(oldstat,ref,etime)
 
   call system_clock(t1)
+
+  ! Define the data region for OpenACC, checking for the Makefile's _OACC symbol.
+#if defined(_OACC)
+!$acc data present(oldstat, newstat, flux, tend, ref)
+#endif
+
+  ! Use NVTX to mark the main computational region for profiling
+  call nvtxRangeStartA('Main Time Loop')
 
   ptime = int(sim_time/10.0)
   do while (etime < sim_time)
@@ -46,6 +57,18 @@ program atmosphere_model
     end if
 
   end do
+
+  call nvtxRangeEnd()
+
+  ! Exit the OpenACC data region.
+#if defined(_OACC)
+!$acc end data
+#endif
+
+  ! Ensure all device operations are complete before diagnostics
+#if defined(_OACC)
+!$acc wait
+#endif
 
   call total_mass_energy(mass1,te1)
   call close_output( )
