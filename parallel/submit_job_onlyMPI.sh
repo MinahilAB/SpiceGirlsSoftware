@@ -1,28 +1,28 @@
 #!/bin/bash
 #SBATCH --job-name=ATM_Model_MPIonly
-#SBATCH --time=00:05:00
+#SBATCH --time=00:30:00
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --cpus-per-task=14
+#SBATCH --cpus-per-task=1
 #SBATCH --partition=dcgp_usr_prod
 #SBATCH --qos=dcgp_qos_dbg
 #SBATCH --exclusive
 #SBATCH --mem=0
-#SBATCH --output=/leonardo/home/userexternal/%u/Jobs/ATM_Model_MPIonly/%j.out
-#SBATCH --error=/leonardo/home/userexternal/%u/Jobs/ATM_Model_MPIonly/%j.err
+#SBATCH --output=output.out
+#SBATCH --error=error.err
 #SBATCH --account=ICT25_MHPC
 
 set -euo pipefail
 
 # Add the path to the SpiceGirlsSoftware directory
-SPG_DIR=${HOME}/MHPC_repos/SpiceGirlsSoftware/parallel
+SPG_DIR=${HOME}/SpiceGirlsSoftware/parallel
 
 # Where ou want the output to go (can leave unchanged)
 OUTDIR=${HOME}/Jobs/ATM_Model_MPIonly
 
 # Set nx gtidsize and the simulation time
-NX_SIZE=100
-SIM_TIME=1000.0
+NX_SIZE=500
+SIM_TIME=1500.0
 
 # Set Makefile flags
 DEBUG=0

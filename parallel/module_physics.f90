@@ -194,6 +194,9 @@ module module_physics
   end subroutine thermal
 
   subroutine hydrostatic_const_theta(z,r,t)
+#if defined(_OPENACC)
+  !$acc routine seq
+#endif
     implicit none
     real(wp), intent(in) :: z
     real(wp), intent(out) :: r, t
@@ -206,6 +209,9 @@ module module_physics
   end subroutine hydrostatic_const_theta
 
   elemental function ellipse(x,z,amp,x0,z0,x1,z1) result(val)
+#if defined(_OPENACC)
+  !$acc routine seq
+#endif
     implicit none
     real(wp), intent(in) :: x, z
     real(wp), intent(in) :: amp
@@ -242,7 +248,9 @@ module module_physics
   !$omp parallel do collapse(2) private(i,k,r, u,w,th,p,t,ke,ie) reduction(+:mass,te) 
 #endif
 #if defined(_OPENACC)
-  !$acc parallel loop gang vector collapse(2) private(i,k,r, u,w,th,p,t,ke,ie) reduction(+:mass,te)
+  !$acc data copyin(mass,te)
+  !$acc parallel loop gang vector collapse(2) present(oldstat%mem, ref%density, ref%denstheta) &
+  !$acc private(i,k,r, u,w,th,p,t,ke,ie) reduction(+:mass,te) 
 #endif
     do k = 1, nz
       do i = 1, nx_loc
@@ -258,6 +266,14 @@ module module_physics
         te = te + (ke + r*cv*t)*dx*dz
       end do
     end do
+
+#if defined(_OPENMP)
+  !$omp end parallel do
+#endif
+
+#if defined(_OPENACC)
+  !$acc end data
+#endif
 
   end subroutine total_mass_energy
 

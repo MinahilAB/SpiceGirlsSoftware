@@ -56,6 +56,8 @@ program atmosphere_model
   call create_output( )
   call write_record(oldstat,ref,etime)
 
+  call nvtx_push("main loop")
+
   call system_clock(t1)
 
   call mytimer_create(t, "Runge Kutta")
@@ -99,6 +101,8 @@ program atmosphere_model
 #if defined(_OACC)
   !$acc wait
 #endif
+
+  call nvtx_pop()
 
   call total_mass_energy(mass1,te1)
   mass_buf(1) = mass1

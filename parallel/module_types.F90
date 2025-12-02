@@ -7,6 +7,7 @@ module module_types
   use legendre_quadrature
   use dimensions
   use iodir
+  use module_nvtx
 
   implicit none
 
@@ -305,6 +306,8 @@ module module_types
 
     ncount = hs * nz * NVARS
     allocate(send_left(ncount), send_right(ncount), recv_left(ncount), recv_right(ncount))
+
+    call nvtx_push("halo exchange x")
     
     call pack_strip(s%mem, 1, 1, nx_loc, hs, send_left)
     call pack_strip(s%mem, nx_loc-hs+1, 1, nx_loc, hs, send_right)
@@ -320,6 +323,9 @@ module module_types
     call unpack_strip(recv_right, s%mem, nx_loc+1, 1)
     
     deallocate(send_left, send_right, recv_left, recv_right)
+
+    call nvtx_pop()
+
   end subroutine exchange_halo_x
 
 
@@ -507,7 +513,7 @@ module module_types
 ! #elif defined(_OMP)
 ! !$omp parallel do collapse(3) default(none) shared(x, y, nx, nz, NVARS, hs)
 #endif
-    x%mem(1-hs:nx+hs, 1-hs:nz+hs, :) = y%mem(1-hs:nx+hs, 1-hs:nz+hs, :)
+    x%mem(1-hs:nx_loc+hs, 1-hs:nz+hs, :) = y%mem(1-hs:nx_loc+hs, 1-hs:nz+hs, :)
 #if defined(_OACC)
 !$acc end kernels
 #endif
