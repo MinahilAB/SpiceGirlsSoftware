@@ -1,9 +1,9 @@
 #!/bin/bash
 #SBATCH --job-name=ATM_Model_MPIonly
-#SBATCH --time=00:05:00
+#SBATCH --time=00:10:00
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --cpus-per-task=14
+#SBATCH --cpus-per-task=1
 #SBATCH --partition=dcgp_usr_prod
 #SBATCH --qos=dcgp_qos_dbg
 #SBATCH --exclusive
@@ -21,13 +21,13 @@ SPG_DIR=${HOME}/MHPC_repos/SpiceGirlsSoftware/parallel
 OUTDIR=${HOME}/Jobs/ATM_Model_MPIonly
 
 # Set nx gtidsize and the simulation time
-NX_SIZE=100
-SIM_TIME=1000.0
+NX_SIZE=500
+SIM_TIME=1500.0
 
 # Set Makefile flags
 DEBUG=0
 USE_OPENACC=0
-USE_OPENMP=1
+USE_OPENMP=0
 USE_NVTX=1
 
 # Set the number of OMP threads for CPU thread parallelisation
@@ -48,13 +48,11 @@ WORK_DIR="${WORK_ROOT}/parallel"
 make -C "${WORK_DIR}" clean
 make -C "${WORK_DIR}" DEBUG=${DEBUG} USE_OPENACC=${USE_OPENACC} USE_OPENMP=${USE_OPENMP} USE_NVTX=${USE_NVTX}
 
-srun ${WORK_DIR}/model ${NX_SIZE} ${SIM_TIME}
+srun nsys profile \
+    --trace=cuda,nvtx \
+    -o "${OUTDIR}/%q{SLURM_JOB_ID}_N%q{SLURM_JOB_NUM_NODES}_%q{SLURM_PROCID}" ${WORK_DIR}/model ${NX_SIZE} ${SIM_TIME}
 
-cp output.nc* "${OUTDIR}/"
-
-# srun nsys profile \
-    # --trace=cuda,nvtx \
-    # -o "${OUTDIR}/%q{SLURM_JOB_ID}_N%q{SLURM_JOB_NUM_NODES}_%q{SLURM_PROCID}" ${WORK_DIR}/model ${NX_SIZE} ${SIM_TIME}
+mv output.nc "${OUTDIR}/${SLURM_JOB_ID}_output.nc"
 
 rm -rf "${WORK_ROOT}"
 echo "==== Cleanup Done! ==== "

@@ -58,14 +58,12 @@ program atmosphere_model
 
   call system_clock(t1)
 
-  call mytimer_create(t, "Runge Kutta")
+  ! Use NVTX to mark the main computational region for profiling
+  call nvtx_push('main_loop')
 
 #if defined(_OACC)
   !$acc data present(oldstat, newstat, flux, tend, ref)
 #endif
-
-  ! Use NVTX to mark the main computational region for profiling
-  ! call nvtxRangeStartA('Main Time Loop')
 
   ptime = int(sim_time/10.0)
   do while (etime < sim_time)
@@ -88,8 +86,6 @@ program atmosphere_model
 
   end do
 
-  ! call nvtxRangeEnd()
-
   ! Exit the OpenACC data region.
 #if defined(_OACC)
   !$acc end data
@@ -99,6 +95,8 @@ program atmosphere_model
 #if defined(_OACC)
   !$acc wait
 #endif
+
+  call nvtx_pop()
 
   call total_mass_energy(mass1,te1)
   mass_buf(1) = mass1
@@ -117,9 +115,6 @@ program atmosphere_model
 
   call finalize()
   
-  call mytimer_destroy(t)
-  call mytimer_gather_stats()
-
   call system_clock(t2,rate)
 
   if (rank == 0) then

@@ -7,6 +7,7 @@ module module_types
   use legendre_quadrature
   use dimensions
   use iodir
+  use module_nvtx
 
   implicit none
 
@@ -88,6 +89,8 @@ module module_types
     atmo%rhot(1-hs:,1-hs:) => atmo%mem(:,:,I_RHOT)
   end subroutine new_state
 
+
+
   subroutine set_state(atmo, xval)
     implicit none
     class(atmospheric_state), intent(inout) :: atmo
@@ -107,6 +110,8 @@ module module_types
 #endif
   end subroutine set_state
 
+
+
   subroutine del_state(atmo)
     implicit none
     class(atmospheric_state), intent(inout) :: atmo
@@ -116,6 +121,8 @@ module module_types
     nullify(atmo%wmom)
     nullify(atmo%rhot)
   end subroutine del_state
+
+
 
   subroutine update(s2,s0,tend,dt)
     implicit none
@@ -141,6 +148,8 @@ module module_types
     !$omp end parallel do
 #endif
   end subroutine update
+
+
 
   subroutine xtend(tendency,flux,ref,atmostat,dx,dt)
     implicit none
@@ -213,6 +222,8 @@ module module_types
   !$omp end parallel do
 #endif
   end subroutine xtend
+
+
 
   subroutine ztend(tendency,flux,ref,atmostat,dz,dt)
     implicit none
@@ -295,6 +306,7 @@ module module_types
   end subroutine ztend
 
 
+
   subroutine exchange_halo_x(s)
     use mpi
     use dimensions, only : nz, nx_loc
@@ -302,6 +314,8 @@ module module_types
     integer :: ierr, ncount
     integer :: reqs(4)
     real(wp), allocatable :: send_left(:), send_right(:), recv_left(:), recv_right(:)
+
+    call nvtx_push('exchange_halo')
 
     ncount = hs * nz * NVARS
     allocate(send_left(ncount), send_right(ncount), recv_left(ncount), recv_right(ncount))
@@ -320,7 +334,10 @@ module module_types
     call unpack_strip(recv_right, s%mem, nx_loc+1, 1)
     
     deallocate(send_left, send_right, recv_left, recv_right)
+
+    call nvtx_pop()
   end subroutine exchange_halo_x
+
 
 
   subroutine pack_strip(mem, i_start, k_start, nx_loc, width, buffer)
@@ -341,6 +358,7 @@ module module_types
   end subroutine pack_strip
 
 
+
   subroutine unpack_strip(buffer, mem, i_start, k_start)
     real(wp), intent(in) :: buffer(:)
     real(wp), intent(inout) :: mem(1-hs:nx_loc+hs,1-hs:nz+hs,NVARS)
@@ -357,6 +375,8 @@ module module_types
       end do
     end do
   end subroutine unpack_strip
+
+
 
 
   subroutine exchange_halo_z(s,ref)
@@ -398,6 +418,8 @@ module module_types
 #endif
   end subroutine exchange_halo_z
 
+
+
   subroutine new_ref(ref)
     implicit none
     class(reference_state), intent(inout) :: ref
@@ -407,6 +429,8 @@ module module_types
     allocate(ref%idenstheta(nz+1))
     allocate(ref%pressure(nz+1))
   end subroutine new_ref
+
+
 
   subroutine del_ref(ref)
     implicit none
@@ -418,6 +442,8 @@ module module_types
     deallocate(ref%pressure)
   end subroutine del_ref
 
+
+
   subroutine new_flux(flux)
     implicit none
     class(atmospheric_flux), intent(inout) :: flux
@@ -428,6 +454,8 @@ module module_types
     flux%wmom => flux%mem(:,:,I_WMOM)
     flux%rhot => flux%mem(:,:,I_RHOT)
   end subroutine new_flux
+
+
 
   subroutine set_flux(flux, xval)
     implicit none
@@ -448,6 +476,8 @@ module module_types
 #endif
   end subroutine set_flux
 
+
+
   subroutine del_flux(flux)
     implicit none
     class(atmospheric_flux), intent(inout) :: flux
@@ -457,6 +487,8 @@ module module_types
     nullify(flux%wmom)
     nullify(flux%rhot)
   end subroutine del_flux
+
+
 
   subroutine new_tendency(tend)
     implicit none
@@ -468,6 +500,8 @@ module module_types
     tend%wmom => tend%mem(:,:,I_WMOM)
     tend%rhot => tend%mem(:,:,I_RHOT)
   end subroutine new_tendency
+
+
 
   subroutine set_tendency(tend, xval)
     implicit none
@@ -488,6 +522,8 @@ module module_types
 #endif
   end subroutine set_tendency
 
+
+
   subroutine del_tendency(tend)
     implicit none
     class(atmospheric_tendency), intent(inout) :: tend
@@ -497,6 +533,8 @@ module module_types
     nullify(tend%wmom)
     nullify(tend%rhot)
   end subroutine del_tendency
+
+
 
   subroutine state_equal_to_state(x,y)
     implicit none
