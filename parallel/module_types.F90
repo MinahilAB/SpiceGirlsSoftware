@@ -452,7 +452,7 @@ module module_types
     allocate(ref%pressure(nz+1))
 
 #if defined(_OACC)
-  !$acc data copyin(ref)
+  !$acc enter data copyin(ref)
   !$acc enter data create(ref%density, ref%denstheta, ref%idens, ref%idenstheta, ref%pressure)
 #endif
   end subroutine new_ref
