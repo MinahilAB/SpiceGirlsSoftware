@@ -8,8 +8,10 @@ program atmosphere_model
   use physical_parameters, only : xlen, zlen
   use iodir, only : stdout
   use module_nvtx
+  use parallel_timer
   use mpi
   use parallel_parameters, only : rank, csize, left_rank, right_rank, cart_comm
+
   implicit none
 
   real(wp) :: etime
@@ -56,11 +58,13 @@ program atmosphere_model
 
   call init(etime,output_counter,dt)
   call total_mass_energy(mass0,te0)
+  
   mass_buf(1) = mass0
   mass_buf(2) = te0
   call MPI_Allreduce(MPI_IN_PLACE, mass_buf, 2, MPI_DOUBLE_PRECISION, MPI_SUM, MPI_COMM_WORLD, ierr)
   mass0 = mass_buf(1)
   te0 = mass_buf(2)
+  
   call create_output( )
   call write_record(oldstat,ref,etime)
 
@@ -98,7 +102,6 @@ program atmosphere_model
 #if defined(_OACC)
   !$acc end data
 #endif
-
   ! Ensure all device operations are complete before diagnostics
 #if defined(_OACC)
   !$acc wait
@@ -107,11 +110,13 @@ program atmosphere_model
   call nvtx_pop()
 
   call total_mass_energy(mass1,te1)
+  
   mass_buf(1) = mass1
   mass_buf(2) = te1
   call MPI_Allreduce(MPI_IN_PLACE, mass_buf, 2, MPI_DOUBLE_PRECISION, MPI_SUM, MPI_COMM_WORLD, ierr)
   mass1 = mass_buf(1)
   te1 = mass_buf(2)
+  
   call close_output( )
 
   if (rank == 0) then
@@ -122,7 +127,6 @@ program atmosphere_model
   end if
 
   call finalize()
-  
   call system_clock(t2,rate)
 
   if (rank == 0) then
