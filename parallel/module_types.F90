@@ -96,7 +96,7 @@ module module_types
     atmo%wmom(1-hs:,1-hs:) => atmo%mem(:,:,I_WMOM)
     atmo%rhot(1-hs:,1-hs:) => atmo%mem(:,:,I_RHOT)
 
-#if defined(_OPENACC)
+#if defined(_OACC)
     !$acc enter data copyin(atmo)
     !$acc enter data create(atmo%mem)
     !$acc enter data attach(atmo%dens, atmo%umom, atmo%wmom, atmo%rhot)
@@ -331,7 +331,7 @@ module module_types
 
     call nvtx_push('exchange_halo')
 
-#if defined(_OPENACC)
+#if defined(_OACC)
     !$acc update self(s)
 #endif
 
@@ -351,7 +351,7 @@ module module_types
     call unpack_strip(recv_left, s%mem, 1-hs, 1)
     call unpack_strip(recv_right, s%mem, nx_loc+1, 1)
 
-#if defined(_OPENACC)
+#if defined(_OACC)
     !$acc update device(s)
 #endif
     
@@ -451,18 +451,17 @@ module module_types
     allocate(ref%idenstheta(nz+1))
     allocate(ref%pressure(nz+1))
 
-#if defined(_OPENACC)
-    !$acc data copyin(ref)
-    !$acc enter data create(ref%density, ref%denstheta, ref%idens, ref%idenstheta, ref%pressure)
+#if defined(_OACC)
+  !$acc data copyin(ref)
+  !$acc enter data create(ref%density, ref%denstheta, ref%idens, ref%idenstheta, ref%pressure)
 #endif
-
   end subroutine new_ref
 
 
   subroutine del_ref(ref)
     implicit none
     class(reference_state), intent(inout) :: ref
-#if defined(_OPENACC)
+#if defined(_OACC)
     !$acc exit data delete(ref%density, ref%denstheta, ref%idens, ref%idenstheta, ref%pressure)
     !$acc exit data delete(ref)
 #endif
@@ -485,7 +484,7 @@ module module_types
     flux%wmom => flux%mem(:,:,I_WMOM)
     flux%rhot => flux%mem(:,:,I_RHOT)
 
-#if defined(_OPENACC)
+#if defined(_OACC)
     !$acc enter data copyin(flux)
     !$acc enter data create(flux%mem)
     !$acc enter data attach(flux%dens, flux%umom, flux%wmom, flux%rhot)
@@ -518,7 +517,7 @@ module module_types
   subroutine del_flux(flux)
     implicit none
     class(atmospheric_flux), intent(inout) :: flux
-#if defined(_OPENACC)
+#if defined(_OACC)
     !$acc exit data delete(flux%mem)
     !$acc exit data delete(flux)
 #endif
@@ -540,7 +539,7 @@ module module_types
     tend%umom => tend%mem(:,:,I_UMOM)
     tend%wmom => tend%mem(:,:,I_WMOM)
     tend%rhot => tend%mem(:,:,I_RHOT)
-#if defined(_OPENACC)
+#if defined(_OACC)
     !$acc enter data copyin(tend)
     !$acc enter data create(tend%mem)
     !$acc enter data attach(tend%dens, tend%umom, tend%wmom, tend%rhot)
@@ -573,7 +572,7 @@ module module_types
   subroutine del_tendency(tend)
     implicit none
     class(atmospheric_tendency), intent(inout) :: tend
-#if defined(_OPENACC)
+#if defined(_OACC)
     !$acc exit data delete(tend%mem)
     !$acc exit data delete(tend)
 #endif

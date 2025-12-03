@@ -69,11 +69,11 @@ module module_output
     integer, dimension(3) :: st3, ct3
     real(wp), dimension(1) :: etimearr
 
-#if defined(_OPENMP)
+#if defined(_OMP)
   !$omp parallel do collapse(2) private(i,k) 
 #endif
 
-#if defined(_OPENACC)
+#if defined(_OACC)
   !$acc parallel loop gang vector collapse(2) private(i,k) 
 #endif
 

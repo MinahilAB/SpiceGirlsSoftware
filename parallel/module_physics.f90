@@ -71,14 +71,14 @@ module module_physics
 
     call oldstat%set_state(0.0_wp)
 
-#if defined(_OPENACC)
+#if defined(_OACC)
   !$acc update device(oldstat%mem)
 #endif
 
-#if defined(_OPENMP)
+#if defined(_OMP)
     !$omp parallel do collapse(2) private(i,k,ii,kk,x,z,r,u,w,t,hr,ht)
 #endif
-#if defined(_OPENACC)
+#if defined(_OACC)
     !$acc parallel loop gang vector collapse(2) private(i,k,ii,kk,x,z,r,u,w,t,hr,ht)
 #endif
     do k = 1-hs, nz+hs
@@ -104,10 +104,10 @@ module module_physics
     ref%density(:) = 0.0_wp
     ref%denstheta(:) = 0.0_wp
 
-#if defined(_OPENMP)
+#if defined(_OMP)
     !$omp parallel do collapse(2) private(k,kk,z,hr,ht) 
 #endif
-#if defined(_OPENACC)
+#if defined(_OACC)
     !$acc parallel loop gang vector collapse(2) private(k,kk,z,hr,ht)
 #endif
     do k = 1-hs, nz+hs
@@ -185,7 +185,7 @@ module module_physics
 
 
   subroutine thermal(x,z,r,u,w,t,hr,ht)
-#if defined(_OPENACC)
+#if defined(_OACC)
     !$acc routine seq
 #endif
     implicit none
@@ -203,7 +203,7 @@ module module_physics
 
 
   subroutine hydrostatic_const_theta(z,r,t)
-#if defined(_OPENACC)
+#if defined(_OACC)
     !$acc routine seq
 #endif
     implicit none
@@ -220,7 +220,7 @@ module module_physics
 
 
   elemental function ellipse(x,z,amp,x0,z0,x1,z1) result(val)
-#if defined(_OPENACC)
+#if defined(_OACC)
     !$acc routine seq
 #endif
     implicit none
@@ -259,10 +259,10 @@ module module_physics
     mass = 0.0_wp
     te = 0.0_wp
 
-#if defined(_OPENMP)
+#if defined(_OMP)
     !$omp parallel do collapse(2) private(i,k,r, u,w,th,p,t,ke,ie) reduction(+:mass,te)
 #endif
-#if defined(_OPENACC)
+#if defined(_OACC)
     !$acc parallel loop gang vector collapse(2) reduction(+:mass,te)
 #endif
     do k = 1, nz
