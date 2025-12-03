@@ -95,6 +95,13 @@ module module_types
     atmo%umom(1-hs:,1-hs:) => atmo%mem(:,:,I_UMOM)
     atmo%wmom(1-hs:,1-hs:) => atmo%mem(:,:,I_WMOM)
     atmo%rhot(1-hs:,1-hs:) => atmo%mem(:,:,I_RHOT)
+
+#if defined(_OPENACC)
+    !$acc enter data copyin(atmo)
+    !$acc enter data create(atmo%mem)
+    !$acc enter data attach(atmo%dens, atmo%umom, atmo%wmom, atmo%rhot)
+#endif
+
   end subroutine new_state
 
 
@@ -109,8 +116,6 @@ module module_types
     end if
 #if defined(_OACC)
     !$acc kernels present(atmo)
-! #elif defined(_OMP)
-    ! $omp parallel do collapse(3) default(none) shared(atmo, xval, nx, nz, NVARS, hs)
 #endif
     atmo%mem(1-hs:nx_loc+hs, 1-hs:nz+hs, :) = xval
 #if defined(_OACC)
@@ -323,11 +328,16 @@ module module_types
     integer :: reqs(4)
     real(wp), allocatable :: send_left(:), send_right(:), recv_left(:), recv_right(:)
 
+
     call nvtx_push('exchange_halo')
+
+#if defined(_OPENACC)
+    !$acc update self(s)
+#endif
 
     ncount = hs * nz * NVARS
     allocate(send_left(ncount), send_right(ncount), recv_left(ncount), recv_right(ncount))
-    
+  
     call pack_strip(s%mem, 1, 1, nx_loc, hs, send_left)
     call pack_strip(s%mem, nx_loc-hs+1, 1, nx_loc, hs, send_right)
     
@@ -340,6 +350,10 @@ module module_types
     
     call unpack_strip(recv_left, s%mem, 1-hs, 1)
     call unpack_strip(recv_right, s%mem, nx_loc+1, 1)
+
+#if defined(_OPENACC)
+    !$acc update device(s)
+#endif
     
     deallocate(send_left, send_right, recv_left, recv_right)
 
@@ -436,13 +450,22 @@ module module_types
     allocate(ref%idens(nz+1))
     allocate(ref%idenstheta(nz+1))
     allocate(ref%pressure(nz+1))
-  end subroutine new_ref
 
+#if defined(_OPENACC)
+    !$acc data copyin(ref)
+    !$acc enter data create(ref%density, ref%denstheta, ref%idens, ref%idenstheta, ref%pressure)
+#endif
+
+  end subroutine new_ref
 
 
   subroutine del_ref(ref)
     implicit none
     class(reference_state), intent(inout) :: ref
+#if defined(_OPENACC)
+    !$acc exit data delete(ref%density, ref%denstheta, ref%idens, ref%idenstheta, ref%pressure)
+    !$acc exit data delete(ref)
+#endif
     deallocate(ref%density)
     deallocate(ref%denstheta)
     deallocate(ref%idens)
@@ -461,6 +484,12 @@ module module_types
     flux%umom => flux%mem(:,:,I_UMOM)
     flux%wmom => flux%mem(:,:,I_WMOM)
     flux%rhot => flux%mem(:,:,I_RHOT)
+
+#if defined(_OPENACC)
+    !$acc enter data copyin(flux)
+    !$acc enter data create(flux%mem)
+    !$acc enter data attach(flux%dens, flux%umom, flux%wmom, flux%rhot)
+#endif
   end subroutine new_flux
 
 
@@ -489,6 +518,10 @@ module module_types
   subroutine del_flux(flux)
     implicit none
     class(atmospheric_flux), intent(inout) :: flux
+#if defined(_OPENACC)
+    !$acc exit data delete(flux%mem)
+    !$acc exit data delete(flux)
+#endif
     if ( associated(flux%mem) ) deallocate(flux%mem)
     nullify(flux%dens)
     nullify(flux%umom)
@@ -507,6 +540,11 @@ module module_types
     tend%umom => tend%mem(:,:,I_UMOM)
     tend%wmom => tend%mem(:,:,I_WMOM)
     tend%rhot => tend%mem(:,:,I_RHOT)
+#if defined(_OPENACC)
+    !$acc enter data copyin(tend)
+    !$acc enter data create(tend%mem)
+    !$acc enter data attach(tend%dens, tend%umom, tend%wmom, tend%rhot)
+#endif
   end subroutine new_tendency
 
 
@@ -535,6 +573,10 @@ module module_types
   subroutine del_tendency(tend)
     implicit none
     class(atmospheric_tendency), intent(inout) :: tend
+#if defined(_OPENACC)
+    !$acc exit data delete(tend%mem)
+    !$acc exit data delete(tend)
+#endif
     if ( associated(tend%mem) ) deallocate(tend%mem)
     nullify(tend%dens)
     nullify(tend%umom)

@@ -93,6 +93,9 @@ program atmosphere_model
     output_counter = output_counter + dt
 
     if (output_counter >= output_freq) then
+#if defined(_OACC)
+      !$acc update self(oldstat%mem)
+#endif
       output_counter = output_counter - output_freq
       call write_record(oldstat,ref,etime)
     end if

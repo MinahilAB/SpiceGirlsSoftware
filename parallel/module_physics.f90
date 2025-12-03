@@ -71,6 +71,10 @@ module module_physics
 
     call oldstat%set_state(0.0_wp)
 
+#if defined(_OPENACC)
+  !$acc update device(oldstat%mem)
+#endif
+
 #if defined(_OPENMP)
     !$omp parallel do collapse(2) private(i,k,ii,kk,x,z,r,u,w,t,hr,ht)
 #endif
@@ -259,7 +263,7 @@ module module_physics
     !$omp parallel do collapse(2) private(i,k,r, u,w,th,p,t,ke,ie) reduction(+:mass,te)
 #endif
 #if defined(_OPENACC)
-    !$acc parallel loop gang vector collapse(2) private(i,k,r, u,w,th,p,t,ke,ie) reduction(+:mass,te)
+    !$acc parallel loop gang vector collapse(2) reduction(+:mass,te)
 #endif
     do k = 1, nz
       do i = 1, nx_loc
