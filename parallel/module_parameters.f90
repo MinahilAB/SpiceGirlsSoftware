@@ -8,6 +8,8 @@ module calculation_types
   integer, parameter :: ip = int32
 end module calculation_types
 
+
+
 module physical_constants
   use calculation_types, only : wp
   implicit none
@@ -35,6 +37,8 @@ module physical_constants
   real(wp), parameter :: exner0 = 1.0_wp
 end module physical_constants
 
+
+
 module physical_parameters
   use calculation_types, only : wp
   implicit none
@@ -56,6 +60,8 @@ module physical_parameters
   real(wp), parameter :: amp = 0.01_wp
 end module physical_parameters
 
+
+
 module indexing
   implicit none
   public
@@ -69,6 +75,8 @@ module indexing
   integer, parameter :: DIR_Z = 2
 end module indexing
 
+
+
 module iodir
   use iso_fortran_env
   public
@@ -76,6 +84,8 @@ module iodir
   integer, public, parameter :: stdout = output_unit
   integer, public, parameter :: stderr = error_unit
 end module iodir
+
+
 
 module parallel_parameters
   use mpi
@@ -85,6 +95,8 @@ module parallel_parameters
   integer, parameter :: k_beg = 1
   integer, parameter :: hs = 2
 end module parallel_parameters
+
+
 
 module legendre_quadrature
   use calculation_types, only : wp
@@ -100,6 +112,8 @@ module legendre_quadrature
         0.444444444444444444444444444444E0_wp , &
         0.277777777777777777777777777779E0_wp ]
 end module legendre_quadrature
+
+
 
 module dimensions
   use calculation_types, only : wp

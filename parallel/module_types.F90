@@ -31,6 +31,8 @@ module module_types
     procedure, public :: del_ref
   end type reference_state
 
+
+
   type atmospheric_state
     real(wp), pointer, dimension(:,:,:) :: mem => null( )
     real(wp), pointer, dimension(:,:) :: dens
@@ -46,6 +48,8 @@ module module_types
     procedure, public :: exchange_halo_z
   end type atmospheric_state
 
+
+
   type atmospheric_flux
     real(wp), pointer, dimension(:,:,:) :: mem => null( )
     real(wp), pointer, dimension(:,:) :: dens
@@ -57,6 +61,8 @@ module module_types
     procedure, public :: set_flux
     procedure, public :: del_flux
   end type atmospheric_flux
+
+
 
   type atmospheric_tendency
     real(wp), pointer, dimension(:,:,:) :: mem => null( )
@@ -71,6 +77,8 @@ module module_types
     procedure, public :: xtend
     procedure, public :: ztend
   end type atmospheric_tendency
+
+
 
   interface assignment(=)
     module procedure state_equal_to_state
@@ -100,13 +108,13 @@ module module_types
       stop
     end if
 #if defined(_OACC)
-  !$acc kernels present(atmo)
+    !$acc kernels present(atmo)
 ! #elif defined(_OMP)
-  ! $omp parallel do collapse(3) default(none) shared(atmo, xval, nx, nz, NVARS, hs)
+    ! $omp parallel do collapse(3) default(none) shared(atmo, xval, nx, nz, NVARS, hs)
 #endif
     atmo%mem(1-hs:nx_loc+hs, 1-hs:nz+hs, :) = xval
 #if defined(_OACC)
-  !$acc end kernels
+    !$acc end kernels
 #endif
   end subroutine set_state
 
@@ -201,14 +209,14 @@ module module_types
       end do
     end do
 #if defined(_OMP)
-  !$omp end parallel do
+    !$omp end parallel do
 #endif
 
-  ! Second loop for tendency calculation
+    ! Second loop for tendency calculation
 #if defined(_OACC)
-  !$acc parallel loop collapse(3) present(tendency, flux)
+    !$acc parallel loop collapse(3) present(tendency, flux)
 #elif defined(_OMP)
-  !$omp parallel do collapse(3) default(none) shared(tendency, flux, dx, nx_loc, nz) private(ll, k, i)
+    !$omp parallel do collapse(3) default(none) shared(tendency, flux, dx, nx_loc, nz) private(ll, k, i)
 #endif
     do ll = 1, NVARS
       do k = 1, nz
@@ -219,7 +227,7 @@ module module_types
       end do
     end do
 #if defined(_OMP)
-  !$omp end parallel do
+    !$omp end parallel do
 #endif
   end subroutine xtend
 
@@ -242,11 +250,11 @@ module module_types
 
     hv_coef = -hv_beta * dz / (16.0_wp*dt)
 #if defined(_OACC)
-  !$acc parallel loop collapse(2) present(flux, ref, atmostat) &
-  !$acc& private(i, k, ll, s, r, u, w, t, p, stencil, d3_vals, vals)
+    !$acc parallel loop collapse(2) present(flux, ref, atmostat) &
+    !$acc& private(i, k, ll, s, r, u, w, t, p, stencil, d3_vals, vals)
 #elif defined(_OMP)
-  !$omp parallel do collapse(2) default(none) shared(flux, ref, atmostat, dz, dt, hv_coef, nx_loc, nz) &
-  !$omp& private(i, k, ll, s, r, u, w, t, p, stencil, d3_vals, vals)
+    !$omp parallel do collapse(2) default(none) shared(flux, ref, atmostat, dz, dt, hv_coef, nx_loc, nz) &
+    !$omp& private(i, k, ll, s, r, u, w, t, p, stencil, d3_vals, vals)
 #endif
     do k = 1, nz+1
       do i = 1, nx_loc
@@ -279,7 +287,7 @@ module module_types
       end do
     end do
 #if defined(_OMP)
-  !$omp end parallel do
+    !$omp end parallel do
 #endif
 
     ! Second loop for tendency calculation
@@ -301,7 +309,7 @@ module module_types
       end do
     end do
 #if defined(_OMP)
-  !$omp end parallel do
+    !$omp end parallel do
 #endif
   end subroutine ztend
 
@@ -414,7 +422,7 @@ module module_types
       end do
     end do
 #if defined(_OMP)
-  !$omp end parallel do
+    !$omp end parallel do
 #endif
   end subroutine exchange_halo_z
 
@@ -466,9 +474,9 @@ module module_types
       stop
     end if
 #if defined(_OACC)
-  !$acc kernels present(flux)
+    !$acc kernels present(flux)
 ! #elif defined(_OMP)
-! !$omp parallel do collapse(3) default(none) shared(flux, xval, nx, nz, NVARS)
+  ! !$omp parallel do collapse(3) default(none) shared(flux, xval, nx, nz, NVARS)
 #endif
   flux%mem(:,:,:) = xval
 #if defined(_OACC)
@@ -514,7 +522,7 @@ module module_types
 #if defined(_OACC)
     !$acc kernels present(tend)
 ! #elif defined(_OMP)
-! !$omp parallel do collapse(3) default(none) shared(tend, xval, nx, nz, NVARS)
+  ! !$omp parallel do collapse(3) default(none) shared(tend, xval, nx, nz, NVARS)
 #endif
     tend%mem(:,:,:) = xval
 #if defined(_OACC)
@@ -541,14 +549,13 @@ module module_types
     type(atmospheric_state), intent(inout) :: x
     type(atmospheric_state), intent(in) :: y
 #if defined(_OACC)
-!$acc kernels present(x, y)
-! #elif defined(_OMP)
-! !$omp parallel do collapse(3) default(none) shared(x, y, nx, nz, NVARS, hs)
+    !$acc kernels present(x, y)
+    ! #elif defined(_OMP)
+    ! !$omp parallel do collapse(3) default(none) shared(x, y, nx, nz, NVARS, hs)
 #endif
     x%mem(1-hs:nx_loc+hs, 1-hs:nz+hs, :) = y%mem(1-hs:nx_loc+hs, 1-hs:nz+hs, :)
 #if defined(_OACC)
-!$acc end kernels
+    !$acc end kernels
 #endif
   end subroutine state_equal_to_state
-
 end module module_types

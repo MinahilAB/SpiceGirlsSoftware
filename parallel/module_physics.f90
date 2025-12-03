@@ -277,6 +277,4 @@ module module_physics
     end do
   end subroutine total_mass_energy
 
-
-
 end module module_physics

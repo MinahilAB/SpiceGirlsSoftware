@@ -28,6 +28,7 @@ program atmosphere_model
   integer, dimension(1) :: dims
   logical, dimension(1) :: periods
   logical :: reorder
+  integer :: rank_source_dummy
 
 
 
@@ -51,8 +52,8 @@ program atmosphere_model
   reorder = .true.
   call MPI_Cart_create(MPI_COMM_WORLD, 1, dims, periods, reorder, cart_comm, ierr)
 
-  call MPI_Cart_shift(cart_comm, 0, -1, ierr, left_rank, ierr)
-  call MPI_Cart_shift(cart_comm, 0, 1, ierr, right_rank, ierr)
+  call MPI_Cart_shift(cart_comm, 0, -1, rank_source_dummy, left_rank, ierr)
+  call MPI_Cart_shift(cart_comm, 0, 1, rank_source_dummy, right_rank, ierr)
   
   if (rank == 0) write(stdout, '(/,A,/)') 'SIMPLE ATMOSPHERIC MODEL STARTING.'
 
