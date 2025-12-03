@@ -39,7 +39,6 @@ module module_output
     call mpi_comm_dup(cart_comm, nc_comm, ierr)
     call ncwrap(nf90_create_par('output.nc', nf90_clobber, nc_comm, MPI_INFO_NULL, ncid), __LINE__)
     
-    
     call ncwrap(nf90_def_dim(ncid,'time',nf90_unlimited,t_dimid), __LINE__)
     call ncwrap(nf90_def_dim(ncid,'x',nx,x_dimid), __LINE__)
     call ncwrap(nf90_def_dim(ncid,'z',nz,z_dimid), __LINE__)
@@ -69,11 +68,9 @@ module module_output
 #if defined(_OPENMP)
   !$omp parallel do collapse(2) private(i,k) 
 #endif
-
-#if defined(_OPENACC)
-  !$acc parallel loop gang vector collapse(2) private(i,k) 
+#if defined(_OACC)
+  !$acc parallel loop gang vector collapse(2) private(i,k)
 #endif
-
     do k = 1, nz
       do i = 1, nx_loc
         dens(i,k) = atmostat%dens(i,k)
@@ -116,10 +113,12 @@ module module_output
     implicit none
     integer, intent(in) :: ierr
     integer, intent(in) :: line
+    integer :: mpierr ! Local variable for abort code
+
     if (ierr /= nf90_noerr) then
       write(stderr,*) 'NetCDF Error at line: ', line
       write(stderr,*) nf90_strerror(ierr)
-      stop
+      call MPI_Abort(MPI_COMM_WORLD, 1, mpierr)
     end if
   end subroutine ncwrap
 

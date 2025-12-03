@@ -9,8 +9,7 @@ program atmosphere_model
   use iodir, only : stdout
   use module_nvtx
   use mpi
-  use parallel_parameters, only : rank, csize, left_rank, right_rank
-  use parallel_timer
+  use parallel_parameters, only : rank, csize
   implicit none
 
   real(wp) :: etime
@@ -24,109 +23,91 @@ program atmosphere_model
   integer :: ierr
   integer :: n_args
   character(len=32) :: arg
-  type(timer_type) :: t
+
+  ! --- MPI Initialization and Argument Parsing ---
+  call MPI_Init(ierr)
+  call MPI_Comm_rank(MPI_COMM_WORLD, rank, ierr)
+  call MPI_Comm_size(MPI_COMM_WORLD, csize, ierr)
 
   n_args = command_argument_count()
-  if (n_args == 2) then
+  if (n_args >= 2) then
     call get_command_argument(1, arg)
     read(arg, *) nx
     call get_command_argument(2, arg)
     read(arg, *) sim_time
   end if
 
+  ! Set vertical resolution based on aspect ratio
   nz = int(nx * zlen/xlen)
-
-  ! MPI initialisation
-  call MPI_Init(ierr)
-  call MPI_Comm_rank(MPI_COMM_WORLD, rank, ierr)
-  call MPI_Comm_size(MPI_COMM_WORLD, csize, ierr)
-
-  left_rank = mod(rank-1+csize,csize)
-  right_rank = mod(rank+1,csize)
   
-  if (rank == 0) write(stdout, '(/,A,/)') 'SIMPLE ATMOSPHERIC MODEL STARTING.'
+  ! Initialize parallel parameters, data structures, and OpenACC data regions
+  call init(etime, output_counter, dt)
+  
+  if (rank == 0) call create_output()
 
-  call init(etime,output_counter,dt)
+  ! Calculate Initial Mass and Energy
   call total_mass_energy(mass0,te0)
   mass_buf(1) = mass0
   mass_buf(2) = te0
+  
+  ! Global Sum
   call MPI_Allreduce(MPI_IN_PLACE, mass_buf, 2, MPI_DOUBLE_PRECISION, MPI_SUM, MPI_COMM_WORLD, ierr)
   mass0 = mass_buf(1)
   te0 = mass_buf(2)
-  call create_output( )
-  call write_record(oldstat,ref,etime)
 
-  call system_clock(t1)
+  if (rank == 0) then
+      write(stdout,*) 'Initial Mass: ', mass0
+      write(stdout,*) 'Initial Energy: ', te0
+      ! Set progress print time
+      ptime = sim_time / 10.0_wp
+  end if
+  
+  ! --- Main Time-Stepping Loop ---
+  call nvtx_push("Main Loop") 
 
-  call mytimer_create(t, "Runge Kutta")
-
-#if defined(_OACC)
-  !$acc data present(oldstat, newstat, flux, tend, ref)
-#endif
-
-  ! Use NVTX to mark the main computational region for profiling
-  ! call nvtxRangeStartA('Main Time Loop')
-
-  ptime = int(sim_time/10.0)
   do while (etime < sim_time)
 
-    if (etime + dt > sim_time) dt = sim_time - etime
-      call rungekutta(oldstat,newstat,flux,tend,dt)
+    call nvtx_push("RungeKutta")
+    call rungekutta(oldstat, newstat, flux, tend, ref, dt)
+    call nvtx_pop()
+
+    ! Output to NetCDF
+    if ( output_counter >= output_freq ) then
+       ! Move data from device to host for output calculation
+       !$acc update self(oldstat%mem)
+       if (rank==0) call write_record(oldstat,ref,etime)
+       output_counter = output_counter - output_freq
+    end if
     
-    if ( (rank == 0) .and. (mod(etime,ptime) < dt) ) then
-      pctime = (etime/sim_time)*100.0_wp
-      write(stdout,'(1x,a,i2,a)') 'TIME PERCENT : ', int(pctime), '%'
+    ! Print progress
+    if (rank == 0 .and. (mod(etime,ptime) < dt) ) then
+        pctime = (etime/sim_time)*100.0_wp
+        write(stdout,'(1x,a,i2,a)') 'TIME PERCENT : ', int(pctime), '%'
     end if
 
     etime = etime + dt
-    output_counter = output_counter + dt
-
-    if (output_counter >= output_freq) then
-      output_counter = output_counter - output_freq
-      call write_record(oldstat,ref,etime)
-    end if
-
   end do
 
-  ! call nvtxRangeEnd()
+  call nvtx_pop()
 
-  ! Exit the OpenACC data region.
-#if defined(_OACC)
-  !$acc end data
-#endif
-
-  ! Ensure all device operations are complete before diagnostics
-#if defined(_OACC)
-  !$acc wait
-#endif
-
+  ! Calculate Final Mass and Energy
   call total_mass_energy(mass1,te1)
   mass_buf(1) = mass1
   mass_buf(2) = te1
   call MPI_Allreduce(MPI_IN_PLACE, mass_buf, 2, MPI_DOUBLE_PRECISION, MPI_SUM, MPI_COMM_WORLD, ierr)
   mass1 = mass_buf(1)
   te1 = mass_buf(2)
-  call close_output( )
+  
+  ! --- Finalization ---
+  if (rank == 0) call close_output()
+  call finalize()
+  call MPI_Finalize(ierr)
 
   if (rank == 0) then
     write(stdout,'(/,A)') "----------------- Atmosphere check ----------------"
     write(stdout,*) "Fractional Delta Mass  : ", (mass1-mass0)/mass0
     write(stdout,*) "Fractional Delta Energy: ", (te1-te0)/te0
-    write(stdout,'(A,/)') "---------------------------------------------------"
+    write(stdout,'(A)') "---------------------------------------------------"
   end if
 
-  call finalize()
-  
-  call mytimer_destroy(t)
-  call mytimer_gather_stats()
-
-  call system_clock(t2,rate)
-
-  if (rank == 0) then
-    write(stdout,'(A)') "SIMPLE ATMOSPHERIC MODEL RUN COMPLETED."
-    write(stdout,'(A, F0.18, /)') "USED CPU TIME: ", dble(t2-t1)/dble(rate)
-  end if
-
-  call MPI_Finalize(ierr)
-  
 end program atmosphere_model
