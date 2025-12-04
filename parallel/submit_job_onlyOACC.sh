@@ -1,11 +1,11 @@
 #!/bin/bash
 #SBATCH --job-name=ATM_Model_onlyOACC
-#SBATCH --time=00:10:00
-#SBATCH --nodes=1
+#SBATCH --time=00:20:00
+#SBATCH --nodes=16
 #SBATCH --ntasks-per-node=4
-#SBATCH --cpus-per-task=1
+#SBATCH --cpus-per-task=8
 #SBATCH --partition=boost_usr_prod
-#SBATCH --qos=boost_qos_dbg
+#SBATCH --qos=normal
 #SBATCH --gres=gpu:4
 #SBATCH --hint=nomultithread
 #SBATCH --exclusive
@@ -24,16 +24,17 @@ OUTDIR=${HOME}/Jobs/ATM_Model_onlyOACC
 mkdir -p ${OUTDIR}
 
 # Set nx gtidsize and the simulation time
-NX_SIZE=100
+NX_SIZE=500
 SIM_TIME=1000.0
 
 # Set Makefile flags
-DEBUG=1
+DEBUG=0
 USE_OPENACC=1
 USE_OPENMP=0
 
 # Set the number of OMP threads for CPU thread parallelisation
-export OMP_NUM_THREADS=${SLURM_CPUS_PER_TASK}
+# export OMP_NUM_THREADS=${SLURM_CPUS_PER_TASK}
+export OMP_NUM_THREADS=1
 
 echo " ==== Loading modules... ===== "
 module purge
@@ -52,12 +53,12 @@ WORK_DIR="${WORK_ROOT}/parallel"
 make -C "${WORK_DIR}" clean
 make -C "${WORK_DIR}" DEBUG=${DEBUG} USE_OPENACC=${USE_OPENACC} USE_OPENMP=${USE_OPENMP}
 
-srun nsys profile \
-    --trace=cuda,nvtx \
+srun nsys profile --nic-metrics=true \
+    --trace=cuda,nvtx,mpi \
     -o "${OUTDIR}/%q{SLURM_JOB_ID}_N%q{SLURM_JOB_NUM_NODES}_%q{SLURM_PROCID}" ${WORK_DIR}/model ${NX_SIZE} ${SIM_TIME}
 
-mv output.nc ${OUTDIR}/${SLURM_JOB_ID}_output.nc
-mv statistics_*.txt ${OUTDIR}/${SLURM_JOB_ID}_statistics_*.txt
+mv output.nc ${OUTDIR}/${SLURM_JOB_ID}_output.nc 2>/dev/null
+mv statistics_*.txt ${OUTDIR}/${SLURM_JOB_ID}_statistics_*.txt 2>/dev/null
 
 rm -rf "${WORK_ROOT}"
 echo "==== Cleanup Done! ==== "

@@ -95,17 +95,17 @@ module module_physics
     etime = 0.0_wp
     output_counter = 0.0_wp
 
-    write(stdout,'(/, A, I0, A)')  'R', rank, ': INITIALIZING MODEL STATUS.'
-#if defined(_OACC)
-    write(stdout,'(A, I0)')        'GPU ID     : ', device_id
-#endif
-    write(stdout,'(A, I0)')        'nx         : ', nx
-    write(stdout,'(A, I0)')        'nx_loc     : ', nx_loc
-    write(stdout,'(A, I0)')        'nz         : ', nz
-    write(stdout,'(A, F0.18)')     'dx         : ', dx
-    write(stdout,'(A, F0.18)')     'dz         : ', dz
-    write(stdout,'(A, F0.18)')     'dt         : ', dt
-    write(stdout,'(A, F0.18, /)')  'final time : ', sim_time
+!     write(stdout,'(/, A, I0, A)')  'R', rank, ': INITIALIZING MODEL STATUS.'
+! #if defined(_OACC)
+!     write(stdout,'(A, I0)')        'GPU ID     : ', device_id
+! #endif
+!     write(stdout,'(A, I0)')        'nx         : ', nx
+!     write(stdout,'(A, I0)')        'nx_loc     : ', nx_loc
+!     write(stdout,'(A, I0)')        'nz         : ', nz
+!     write(stdout,'(A, F0.18)')     'dx         : ', dx
+!     write(stdout,'(A, F0.18)')     'dz         : ', dz
+!     write(stdout,'(A, F0.18)')     'dt         : ', dt
+!     write(stdout,'(A, F0.18, /)')  'final time : ', sim_time
 
     call oldstat%set_state(0.0_wp)
 
