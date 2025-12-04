@@ -8,6 +8,10 @@ module module_physics
   use dimensions
   use iodir
   use module_types
+  use module_nvtx
+#if defined(_OACC)
+  use openacc
+#endif
 
   implicit none
 
@@ -35,7 +39,36 @@ module module_physics
     integer :: i, k, ii, kk
     real(wp) :: x, z, r, u, w, t, hr, ht
 
-    ! MPI params get initialised here!
+    call nvtx_push('init')
+    
+
+    ! MPI initialisation here
+    call MPI_Init(ierr)
+    call MPI_Comm_size(MPI_COMM_WORLD, csize, ierr)
+    call MPI_Comm_rank(MPI_COMM_WORLD, rank, ierr)
+
+    dims(1) = csize
+    periods(1) = .true.
+    reorder = .true.
+    call MPI_Cart_create(MPI_COMM_WORLD, 1, dims, periods, reorder, cart_comm, ierr)
+    call MPI_Cart_shift(cart_comm, 0, -1, rank_source_dummy, left_rank, ierr)
+    call MPI_Cart_shift(cart_comm, 0, 1, rank_source_dummy, right_rank, ierr)
+    
+    
+    ! Assigning GPU to rank here
+#ifdef _OACC
+    num_devices = acc_get_num_devices(acc_device_nvidia)
+    
+    if ( (num_devices == 0) .and. (rank == 0) ) then
+      write(*, '(/,A,/)') 'FATAL: No NVIDIA GPUs detected by OpenACC. Aborting...'
+      call MPI_Abort(MPI_COMM_WORLD, 1, ierr)
+    end if
+
+    device_id = mod(rank, num_devices)
+    call acc_set_device_num(device_id, acc_device_nvidia)
+#endif
+
+    ! Grid dimensions get initialised here
     rest = mod(nx, csize)
     nx_loc = nx / csize
 
@@ -46,7 +79,9 @@ module module_physics
       i_beg = rank * nx_loc + rest + 1
     end if
     i_end = i_beg + nx_loc - 1
-    
+
+  
+    ! The rest of the initialisation happening now
     dx = xlen / nx
     dz = zlen / nz
 
@@ -61,6 +96,9 @@ module module_physics
     output_counter = 0.0_wp
 
     write(stdout,'(/, A, I0, A)')  'R', rank, ': INITIALIZING MODEL STATUS.'
+#if defined(_OACC)
+    write(stdout,'(A, I0)')        'GPU ID     : ', device_id
+#endif
     write(stdout,'(A, I0)')        'nx         : ', nx
     write(stdout,'(A, I0)')        'nx_loc     : ', nx_loc
     write(stdout,'(A, I0)')        'nz         : ', nz
@@ -71,15 +109,8 @@ module module_physics
 
     call oldstat%set_state(0.0_wp)
 
-#if defined(_OACC)
-  !$acc update device(oldstat%mem)
-#endif
-
 #if defined(_OMP)
     !$omp parallel do collapse(2) private(i,k,ii,kk,x,z,r,u,w,t,hr,ht)
-#endif
-#if defined(_OACC)
-    !$acc parallel loop gang vector collapse(2) private(i,k,ii,kk,x,z,r,u,w,t,hr,ht)
 #endif
     do k = 1-hs, nz+hs
       do i = 1-hs, nx_loc+hs
@@ -103,12 +134,12 @@ module module_physics
     newstat = oldstat
     ref%density(:) = 0.0_wp
     ref%denstheta(:) = 0.0_wp
+#if defined(_OMP)
+    !$omp end parallel do
+#endif
 
 #if defined(_OMP)
-    !$omp parallel do collapse(2) private(k,kk,z,hr,ht) 
-#endif
-#if defined(_OACC)
-    !$acc parallel loop gang vector collapse(2) private(k,kk,z,hr,ht)
+    !$omp parallel do collapse(2) private(k,kk,z,hr,ht)
 #endif
     do k = 1-hs, nz+hs
       do kk = 1, nqpoints
@@ -126,12 +157,34 @@ module module_physics
       ref%idenstheta(k) = hr*ht
       ref%pressure(k) = c0*(hr*ht)**cdocv
     end do
+#if defined(_OMP)
+    !$omp end parallel do
+#endif
+
+#if defined(_OACC)
+    !$acc enter data create(oldstat, newstat, flux, tend, ref)
+    !$acc enter data copyin(oldstat%mem, newstat%mem, flux%mem, tend%mem)
+    !$acc enter data copyin(ref%density, ref%denstheta, ref%idens, ref%idenstheta, ref%pressure)
+    !$acc enter data attach(oldstat%mem, newstat%mem, flux%mem, tend%mem)
+    !$acc enter data attach(ref%density, ref%denstheta, ref%idens, ref%idenstheta, ref%pressure)
+
+    
+    allocate(send_left_d(hs*nz*NVARS), send_right_d(hs*nz*NVARS), &
+      recv_left_d(hs*nz*NVARS), recv_right_d(hs*nz*NVARS))
+    !$acc enter data create(send_left_d, send_right_d, recv_left_d, recv_right_d)
+#else
+    allocate(send_left(hs*nz*NVARS), send_right(hs*nz*NVARS), &
+      recv_left(hs*nz*NVARS), recv_right(hs*nz*NVARS))
+#endif
+
+    call nvtx_pop()
   end subroutine init
 
 
 
   subroutine rungekutta(s0,s1,fl,tend,dt)
     implicit none
+
     type(atmospheric_state), intent(inout) :: s0
     type(atmospheric_state), intent(inout) :: s1
     type(atmospheric_flux), intent(inout) :: fl
@@ -139,6 +192,8 @@ module module_physics
     real(wp), intent(in) :: dt
     real(wp) :: dt1, dt2, dt3
     logical, save :: dimswitch = .true.
+
+    call nvtx_push('rungekutta')
 
     dt1 = dt/1.0_wp
     dt2 = dt/2.0_wp
@@ -159,6 +214,8 @@ module module_physics
       call step(s0, s1, s0, dt1, DIR_X, fl, tend)
     end if
     dimswitch = .not. dimswitch
+
+    call nvtx_pop()
   end subroutine rungekutta
 
 
@@ -242,6 +299,18 @@ module module_physics
 
   subroutine finalize()
     implicit none
+
+#if defined(_OACC)
+    !$acc exit data delete(oldstat%mem, newstat%mem, flux%mem, tend%mem)
+    !$acc exit data delete(ref%density, ref%denstheta, ref%idens, ref%idenstheta, ref%pressure)
+    !$acc exit data delete(oldstat, newstat, flux, tend, ref)
+    !$acc exit data delete(send_left_d, send_right_d, recv_left_d, recv_right_d)
+
+    deallocate(send_left_d, send_right_d, recv_left_d, recv_right_d)
+#else
+    deallocate(send_left, send_right, recv_left, recv_right)
+#endif
+
     call oldstat%del_state( )
     call newstat%del_state( )
     call flux%del_flux( )
@@ -254,31 +323,41 @@ module module_physics
   subroutine total_mass_energy(mass,te)
     implicit none
     real(wp), intent(out) :: mass, te
-    integer :: i, k
+    integer :: i, k, ierr
     real(wp) :: r, u, w, th, p, t, ke, ie
-    mass = 0.0_wp
-    te = 0.0_wp
+    real(wp) :: mass_loc, te_loc
 
-#if defined(_OMP)
-    !$omp parallel do collapse(2) private(i,k,r, u,w,th,p,t,ke,ie) reduction(+:mass,te)
-#endif
+    mass_loc = 0.0_wp
+    te_loc   = 0.0_wp
+
 #if defined(_OACC)
-    !$acc parallel loop gang vector collapse(2) reduction(+:mass,te)
+    !$acc parallel loop collapse(2) present(oldstat%mem, ref%density, ref%denstheta) reduction(+:mass_loc, te_loc)
+#elif defined(_OMP)
+    !$omp parallel do collapse(2) private(i,k,r,u,w,th,p,t,ke,ie) reduction(+:mass_loc, te_loc)
 #endif
     do k = 1, nz
       do i = 1, nx_loc
-        r = oldstat%dens(i,k) + ref%density(k)
-        u = oldstat%umom(i,k) / r
-        w = oldstat%wmom(i,k) / r
-        th = (oldstat%rhot(i,k) + ref%denstheta(k) ) / r
-        p = c0*(r*th)**cdocv
-        t = th / (p0/p)**rdocp
-        ke = r*(u*u+w*w)
+        r  = oldstat%mem(i, k, I_DENS) + ref%density(k)
+        u  = oldstat%mem(i, k, I_UMOM) / r
+        w  = oldstat%mem(i, k, I_WMOM) / r
+        th = (oldstat%mem(i, k, I_RHOT) + ref%denstheta(k)) / r
+        p  = c0*(r*th)**cdocv
+        t  = th / (p0/p)**rdocp
+        ke = r*(u*u + w*w)
         ie = r*cv*t
-        mass = mass + r *dx*dz
-        te = te + (ke + r*cv*t)*dx*dz
+        mass_loc = mass_loc + r*dx*dz
+        te_loc   = te_loc   + (ke + r*cv*t)*dx*dz
       end do
     end do
+#if defined(_OACC)
+    !$acc end parallel
+#elif defined(_OMP)
+    !$omp end parallel do
+#endif
+
+    call MPI_Allreduce(mass_loc, mass, 1, MPI_DOUBLE_PRECISION, MPI_SUM, MPI_COMM_WORLD, ierr)
+    call MPI_Allreduce(te_loc, te, 1, MPI_DOUBLE_PRECISION, MPI_SUM, MPI_COMM_WORLD, ierr)
+
   end subroutine total_mass_energy
 
 end module module_physics

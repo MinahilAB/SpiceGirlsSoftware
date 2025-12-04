@@ -2,11 +2,11 @@
 #SBATCH --job-name=ATM_Model_onlyOACC
 #SBATCH --time=00:10:00
 #SBATCH --nodes=1
-#SBATCH --ntasks-per-node=1
+#SBATCH --ntasks-per-node=4
 #SBATCH --cpus-per-task=1
 #SBATCH --partition=boost_usr_prod
 #SBATCH --qos=boost_qos_dbg
-#SBATCH --gres=gpu:1
+#SBATCH --gres=gpu:4
 #SBATCH --hint=nomultithread
 #SBATCH --exclusive
 #SBATCH --mem=0
@@ -38,8 +38,10 @@ export OMP_NUM_THREADS=${SLURM_CPUS_PER_TASK}
 echo " ==== Loading modules... ===== "
 module purge
 module load cuda/12.6
+module load nvhpc/24.5
+module load hpcx-mpi/2.19
 module load gcc/12.2.0
-module load netcdf-fortran/4.6.1--openmpi--4.1.6--gcc--12.2.0-spack0.22
+module load netcdf-fortran/4.6.1--hpcx-mpi--2.19--nvhpc--24.5
 
 echo " ==== Building Project... ===== "
 WORK_ROOT=$(mktemp -d "${SCRATCH}/${SLURM_JOB_NAME}_XXXXXX")

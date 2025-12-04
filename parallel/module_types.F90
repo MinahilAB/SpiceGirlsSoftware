@@ -8,6 +8,7 @@ module module_types
   use dimensions
   use iodir
   use module_nvtx
+  
 
   implicit none
 
@@ -84,6 +85,15 @@ module module_types
     module procedure state_equal_to_state
   end interface assignment(=)
 
+  
+#if defined(_OACC)
+  public :: send_left_d, send_right_d, recv_left_d, recv_right_d
+  real(wp), allocatable :: send_left_d(:), send_right_d(:), recv_left_d(:), recv_right_d(:)
+#else
+  public :: send_left, send_right, recv_left, recv_right
+  real(wp), allocatable :: send_left(:), send_right(:), recv_left(:), recv_right(:)
+#endif
+
   contains
 
   subroutine new_state(atmo)
@@ -95,13 +105,6 @@ module module_types
     atmo%umom(1-hs:,1-hs:) => atmo%mem(:,:,I_UMOM)
     atmo%wmom(1-hs:,1-hs:) => atmo%mem(:,:,I_WMOM)
     atmo%rhot(1-hs:,1-hs:) => atmo%mem(:,:,I_RHOT)
-
-#if defined(_OACC)
-    !$acc enter data copyin(atmo)
-    !$acc enter data create(atmo%mem)
-    !$acc enter data attach(atmo%dens, atmo%umom, atmo%wmom, atmo%rhot)
-#endif
-
   end subroutine new_state
 
 
@@ -110,17 +113,13 @@ module module_types
     implicit none
     class(atmospheric_state), intent(inout) :: atmo
     real(wp), intent(in) :: xval
+
     if ( .not. associated(atmo%mem) ) then
       write(stderr,*) 'NOT ALLOCATED STATE ERROR AT LINE ', __LINE__
       stop
     end if
-#if defined(_OACC)
-    !$acc kernels present(atmo)
-#endif
+
     atmo%mem(1-hs:nx_loc+hs, 1-hs:nz+hs, :) = xval
-#if defined(_OACC)
-    !$acc end kernels
-#endif
   end subroutine set_state
 
 
@@ -144,9 +143,9 @@ module module_types
     class(atmospheric_tendency), intent(in) :: tend
     real(wp), intent(in) :: dt
     integer :: ll, k, i
-
+    
 #if defined(_OACC)
-    !$acc parallel loop collapse(3) present(s2, s0, tend)
+    !$acc parallel loop collapse(3) present(s2%mem, s0%mem, tend%mem)
 #elif defined(_OMP)
     !$omp parallel do collapse(3) default(none) shared(s2, s0, tend, nx_loc, nz, dt) private(ll, k, i)
 #endif
@@ -157,7 +156,9 @@ module module_types
         end do
       end do
     end do
-#if defined(_OMP)
+#if defined(_OACC)
+    !$acc end parallel
+#elif defined(_OMP)
     !$omp end parallel do
 #endif
   end subroutine update
@@ -181,7 +182,8 @@ module module_types
 
     hv_coef = -hv_beta * dx / (16.0_wp*dt)
 #if defined(_OACC)
-    !$acc parallel loop collapse(2) present(flux, ref, atmostat) &
+    !$acc parallel loop collapse(2) &
+    !$acc& present(flux%mem, atmostat%mem, ref%density, ref%denstheta) &
     !$acc& private(i, k, ll, s, r, u, w, t, p, stencil, d3_vals, vals)
 #elif defined(_OMP)
     !$omp parallel do collapse(2) default(none) shared(flux, ref, atmostat, dx, dt, hv_coef, nx_loc, nz) &
@@ -207,19 +209,21 @@ module module_types
         w = vals(I_WMOM) / r
         t = ( vals(I_RHOT) + ref%denstheta(k) ) / r
         p = c0*(r*t)**cdocv
-        flux%dens(i,k) = r*u - hv_coef*d3_vals(I_DENS)
-        flux%umom(i,k) = r*u*u+p - hv_coef*d3_vals(I_UMOM)
-        flux%wmom(i,k) = r*u*w - hv_coef*d3_vals(I_WMOM)
-        flux%rhot(i,k) = r*u*t - hv_coef*d3_vals(I_RHOT)
+        flux%mem(i, k, I_DENS) = r*u - hv_coef*d3_vals(I_DENS)
+        flux%mem(i, k, I_UMOM) = r*u*u+p - hv_coef*d3_vals(I_UMOM)
+        flux%mem(i, k, I_WMOM) = r*u*w - hv_coef*d3_vals(I_WMOM)
+        flux%mem(i, k, I_RHOT) = r*u*t - hv_coef*d3_vals(I_RHOT)
       end do
     end do
-#if defined(_OMP)
+#if defined(_OACC)
+    !$acc end parallel
+#elif defined(_OMP)
     !$omp end parallel do
 #endif
 
     ! Second loop for tendency calculation
 #if defined(_OACC)
-    !$acc parallel loop collapse(3) present(tendency, flux)
+    !$acc parallel loop collapse(3) present(tendency%mem, flux%mem)
 #elif defined(_OMP)
     !$omp parallel do collapse(3) default(none) shared(tendency, flux, dx, nx_loc, nz) private(ll, k, i)
 #endif
@@ -231,7 +235,9 @@ module module_types
         end do
       end do
     end do
-#if defined(_OMP)
+#if defined(_OACC)
+    !$acc end parallel
+#elif defined(_OMP)
     !$omp end parallel do
 #endif
   end subroutine xtend
@@ -255,7 +261,7 @@ module module_types
 
     hv_coef = -hv_beta * dz / (16.0_wp*dt)
 #if defined(_OACC)
-    !$acc parallel loop collapse(2) present(flux, ref, atmostat) &
+    !$acc parallel loop collapse(2) present(flux%mem, atmostat%mem, ref%idens, ref%idenstheta, ref%pressure) &
     !$acc& private(i, k, ll, s, r, u, w, t, p, stencil, d3_vals, vals)
 #elif defined(_OMP)
     !$omp parallel do collapse(2) default(none) shared(flux, ref, atmostat, dz, dt, hv_coef, nx_loc, nz) &
@@ -285,19 +291,21 @@ module module_types
           w = 0.0_wp
           d3_vals(I_DENS) = 0.0_wp
         end if
-        flux%dens(i,k) = r*w - hv_coef*d3_vals(I_DENS)
-        flux%umom(i,k) = r*w*u - hv_coef*d3_vals(I_UMOM)
-        flux%wmom(i,k) = r*w*w+p - hv_coef*d3_vals(I_WMOM)
-        flux%rhot(i,k) = r*w*t - hv_coef*d3_vals(I_RHOT)
+        flux%mem(i, k, I_DENS) = r*w - hv_coef*d3_vals(I_DENS)
+        flux%mem(i, k, I_UMOM) = r*w*u - hv_coef*d3_vals(I_UMOM)
+        flux%mem(i, k, I_WMOM) = r*w*w+p - hv_coef*d3_vals(I_WMOM)
+        flux%mem(i, k, I_RHOT) = r*w*t - hv_coef*d3_vals(I_RHOT)
       end do
     end do
-#if defined(_OMP)
+#if defined(_OACC)
+    !$acc end parallel
+#elif defined(_OMP)
     !$omp end parallel do
 #endif
 
     ! Second loop for tendency calculation
 #if defined(_OACC)
-    !$acc parallel loop collapse(3) present(tendency, flux, atmostat)
+    !$acc parallel loop collapse(3) present(tendency%mem, flux%mem, atmostat%mem)
 #elif defined(_OMP)
     !$omp parallel do collapse(3) default(none) shared(tendency, flux, atmostat, dz, nx_loc, nz) private(ll, k, i)
 #endif
@@ -308,12 +316,14 @@ module module_types
               -( flux%mem(i,k+1,ll) - flux%mem(i,k,ll) ) / dz
           ! Source term application (gravity)
           if (ll == I_WMOM) then
-            tendency%wmom(i,k) = tendency%wmom(i,k) - atmostat%dens(i,k)*grav
+            tendency%mem(i,k,ll) = tendency%mem(i,k,ll) - atmostat%mem(i,k,I_DENS)*grav
           end if
         end do
       end do
     end do
-#if defined(_OMP)
+#if defined(_OACC)
+    !$acc end parallel
+#elif defined(_OMP)
     !$omp end parallel do
 #endif
   end subroutine ztend
@@ -321,41 +331,92 @@ module module_types
 
 
   subroutine exchange_halo_x(s)
-    use mpi
     use dimensions, only : nz, nx_loc
     class(atmospheric_state), intent(inout) :: s
-    integer :: ierr, ncount
-    integer :: reqs(4)
-    real(wp), allocatable :: send_left(:), send_right(:), recv_left(:), recv_right(:)
-
+    integer :: ncount
+    integer :: reqs(4), ierr
+    integer :: ll, k, i, idx
 
     call nvtx_push('exchange_halo')
 
-#if defined(_OACC)
-    !$acc update self(s)
-#endif
-
     ncount = hs * nz * NVARS
-    allocate(send_left(ncount), send_right(ncount), recv_left(ncount), recv_right(ncount))
-  
-    call pack_strip(s%mem, 1, 1, nx_loc, hs, send_left)
+
+#if defined(_OACC)
+    ! Pack left
+    !$acc parallel loop collapse(3) present(s, send_left_d)
+    do ll = 1, NVARS
+      do k = 1, nz
+        do i = 1, hs
+          idx = ((ll - 1) * nz + (k - 1)) * hs + i
+          send_left_d(idx) = s%mem(i, k, ll)
+        end do
+      end do
+    end do
+    !$acc end parallel
+
+    ! Pack right
+    !$acc parallel loop collapse(3) present(s, send_right_d)
+    do ll = 1, NVARS
+      do k = 1, nz
+        do i = 1, hs
+          idx = ((ll - 1) * nz + (k - 1)) * hs + i
+          send_right_d(idx) = s%mem(nx_loc - hs + i, k, ll)
+        end do
+      end do
+    end do
+    !$acc end parallel
+
+    ! Send/Recv
+    !$acc host_data use_device(send_left_d, send_right_d, recv_left_d, recv_right_d)
+      call MPI_Irecv(recv_left_d,  ncount, MPI_DOUBLE_PRECISION, left_rank,  102, cart_comm, reqs(1), ierr)
+      call MPI_Irecv(recv_right_d, ncount, MPI_DOUBLE_PRECISION, right_rank, 101, cart_comm, reqs(2), ierr)
+      call MPI_Isend(send_right_d, ncount, MPI_DOUBLE_PRECISION, right_rank, 102, cart_comm, reqs(3), ierr)
+      call MPI_Isend(send_left_d,  ncount, MPI_DOUBLE_PRECISION, left_rank,  101, cart_comm, reqs(4), ierr)
+    !$acc end host_data
+
+    call MPI_Waitall(4, reqs, MPI_STATUSES_IGNORE, ierr)
+
+    ! Unpack received left
+    !$acc parallel loop collapse(3) present(s, recv_left_d)
+      do ll = 1, NVARS
+        do k = 1, nz
+          do i = 1, hs
+            idx = ((ll - 1) * nz + (k - 1)) * hs + i
+            s%mem(1 - hs + (i - 1), k, ll) = recv_left_d(idx)
+            ! equivalently: s%mem(i - hs, k, ll)
+          end do
+        end do
+      end do
+    !$acc end parallel
+
+    ! Unpack received right
+    !$acc parallel loop collapse(3) present(s, recv_right_d)
+      do ll = 1, NVARS
+        do k = 1, nz
+          do i = 1, hs
+            idx = ((ll - 1) * nz + (k - 1)) * hs + i
+            s%mem(nx_loc + i, k, ll) = recv_right_d(idx)
+          end do
+        end do
+      end do
+    !$acc end parallel
+
+#else
+
+    call pack_strip(s%mem, 1,           1, nx_loc, hs, send_left)
     call pack_strip(s%mem, nx_loc-hs+1, 1, nx_loc, hs, send_right)
-    
-    call MPI_Irecv(recv_left, ncount, MPI_DOUBLE_PRECISION, left_rank, 102, cart_comm, reqs(1), ierr)
+      
+    call MPI_Irecv(recv_left,  ncount, MPI_DOUBLE_PRECISION, left_rank,  102, cart_comm, reqs(1), ierr)
     call MPI_Irecv(recv_right, ncount, MPI_DOUBLE_PRECISION, right_rank, 101, cart_comm, reqs(2), ierr)
     call MPI_Isend(send_right, ncount, MPI_DOUBLE_PRECISION, right_rank, 102, cart_comm, reqs(3), ierr)
-    call MPI_Isend(send_left, ncount, MPI_DOUBLE_PRECISION, left_rank, 101, cart_comm, reqs(4), ierr)
-    
+    call MPI_Isend(send_left,  ncount, MPI_DOUBLE_PRECISION, left_rank,  101, cart_comm, reqs(4), ierr)
+      
     call MPI_Waitall(4, reqs, MPI_STATUSES_IGNORE, ierr)
+      
+    call unpack_strip(recv_left,  s%mem, 1-hs,    1)
+    call unpack_strip(recv_right, s%mem, nx_loc+1,1)
     
-    call unpack_strip(recv_left, s%mem, 1-hs, 1)
-    call unpack_strip(recv_right, s%mem, nx_loc+1, 1)
-
-#if defined(_OACC)
-    !$acc update device(s)
 #endif
-    
-    deallocate(send_left, send_right, recv_left, recv_right)
 
     call nvtx_pop()
   end subroutine exchange_halo_x
@@ -368,7 +429,7 @@ module module_types
     real(wp), intent(out) :: buffer(:)
     integer :: ll, k, i, pos
     pos = 0
-
+    
     do ll = 1, NVARS
       do k = k_start, k_start+nz-1
         do i = i_start, i_start+width-1
@@ -400,14 +461,13 @@ module module_types
 
 
 
-
   subroutine exchange_halo_z(s,ref)
     implicit none
     class(atmospheric_state), intent(inout) :: s
     class(reference_state), intent(in) :: ref
     integer :: i, ll
 #if defined(_OACC)
-    !$acc parallel loop collapse(2) present(s, ref)
+    !$acc parallel loop collapse(2) present(s%mem, ref%density)
 #elif defined(_OMP)
     !$omp parallel do private(ll, i) shared(s, ref)
 #endif
@@ -435,7 +495,9 @@ module module_types
         end if
       end do
     end do
-#if defined(_OMP)
+#if defined(_OACC)
+    !$acc end parallel
+#elif defined(_OMP)
     !$omp end parallel do
 #endif
   end subroutine exchange_halo_z
@@ -450,21 +512,12 @@ module module_types
     allocate(ref%idens(nz+1))
     allocate(ref%idenstheta(nz+1))
     allocate(ref%pressure(nz+1))
-
-#if defined(_OACC)
-  !$acc enter data copyin(ref)
-  !$acc enter data create(ref%density, ref%denstheta, ref%idens, ref%idenstheta, ref%pressure)
-#endif
   end subroutine new_ref
 
 
   subroutine del_ref(ref)
     implicit none
     class(reference_state), intent(inout) :: ref
-#if defined(_OACC)
-    !$acc exit data delete(ref%density, ref%denstheta, ref%idens, ref%idenstheta, ref%pressure)
-    !$acc exit data delete(ref)
-#endif
     deallocate(ref%density)
     deallocate(ref%denstheta)
     deallocate(ref%idens)
@@ -483,12 +536,6 @@ module module_types
     flux%umom => flux%mem(:,:,I_UMOM)
     flux%wmom => flux%mem(:,:,I_WMOM)
     flux%rhot => flux%mem(:,:,I_RHOT)
-
-#if defined(_OACC)
-    !$acc enter data copyin(flux)
-    !$acc enter data create(flux%mem)
-    !$acc enter data attach(flux%dens, flux%umom, flux%wmom, flux%rhot)
-#endif
   end subroutine new_flux
 
 
@@ -501,15 +548,17 @@ module module_types
       write(stderr,*) 'NOT ALLOCATED FLUX ERROR AT LINE ', __LINE__
       stop
     end if
+
 #if defined(_OACC)
-    !$acc kernels present(flux)
-! #elif defined(_OMP)
-  ! !$omp parallel do collapse(3) default(none) shared(flux, xval, nx, nz, NVARS)
+    !$acc kernels present(flux%mem)
 #endif
+
   flux%mem(:,:,:) = xval
+
 #if defined(_OACC)
   !$acc end kernels
 #endif
+
   end subroutine set_flux
 
 
@@ -517,10 +566,6 @@ module module_types
   subroutine del_flux(flux)
     implicit none
     class(atmospheric_flux), intent(inout) :: flux
-#if defined(_OACC)
-    !$acc exit data delete(flux%mem)
-    !$acc exit data delete(flux)
-#endif
     if ( associated(flux%mem) ) deallocate(flux%mem)
     nullify(flux%dens)
     nullify(flux%umom)
@@ -539,11 +584,6 @@ module module_types
     tend%umom => tend%mem(:,:,I_UMOM)
     tend%wmom => tend%mem(:,:,I_WMOM)
     tend%rhot => tend%mem(:,:,I_RHOT)
-#if defined(_OACC)
-    !$acc enter data copyin(tend)
-    !$acc enter data create(tend%mem)
-    !$acc enter data attach(tend%dens, tend%umom, tend%wmom, tend%rhot)
-#endif
   end subroutine new_tendency
 
 
@@ -556,15 +596,17 @@ module module_types
       write(stderr,*) 'NOT ALLOCATED FLUX ERROR AT LINE ', __LINE__
       stop
     end if
+
 #if defined(_OACC)
-    !$acc kernels present(tend)
-! #elif defined(_OMP)
-  ! !$omp parallel do collapse(3) default(none) shared(tend, xval, nx, nz, NVARS)
+    !$acc kernels present(tend%mem)
 #endif
+
     tend%mem(:,:,:) = xval
+
 #if defined(_OACC)
     !$acc end kernels
 #endif
+
   end subroutine set_tendency
 
 
@@ -572,10 +614,6 @@ module module_types
   subroutine del_tendency(tend)
     implicit none
     class(atmospheric_tendency), intent(inout) :: tend
-#if defined(_OACC)
-    !$acc exit data delete(tend%mem)
-    !$acc exit data delete(tend)
-#endif
     if ( associated(tend%mem) ) deallocate(tend%mem)
     nullify(tend%dens)
     nullify(tend%umom)
@@ -589,14 +627,22 @@ module module_types
     implicit none
     type(atmospheric_state), intent(inout) :: x
     type(atmospheric_state), intent(in) :: y
-#if defined(_OACC)
-    !$acc kernels present(x, y)
-    ! #elif defined(_OMP)
-    ! !$omp parallel do collapse(3) default(none) shared(x, y, nx, nz, NVARS, hs)
+    integer :: ll, k, i
+
+#if defined(_OMP)
+    !$omp parallel do collapse(3) default(none) shared(x, y, nx_loc, nz, hs, NVARS) private(ll, k, i)
 #endif
-    x%mem(1-hs:nx_loc+hs, 1-hs:nz+hs, :) = y%mem(1-hs:nx_loc+hs, 1-hs:nz+hs, :)
-#if defined(_OACC)
-    !$acc end kernels
+    do ll = 1, NVARS
+      do k = 1-hs, nz+hs
+        do i = 1-hs, nx_loc+hs
+          x%mem(i,k,ll) = y%mem(i,k,ll)
+        end do
+      end do
+    end do
+#if defined(_OMP)
+    !$omp end parallel do
 #endif
   end subroutine state_equal_to_state
+
+  
 end module module_types

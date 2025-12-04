@@ -91,9 +91,17 @@ module parallel_parameters
   use mpi
   implicit none
   public
-  integer :: rank, csize, left_rank, right_rank, i_beg, i_end, cart_comm = MPI_COMM_WORLD
+  integer :: ierr, csize, rank, rank_source_dummy, left_rank, right_rank, i_beg, i_end, cart_comm = MPI_COMM_WORLD
+  integer, dimension(1) :: dims
+  logical, dimension(1) :: periods
+  logical :: reorder
   integer, parameter :: k_beg = 1
   integer, parameter :: hs = 2
+
+#if defined(_OACC)
+  integer :: num_devices, device_id
+#endif
+
 end module parallel_parameters
 
 

@@ -4,7 +4,9 @@ module module_output
   use dimensions, only : nx, nx_loc, nz
   use module_types, only : atmospheric_state, reference_state
   use iodir, only : stderr
+  use indexing, only : I_DENS, I_UMOM, I_WMOM, I_RHOT
   use netcdf
+  use module_nvtx
   use mpi
   
   implicit none
@@ -32,10 +34,15 @@ module module_output
     integer :: t_dimid, x_dimid, z_dimid
     integer :: ierr
 
+    call nvtx_push('create_output')
+
     allocate(dens(nx_loc,nz))
     allocate(uwnd(nx_loc,nz))
     allocate(wwnd(nx_loc,nz))
     allocate(theta(nx_loc,nz))
+#if defined(_OACC)
+    !$acc enter data create(dens, uwnd, wwnd, theta)
+#endif
 
     call mpi_comm_dup(cart_comm, nc_comm, ierr)
     call ncwrap(nf90_create_par('output.nc', nf90_clobber, nc_comm, MPI_INFO_NULL, ncid), __LINE__)
@@ -55,6 +62,8 @@ module module_output
         [x_dimid,z_dimid,t_dimid],theta_varid), __LINE__)
     call ncwrap(nf90_enddef(ncid), __LINE__)
     rec_out = 1
+
+    call nvtx_pop()
   end subroutine create_output
 
 
@@ -69,23 +78,29 @@ module module_output
     integer, dimension(3) :: st3, ct3
     real(wp), dimension(1) :: etimearr
 
-#if defined(_OMP)
-  !$omp parallel do collapse(2) private(i,k) 
-#endif
+    call nvtx_push('write_record')
 
 #if defined(_OACC)
-  !$acc parallel loop gang vector collapse(2) private(i,k) 
+  !$acc parallel present(atmostat%mem, ref%density, ref%denstheta, dens, uwnd, wwnd, theta)
+  !$acc loop gang vector collapse(2) private(i, k)
+#elif defined(_OMP)
+  !$omp parallel do collapse(2) private(i,k)
 #endif
-
     do k = 1, nz
       do i = 1, nx_loc
-        dens(i,k) = atmostat%dens(i,k)
-        uwnd(i,k) = atmostat%umom(i,k)/(ref%density(k)+dens(i,k))
-        wwnd(i,k) = atmostat%wmom(i,k)/(ref%density(k)+dens(i,k))
-        theta(i,k) = (atmostat%rhot(i,k) + ref%denstheta(k)) / &
+        dens(i,k) = atmostat%mem(i, k, I_DENS)
+        uwnd(i,k) = atmostat%mem(i, k, I_UMOM)/(ref%density(k)+dens(i,k))
+        wwnd(i,k) = atmostat%mem(i, k, I_WMOM)/(ref%density(k)+dens(i,k))
+        theta(i,k) = (atmostat%mem(i, k, I_RHOT) + ref%denstheta(k)) / &
             (ref%density(k) + dens(i,k)) - ref%denstheta(k)/ref%density(k)
       end do
     end do
+#if defined(_OACC)
+    !$acc end parallel
+    !$acc update self(dens, uwnd, wwnd, theta)
+#elif defined(_OMP)
+    !$omp end parallel do
+#endif
 
     st3 = [ i_beg, k_beg, rec_out ]
     ct3 = [ nx_loc, nz, 1 ]
@@ -102,6 +117,8 @@ module module_output
     end if
 
     rec_out = rec_out + 1
+
+    call nvtx_pop()
   end subroutine write_record
 
 
@@ -110,7 +127,14 @@ module module_output
     implicit none
     integer :: ierr
 
+    call nvtx_push('close_output')
+
     if ( allocated(dens) ) then
+      
+#if defined(_OACC)
+      !$acc exit data delete(dens, uwnd, wwnd, theta)
+#endif
+
       deallocate(dens)
       deallocate(uwnd)
       deallocate(wwnd)
@@ -119,6 +143,8 @@ module module_output
 
     call ncwrap(nf90_close(ncid), __LINE__)
     call mpi_comm_free(nc_comm, ierr)
+
+    call nvtx_pop()
   end subroutine close_output
 
 

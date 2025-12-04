@@ -6,11 +6,17 @@ program atmosphere_model
   use module_output, only : create_output, write_record, close_output
   use dimensions , only : sim_time, output_freq, nx, nz
   use physical_parameters, only : xlen, zlen
+  use parallel_parameters, only : ierr, rank
   use iodir, only : stdout
   use module_nvtx
   use parallel_timer
   use mpi
-  use parallel_parameters, only : rank, csize, left_rank, right_rank, cart_comm
+#if defined(_OACC)
+  use openacc
+#endif
+#if defined(_OMP)
+  use omp_lib
+#endif
 
   implicit none
 
@@ -20,18 +26,12 @@ program atmosphere_model
   real(wp) :: pctime
   real(wp) :: mass0, te0
   real(wp) :: mass1, te1
-  real(wp) :: mass_buf(2)
   integer(8) :: t1, t2, rate
-  integer :: ierr
   integer :: n_args
   character(len=32) :: arg
-  integer, dimension(1) :: dims
-  logical, dimension(1) :: periods
-  logical :: reorder
-  integer :: rank_source_dummy
 
-
-
+  
+  ! Argument parsing occuring here
   n_args = command_argument_count()
   if (n_args == 2) then
     call get_command_argument(1, arg)
@@ -42,45 +42,25 @@ program atmosphere_model
 
   nz = int(nx * zlen/xlen)
 
-  ! MPI initialisation
-  call MPI_Init(ierr)
-  call MPI_Comm_rank(MPI_COMM_WORLD, rank, ierr)
-  call MPI_Comm_size(MPI_COMM_WORLD, csize, ierr)
-
-  dims(1) = csize
-  periods(1) = .true.
-  reorder = .true.
-  call MPI_Cart_create(MPI_COMM_WORLD, 1, dims, periods, reorder, cart_comm, ierr)
-
-  call MPI_Cart_shift(cart_comm, 0, -1, rank_source_dummy, left_rank, ierr)
-  call MPI_Cart_shift(cart_comm, 0, 1, rank_source_dummy, right_rank, ierr)
-  
+  ! Initialisation
   if (rank == 0) write(stdout, '(/,A,/)') 'SIMPLE ATMOSPHERIC MODEL STARTING.'
 
+  ! Use NVTX to mark the main computational region for profiling
+  call nvtx_push('tot')
+
   call init(etime,output_counter,dt)
+
   call total_mass_energy(mass0,te0)
-  
-  mass_buf(1) = mass0
-  mass_buf(2) = te0
-  call MPI_Allreduce(MPI_IN_PLACE, mass_buf, 2, MPI_DOUBLE_PRECISION, MPI_SUM, MPI_COMM_WORLD, ierr)
-  mass0 = mass_buf(1)
-  te0 = mass_buf(2)
-  
   call create_output( )
   call write_record(oldstat,ref,etime)
 
   call system_clock(t1)
 
-  ! Use NVTX to mark the main computational region for profiling
-  call nvtx_push('main_loop')
-
-#if defined(_OACC)
-  !$acc data present(oldstat, newstat, flux, tend, ref)
-#endif
-
   ptime = int(sim_time/10.0)
-  do while (etime < sim_time)
 
+  call nvtx_push('main_loop')
+  
+  do while (etime < sim_time)
     if (etime + dt > sim_time) dt = sim_time - etime
       call rungekutta(oldstat,newstat,flux,tend,dt)
     
@@ -93,34 +73,16 @@ program atmosphere_model
     output_counter = output_counter + dt
 
     if (output_counter >= output_freq) then
-#if defined(_OACC)
-      !$acc update self(oldstat%mem)
-#endif
       output_counter = output_counter - output_freq
       call write_record(oldstat,ref,etime)
     end if
 
   end do
 
-  ! Exit the OpenACC data region.
-#if defined(_OACC)
-  !$acc end data
-#endif
-  ! Ensure all device operations are complete before diagnostics
-#if defined(_OACC)
-  !$acc wait
-#endif
-
   call nvtx_pop()
 
+  
   call total_mass_energy(mass1,te1)
-  
-  mass_buf(1) = mass1
-  mass_buf(2) = te1
-  call MPI_Allreduce(MPI_IN_PLACE, mass_buf, 2, MPI_DOUBLE_PRECISION, MPI_SUM, MPI_COMM_WORLD, ierr)
-  mass1 = mass_buf(1)
-  te1 = mass_buf(2)
-  
   call close_output( )
 
   if (rank == 0) then
@@ -137,6 +99,8 @@ program atmosphere_model
     write(stdout,'(A)') "SIMPLE ATMOSPHERIC MODEL RUN COMPLETED."
     write(stdout,'(A, F0.18, /)') "USED CPU TIME: ", dble(t2-t1)/dble(rate)
   end if
+
+  call nvtx_pop()
 
   call MPI_Finalize(ierr)
   

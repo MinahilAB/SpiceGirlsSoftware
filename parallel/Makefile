@@ -1,12 +1,17 @@
 # ================================
 #       COMPILER & OPTIONS
 # ================================
-FC						= mpifort
+# The compiler
+F_COMP					:= $(MPIF90)
+CPP_COMP				:= $(MPICXX) -std=c++17
 
 # Feature toggles
 DEBUG        			?= 1    # 1 = debug, 0 = release
 USE_OPENACC  			?= 0
 USE_OPENMP   			?= 0
+
+# GPU architecture
+CUDA_ARCH				= -gpu=cc80
 
 
 # ================================
@@ -20,28 +25,25 @@ LDFLAGS  				= -L$(NETCDF_FORTRAN_LIB) -lnetcdff -lnetcdf -lstdc++ -lm -L$(CUDA_
 # ================================
 #       DEBUG / RELEASE FLAGS
 # ================================
-DEVFLAGS 				= -O0 -g -Wall -Wextra -fimplicit-none -fcheck=all -fbacktrace
-RELFLAGS 				= -O3 -march=native -mtune=native -Ofast -ffast-math -funroll-loops
+DEVFLAGS 				= -O0 -g -C -Wall -Wextra
+RELFLAGS 				= -O3 -fast -tp=native
+
 
 ifeq ($(DEBUG),1)
 	FCFLAGS += $(DEVFLAGS)
-	
+
 	ifeq ($(USE_OPENACC),1)
-		FCFLAGS += -fopt-info-all
-		FCFLAGS  := $(filter-out -fcheck=all -fbacktrace,$(FCFLAGS))
-	else ifeq ($(USE_OPENMP),1)
-		FCFLAGS += -fopt-info-optimized-omp
+		FCFLAGS += -gpu=debug -traceback -Mdclchk
 	endif
 else
 	FCFLAGS += $(RELFLAGS)
 endif
 
-
 # ================================
 #       OPENACC SUPPORT (GNU)
 # ================================
 ifeq ($(USE_OPENACC),1)
-	FCFLAGS  += -fopenacc -foffload=nvptx-none=-lm
+	FCFLAGS  += -acc $(CUDA_ARCH) -Minfo=accel
 	CPPFLAGS += -D_OACC
 endif
 
@@ -50,7 +52,7 @@ endif
 #       OPENMP SUPPORT
 # ================================
 ifeq ($(USE_OPENMP),1)
-	FCFLAGS  += -fopenmp
+	FCFLAGS  += -MP
 	CPPFLAGS += -D_OMP
 endif
 
@@ -62,29 +64,29 @@ all: model
 
 # Do the final linking
 model: model.f90  module_parameters.o module_types.o module_physics.o module_output.o parallel_timer.o parallel_timer_c.o module_nvtx.o
-	$(FC) $(FCFLAGS) $(CPPFLAGS) -o $@ $^ $(LDFLAGS)
+	$(F_COMP) $(FCFLAGS) $(CPPFLAGS) -o $@ $^ $(LDFLAGS)
 
 # Compile modules in correct order
 module_nvtx.o: module_nvtx.F90
-	$(FC) $(FCFLAGS) $(CPPFLAGS) -c $<
+	$(F_COMP) $(FCFLAGS) $(CPPFLAGS) -c $<
 
 parallel_timer.o: parallel_timer.f90 parallel_timer_c.o
-	$(FC) $(FCFLAGS) $(CPPFLAGS) -c $<
+	$(F_COMP) $(FCFLAGS) $(CPPFLAGS) -c $<
 
 parallel_timer_c.o : parallel_timer_c.cpp
-	$(CC) $(CFLAGS) -c $<
+	$(CPP_COMP) -c $<
 
 module_parameters.o: module_parameters.f90
-	$(FC) $(FCFLAGS) $(CPPFLAGS) -c $<
+	$(F_COMP) $(FCFLAGS) $(CPPFLAGS) -c $<
 
 module_types.o: module_types.F90 module_parameters.o parallel_timer.o module_nvtx.o
-	$(FC) $(FCFLAGS) $(CPPFLAGS) -c $<
+	$(F_COMP) $(FCFLAGS) $(CPPFLAGS) -c $<
 
-module_physics.o: module_physics.f90 module_types.o
-	$(FC) $(FCFLAGS) $(CPPFLAGS) -c $<
+module_physics.o: module_physics.f90 module_types.o module_nvtx.o
+	$(F_COMP) $(FCFLAGS) $(CPPFLAGS) -c $<
 
-module_output.o: module_output.F90 module_physics.o
-	$(FC) $(FCFLAGS) $(CPPFLAGS) -c $<
+module_output.o: module_output.F90 module_physics.o module_nvtx.o
+	$(F_COMP) $(FCFLAGS) $(CPPFLAGS) -c $<
 
 # Clean
 clean:
