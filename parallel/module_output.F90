@@ -1,3 +1,9 @@
+!> @file module_output.f90
+!> @brief Handles parallel NetCDF output operations, including file creation, data writing, and cleanup.
+!>
+!> This module manages the creation of the output file, defines NetCDF dimensions and variables, 
+!> extracts diagnostic variables from the atmospheric state, and writes the data to disk using 
+!> parallel NetCDF (PNETCDF) capabilities.
 module module_output
   use calculation_types, only : wp, iowp
   use parallel_parameters, only : i_beg, k_beg, cart_comm, rank
@@ -29,6 +35,10 @@ module module_output
 
   contains
 
+  !> @brief Creates the NetCDF output file and defines dimensions and variables.
+  !>
+  !> Sets up parallel NetCDF file creation and defines 4D variables (X, Z, Time) for 
+  !> density, velocity components, and potential temperature.
   subroutine create_output
     implicit none
     integer :: t_dimid, x_dimid, z_dimid
@@ -67,7 +77,14 @@ module module_output
   end subroutine create_output
 
 
-
+  !> @brief Writes a single record of the atmospheric state to the NetCDF file.
+  !>
+  !> Calculates diagnostic fields (velocity, potential temperature perturbation) 
+  !> from prognostic variables and reference state, then writes the data using 
+  !> parallel I/O with appropriate start (\c st3) and count (\c ct3) indices for the domain decomposition.
+  !> @param[in] atmostat The current atmospheric state (prognostic variables).
+  !> @param[in] ref The reference hydrostatic state.
+  !> @param[in] etime The current elapsed simulation time.
   subroutine write_record(atmostat,ref,etime)
     implicit none
     type(atmospheric_state), intent(in) :: atmostat
@@ -122,7 +139,7 @@ module module_output
   end subroutine write_record
 
 
-
+  !> @brief Closes the NetCDF file, frees the MPI communicator, and deallocates arrays.
   subroutine close_output
     implicit none
     integer :: ierr
@@ -148,7 +165,11 @@ module module_output
   end subroutine close_output
 
 
-
+  !> @brief NetCDF error-wrapping subroutine.
+  !>
+  !> Prints the NetCDF error string and stops execution if an error is detected.
+  !> @param[in] ierr The NetCDF status code.
+  !> @param[in] line The line number where the NetCDF call was made.
   subroutine ncwrap(ierr,line)
     implicit none
     integer, intent(in) :: ierr

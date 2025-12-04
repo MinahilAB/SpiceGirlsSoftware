@@ -1,3 +1,8 @@
+!> @file module_physics.f90
+!> @brief Implements the core physics, time integration loop, and initialization/finalization routines.
+!>
+!> This module manages the simulation environment, including MPI/OpenACC setup, grid geometry, 
+!> initial conditions, and the Runge-Kutta time stepping algorithm.
 module module_physics
   use calculation_types, only : wp
   use physical_constants
@@ -33,6 +38,14 @@ module module_physics
 
   contains
 
+
+  !> @brief Initializes the MPI/OpenACC environment, grid dimensions, and initial atmospheric state.
+  !>
+  !> This routine sets up the domain decomposition, assigns GPU devices, allocates memory, 
+  !> and calculates the initial condition including the thermal bubble perturbation.
+  !> @param[out] etime The elapsed simulation time (set to 0.0 initially).
+  !> @param[out] output_counter The output counter (set to 0.0 initially).
+  !> @param[out] dt The calculated time step size.
   subroutine init(etime,output_counter,dt)
     implicit none
     real(wp), intent(out) :: etime, output_counter, dt
@@ -181,7 +194,15 @@ module module_physics
   end subroutine init
 
 
-
+  !> @brief Performs the 6-stage Runge-Kutta time integration using a dimensionally split approach.
+  !>
+  !> It applies three RK steps in the X-direction and three RK steps in the Z-direction, 
+  !> alternating the order of direction splitting each time step.
+  !> @param[inout] s0 State used as the initial condition for the RK step.
+  !> @param[inout] s1 State used for intermediate RK steps.
+  !> @param[inout] fl Temporary flux storage.
+  !> @param[inout] tend Temporary tendency storage.
+  !> @param[in] dt The time step size.
   subroutine rungekutta(s0,s1,fl,tend,dt)
     implicit none
 
@@ -219,6 +240,16 @@ module module_physics
   end subroutine rungekutta
 
 
+  !> @brief Calculates the tendency (RHS) for a given direction and updates the state.
+  !>
+  !> This routine applies the semi-discretized formula: \f$ S^{n+1} = S^n + \Delta t \cdot Tendency(S^*) \f$.
+  !> @param[in] s0 The state at time level \f$n\f$.
+  !> @param[in] s1 The state at the intermediate time level (\f$S^*\f$) used to calculate the tendency.
+  !> @param[inout] s2 The resulting state (\f$S^{n+1}\f$).
+  !> @param[in] dt The time step coefficient for this stage.
+  !> @param[in] dir The direction (DIR_X or DIR_Z) for which to calculate the tendency.
+  !> @param[inout] fl Temporary flux storage.
+  !> @param[inout] tend Temporary tendency storage.
 
   ! Semi-discretized step in time:
   ! s2 = s0 + dt * rhs(s1)
@@ -240,7 +271,17 @@ module module_physics
   end subroutine step
 
 
-
+  !> @brief Calculates the state variables and reference state at a given physical point (\c x, \c z).
+  !>
+  !> This routine sets up the background hydrostatic state and adds the initial thermal bubble perturbation.
+  !> @param[in] x X-coordinate.
+  !> @param[in] z Z-coordinate.
+  !> @param[out] r Density perturbation.
+  !> @param[out] u U-velocity (momentum).
+  !> @param[out] w W-velocity (momentum).
+  !> @param[out] t Potential temperature perturbation.
+  !> @param[out] hr Reference density.
+  !> @param[out] ht Reference potential temperature.
   subroutine thermal(x,z,r,u,w,t,hr,ht)
 #if defined(_OACC)
     !$acc routine seq
@@ -258,7 +299,10 @@ module module_physics
   end subroutine thermal
 
 
-
+  !> @brief Calculates the hydrostatic background reference state (\c r, \c t) based on constant potential temperature (\f$\theta_0\f$).
+  !> @param[in] z Z-coordinate.
+  !> @param[out] r Reference density.
+  !> @param[out] t Reference potential temperature.
   subroutine hydrostatic_const_theta(z,r,t)
 #if defined(_OACC)
     !$acc routine seq
@@ -275,7 +319,13 @@ module module_physics
   end subroutine hydrostatic_const_theta
 
 
-
+  !> @brief Calculates a thermal perturbation using a cosine-squared profile within an elliptical region.
+  !> @param[in] x X-coordinate.
+  !> @param[in] z Z-coordinate.
+  !> @param[in] amp Amplitude of the perturbation.
+  !> @param[in] x0, z0 Center coordinates of the ellipse.
+  !> @param[in] x1, z1 Half-axes lengths of the ellipse.
+  !> @result The perturbation value.
   elemental function ellipse(x,z,amp,x0,z0,x1,z1) result(val)
 #if defined(_OACC)
     !$acc routine seq
@@ -296,7 +346,7 @@ module module_physics
   end function ellipse
 
 
-
+  !> @brief Deallocates all dynamically allocated memory and finalizes MPI/OpenACC resources.
   subroutine finalize()
     implicit none
 
@@ -319,7 +369,12 @@ module module_physics
   end subroutine finalize
 
 
-
+  !> @brief Calculates the total mass and total energy of the domain.
+  !>
+  !> It computes the local sum on each rank and then performs an MPI reduction 
+  !> (MPI_Allreduce) to obtain the global total, which is useful for conservation checks.
+  !> @param[out] mass The total mass of the system.
+  !> @param[out] te The total energy of the system.
   subroutine total_mass_energy(mass,te)
     implicit none
     real(wp), intent(out) :: mass, te

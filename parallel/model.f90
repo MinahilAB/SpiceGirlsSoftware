@@ -1,3 +1,9 @@
+!> @file atmosphere_model.f90
+!> @brief Main driver program for the simple atmospheric model.
+!>
+!> This program initializes the simulation environment (MPI/OpenACC, grid, state), 
+!> executes the main time integration loop, handles I/O output, and calculates 
+!> conservation checks (mass and energy).
 program atmosphere_model
   use calculation_types, only : wp
   use module_physics, only : dt, oldstat, newstat, flux, tend, ref

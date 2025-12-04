@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=ATM_Model_onlyOACC
-#SBATCH --time=00:10:00
+#SBATCH --time=00:30:00
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=4
 #SBATCH --cpus-per-task=1
@@ -17,14 +17,14 @@
 set -euo pipefail
 
 # Add the path to the SpiceGirlsSoftware directory
-SPG_DIR=${HOME}/MHPC_repos/SpiceGirlsSoftware/parallel
+SPG_DIR=${HOME}/SpiceGirlsSoftware/parallel
 
 # Where ou want the output to go (can leave unchanged)
-OUTDIR=${HOME}/Jobs/ATM_Model_onlyOACC
+OUTDIR=${HOME}/SpiceGirlsSoftware/parallel/Jobs/ATM_Model_onlyOACC
 mkdir -p ${OUTDIR}
 
 # Set nx gtidsize and the simulation time
-NX_SIZE=100
+NX_SIZE=2000
 SIM_TIME=1000.0
 
 # Set Makefile flags
