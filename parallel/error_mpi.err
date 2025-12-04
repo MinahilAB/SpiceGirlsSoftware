@@ -1,0 +1,8 @@
+srun: Job 27481369 step creation temporarily disabled, retrying (Requested nodes are busy)
+srun: Step created for StepId=27481369.0
+mv: cannot stat 'output.nc': No such file or directory
+mv: cannot stat 'output.nc': No such file or directory
+mv: cannot stat 'output.nc': No such file or directory
+slurmstepd: error: *** JOB 27481460 ON lrdn1772 CANCELLED AT 2025-12-04T11:45:32 DUE TO TIME LIMIT ***
+srun: Job step aborted: Waiting up to 182 seconds for job step to finish.
+slurmstepd: error: *** STEP 27481460.0 ON lrdn1772 CANCELLED AT 2025-12-04T11:45:32 DUE TO TIME LIMIT ***

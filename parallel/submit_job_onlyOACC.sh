@@ -10,14 +10,14 @@
 #SBATCH --hint=nomultithread
 #SBATCH --exclusive
 #SBATCH --mem=0
-#SBATCH --output=/leonardo/home/userexternal/%u/Jobs/ATM_Model_onlyOACC/%j.out
-#SBATCH --error=/leonardo/home/userexternal/%u/Jobs/ATM_Model_onlyOACC/%j.err
+#SBATCH --output=output.out
+#SBATCH --error=error.err
 #SBATCH --account=ICT25_MHPC_0
 
 set -euo pipefail
 
 # Add the path to the SpiceGirlsSoftware directory
-SPG_DIR=${HOME}/MHPC_repos/SpiceGirlsSoftware/parallel
+SPG_DIR=${HOME}/SpiceGirlsSoftware/parallel
 
 # Where ou want the output to go (can leave unchanged)
 OUTDIR=${HOME}/Jobs/ATM_Model_onlyOACC
@@ -34,6 +34,12 @@ USE_OPENMP=0
 
 # Set the number of OMP threads for CPU thread parallelisation
 export OMP_NUM_THREADS=${SLURM_CPUS_PER_TASK}
+
+# ===== OpenACC DEBUGGING FLAGS FOR GCC =====
+export GOMP_DEBUG=1              # Enable libgomp debugging
+export GCC_OFFLOAD_DEBUG=1       # Show offload operations
+export CUDA_LAUNCH_BLOCKING=1    # Synchronous kernel launches
+# ====================================
 
 echo " ==== Loading modules... ===== "
 module purge

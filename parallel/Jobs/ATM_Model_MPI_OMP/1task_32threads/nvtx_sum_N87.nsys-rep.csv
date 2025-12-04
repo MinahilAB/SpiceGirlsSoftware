@@ -1,0 +1,9 @@
+Generating SQLite file 27473603_N8_7.sqlite from 27473603_N8_7.nsys-rep
+Processing [27473603_N8_7.sqlite] with [/leonardo/prod/spack/06/install/0.22/linux-rhel8-icelake/gcc-8.5.0/nvhpc-24.5-torlmnyzcexnrs6pq4cccabv7ehkv3xy/Linux_x86_64/24.5/profilers/Nsight_Systems/host-linux-x64/reports/nvtx_sum.py]... 
+
+Exportation error: Report was created in Nsight Systems version (2024.5.1.113-245134619542v0), newer than your current version (2024.1.1.59-241133802077v0).
+Please update your Nsight Systems to the latest version to view this report.
+Processing [27473603_N8_7.sqlite] with [/leonardo/prod/spack/06/install/0.22/linux-rhel8-icelake/gcc-8.5.0/nvhpc-24.5-torlmnyzcexnrs6pq4cccabv7ehkv3xy/Linux_x86_64/24.5/profilers/Nsight_Systems/host-linux-x64/reports/nvtx_sum.py]... 
+
+ERROR: Database file 27473603_N8_7.sqlite does not exist.
+

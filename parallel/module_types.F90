@@ -8,6 +8,7 @@ module module_types
   use dimensions
   use iodir
   use module_nvtx
+  use parallel_timer
 
   implicit none
 
@@ -18,7 +19,11 @@ module module_types
   public :: atmospheric_flux
   public :: atmospheric_tendency
 
+
   public :: assignment(=)
+
+
+  type(timer_type) :: t
 
   type reference_state
     real(wp), allocatable, dimension(:) :: density
@@ -144,7 +149,7 @@ module module_types
     class(atmospheric_tendency), intent(in) :: tend
     real(wp), intent(in) :: dt
     integer :: ll, k, i
-
+    call nvtx_push('update')
 #if defined(_OACC)
     !$acc parallel loop collapse(3) present(s2, s0, tend)
 #elif defined(_OMP)
@@ -160,6 +165,8 @@ module module_types
 #if defined(_OMP)
     !$omp end parallel do
 #endif
+
+    call nvtx_pop()
   end subroutine update
 
 
@@ -179,6 +186,7 @@ module module_types
     ! Halo exchange must complete before flux calculation
     call atmostat%exchange_halo_x( )
 
+    call nvtx_push('xtend')
     hv_coef = -hv_beta * dx / (16.0_wp*dt)
 #if defined(_OACC)
     !$acc parallel loop collapse(2) present(flux, ref, atmostat) &
@@ -234,6 +242,8 @@ module module_types
 #if defined(_OMP)
     !$omp end parallel do
 #endif
+
+    call nvtx_pop()
   end subroutine xtend
 
 
@@ -252,6 +262,8 @@ module module_types
 
     ! Halo exchange must complete before flux calculation
     call atmostat%exchange_halo_z(ref)
+
+    call nvtx_push('ztend')
 
     hv_coef = -hv_beta * dz / (16.0_wp*dt)
 #if defined(_OACC)
@@ -316,6 +328,8 @@ module module_types
 #if defined(_OMP)
     !$omp end parallel do
 #endif
+
+    call nvtx_pop()
   end subroutine ztend
 
 
@@ -329,17 +343,27 @@ module module_types
     real(wp), allocatable :: send_left(:), send_right(:), recv_left(:), recv_right(:)
 
 
-    call nvtx_push('exchange_halo')
+    call nvtx_push('exchange_halo_x')
 
-#if defined(_OACC)
-    !$acc update self(s)
-#endif
+    call mytimer_create(t, "exchange_halo")
+
+! #if defined(_OACC)
+  !  !$acc update self(s)
+! #endif
 
     ncount = hs * nz * NVARS
     allocate(send_left(ncount), send_right(ncount), recv_left(ncount), recv_right(ncount))
   
+#if defined(_OACC)
+    !$acc enter data create(send_left, send_right, recv_left, recv_right)
+#endif
+
     call pack_strip(s%mem, 1, 1, nx_loc, hs, send_left)
     call pack_strip(s%mem, nx_loc-hs+1, 1, nx_loc, hs, send_right)
+
+#if defined(_OACC)
+    !$acc update host(send_left, send_right)
+#endif 
     
     call MPI_Irecv(recv_left, ncount, MPI_DOUBLE_PRECISION, left_rank, 102, cart_comm, reqs(1), ierr)
     call MPI_Irecv(recv_right, ncount, MPI_DOUBLE_PRECISION, right_rank, 101, cart_comm, reqs(2), ierr)
@@ -347,15 +371,25 @@ module module_types
     call MPI_Isend(send_left, ncount, MPI_DOUBLE_PRECISION, left_rank, 101, cart_comm, reqs(4), ierr)
     
     call MPI_Waitall(4, reqs, MPI_STATUSES_IGNORE, ierr)
+
+#if defined(_OACC)
+    !$acc update device(recv_left, recv_right)
+#endif
     
     call unpack_strip(recv_left, s%mem, 1-hs, 1)
     call unpack_strip(recv_right, s%mem, nx_loc+1, 1)
 
+! #if defined(_OACC)
+!    !$acc update device(s)
+! #endif
+
 #if defined(_OACC)
-    !$acc update device(s)
+    !$acc exit data delete(send_left, send_right, recv_left, recv_right)
 #endif
-    
+
     deallocate(send_left, send_right, recv_left, recv_right)
+
+    call mytimer_destroy(t)
 
     call nvtx_pop()
   end subroutine exchange_halo_x
@@ -367,16 +401,33 @@ module module_types
     integer, intent(in) :: i_start, k_start, nx_loc, width
     real(wp), intent(out) :: buffer(:)
     integer :: ll, k, i, pos
-    pos = 0
+    ! pos = 0
 
+call nvtx_push('pack_strip')
+#if defined(_OMP)
+    !$omp parallel do collapse(3) private(ll, k, i, pos) schedule(static)
+
+#elif defined(_OACC)
+    !$acc parallel loop collapse(3) copy(buffer) copyin(mem)
+#endif
     do ll = 1, NVARS
       do k = k_start, k_start+nz-1
         do i = i_start, i_start+width-1
-          pos = pos + 1
+          ! pos = pos + 1
+          pos = (ll-1)*nz*width + (k-k_start)*width + (i-i_start) + 1
           buffer(pos) = mem(i,k,ll)
         end do
       end do
     end do
+
+#if defined(_OMP)
+    !$omp end parallel do
+
+#elif defined(_OACC)
+    !$acc end parallel loop
+#endif
+
+    call nvtx_pop()
   end subroutine pack_strip
 
 
@@ -386,18 +437,32 @@ module module_types
     real(wp), intent(inout) :: mem(1-hs:nx_loc+hs,1-hs:nz+hs,NVARS)
     integer, intent(in) :: i_start, k_start
     integer :: ll, k, i, pos
-    pos = 0
+    ! pos = 0
+    call nvtx_push('unpack_strip')
 
+#if defined(_OMP)
+    !$omp parallel do collapse(3) private(ll, k, i, pos) schedule(static)
+#elif defined(_OACC)
+    !$acc parallel loop collapse(3) copy(buffer) copyin(mem)
+#endif
     do ll = 1, NVARS
       do k = k_start, k_start+nz-1
         do i = i_start, i_start+hs-1
-          pos = pos + 1
+          ! pos = pos + 1
+          pos = (ll-1)*nz*hs + (k-k_start)*hs + (i-i_start) + 1
           mem(i,k,ll) = buffer(pos)
         end do
       end do
     end do
-  end subroutine unpack_strip
 
+#if defined(_OMP)
+    !$omp end parallel do
+#elif defined(_OACC)
+    !$acc end parallel loop
+#endif
+
+    call nvtx_pop()
+  end subroutine unpack_strip
 
 
 
@@ -406,6 +471,8 @@ module module_types
     class(atmospheric_state), intent(inout) :: s
     class(reference_state), intent(in) :: ref
     integer :: i, ll
+
+    call nvtx_push('exchange_halo_z')
 #if defined(_OACC)
     !$acc parallel loop collapse(2) present(s, ref)
 #elif defined(_OMP)
@@ -438,6 +505,8 @@ module module_types
 #if defined(_OMP)
     !$omp end parallel do
 #endif
+
+    call nvtx_pop()
   end subroutine exchange_halo_z
 
 

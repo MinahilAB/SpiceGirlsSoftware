@@ -4,6 +4,10 @@
 *.nsys-rep
 *.sqlite
 *.sh
+*.txt
+*.err
+*.out
 model
 /build/
 /docs/
+/Jobs/

@@ -1,34 +1,34 @@
 #!/bin/bash
 #SBATCH --job-name=ATM_Model_MPI_OMP
-#SBATCH --time=00:05:00
+#SBATCH --time=00:20:00
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=4
 #SBATCH --cpus-per-task=8
 #SBATCH --partition=boost_usr_prod
-#SBATCH --qos=boost_qos_dbg
+##SBATCH --qos=boost_qos_dbg
 #SBATCH --gres=gpu:0
 #SBATCH --hint=nomultithread
 #SBATCH --exclusive
 #SBATCH --mem=0
-#SBATCH --output=/leonardo/home/userexternal/%u/Jobs/ATM_Model_MPI_OMP/%j.out
-#SBATCH --error=/leonardo/home/userexternal/%u/Jobs/ATM_Model_MPI_OMP/%j.err
+#SBATCH --output=output_mpiomp.out
+#SBATCH --error=error_mpiomp.err
 #SBATCH --account=ICT25_MHPC_0
 
 set -euo pipefail
 
 # Add the path to the SpiceGirlsSoftware directory
-SPG_DIR=${HOME}/MHPC_repos/SpiceGirlsSoftware/parallel
+SPG_DIR=${HOME}/SpiceGirlsSoftware/parallel
 
 # Where ou want the output to go (can leave unchanged)
-OUTDIR=${HOME}/Jobs/ATM_Model_MPI_OMP
+OUTDIR=${HOME}/SpiceGirlsSoftware/parallel/Jobs/ATM_Model_MPI_OMP/1000/4tasks_8threads
 mkdir -p ${OUTDIR}
 
 # Set nx gtidsize and the simulation time
-NX_SIZE=100
+NX_SIZE=1000
 SIM_TIME=1000.0
 
 # Set Makefile flags
-DEBUG=1
+DEBUG=0
 USE_OPENACC=0
 USE_OPENMP=1
 
@@ -52,12 +52,13 @@ WORK_DIR="${WORK_ROOT}/parallel"
 make -C "${WORK_DIR}" clean
 make -C "${WORK_DIR}" DEBUG=${DEBUG} USE_OPENACC=${USE_OPENACC} USE_OPENMP=${USE_OPENMP}
 
-srun nsys profile \
-    --trace=cuda,nvtx \
+srun nsys profile --nic-metrics=true \
+    --trace=cuda,nvtx,mpi \
     -o "${OUTDIR}/%q{SLURM_JOB_ID}_N%q{SLURM_JOB_NUM_NODES}_%q{SLURM_PROCID}" ${WORK_DIR}/model ${NX_SIZE} ${SIM_TIME}
 
+
 mv output.nc "${OUTDIR}/${SLURM_JOB_ID}_output.nc"
-mv statistics_*.txt ${OUTDIR}/${SLURM_JOB_ID}_statistics_*.txt
+##mv statistics_*.txt ${OUTDIR}/${SLURM_JOB_ID}_statistics_*.txt
 
 rm -rf "${WORK_ROOT}"
 echo "==== Cleanup Done! ==== "

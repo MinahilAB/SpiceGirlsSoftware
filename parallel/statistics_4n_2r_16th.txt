@@ -1,0 +1,38 @@
+----------------------------------------------------------------------------------------------------
+Function : exchange_halo
+Rank 0 process time : 8717350 ms
+Rank 1 process time : 10721389 ms
+Rank 2 process time : 10921296 ms
+Rank 3 process time : 12371515 ms
+Rank 4 process time : 11046378 ms
+Rank 5 process time : 15309071 ms
+Rank 6 process time : 15647911 ms
+Rank 7 process time : 16398935 ms
+----------------------------------------------------------------------------------------------------
+Function : main_loop
+Rank 0 process time : 45418461 ms
+Rank 1 process time : 45589259 ms
+Rank 2 process time : 45426853 ms
+Rank 3 process time : 45430425 ms
+Rank 4 process time : 45439827 ms
+Rank 5 process time : 45512601 ms
+Rank 6 process time : 45439888 ms
+Rank 7 process time : 45443939 ms
+----------------------------------------------------------------------------------------------------
+Function : write_record
+Rank 0 process time : 12261 ms
+Rank 1 process time : 11346 ms
+Rank 2 process time : 166736 ms
+Rank 3 process time : 166605 ms
+Rank 4 process time : 85612 ms
+Rank 5 process time : 85759 ms
+Rank 6 process time : 152977 ms
+Rank 7 process time : 153189 ms
+----------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
+Function : exchange_halo        Max time:      16398ms Min time:       8717ms Avg time : 12641.730625ms
+----------------------------------------------------------------------------------------------------
+Function : main_loop            Max time:      45589ms Min time:      45418ms Avg time : 45462.656625ms
+----------------------------------------------------------------------------------------------------
+Function : write_record         Max time:        166ms Min time:         11ms Avg time : 104.310625ms
+----------------------------------------------------------------------------------------------------

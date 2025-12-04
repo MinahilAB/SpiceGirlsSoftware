@@ -30,6 +30,7 @@ program atmosphere_model
   logical :: reorder
   integer :: rank_source_dummy
 
+  type(timer_type) :: t
 
 
   n_args = command_argument_count()
@@ -66,13 +67,23 @@ program atmosphere_model
   mass0 = mass_buf(1)
   te0 = mass_buf(2)
   
-  call create_output( )
-  call write_record(oldstat,ref,etime)
+  !call create_output( )
+
+  !call nvtx_push("write_record")
+  !call mytimer_create(t, "write_record")
+
+  !call write_record(oldstat,ref,etime)
+
+  !call mytimer_destroy(t)
+  !call mytimer_gather_stats()
+  !call nvtx_pop()
 
   call system_clock(t1)
 
   ! Use NVTX to mark the main computational region for profiling
   call nvtx_push('main_loop')
+
+  call mytimer_create(t, "main_loop")
 
 #if defined(_OACC)
   !$acc data present(oldstat, newstat, flux, tend, ref)
@@ -84,21 +95,21 @@ program atmosphere_model
     if (etime + dt > sim_time) dt = sim_time - etime
       call rungekutta(oldstat,newstat,flux,tend,dt)
     
-    if ( (rank == 0) .and. (mod(etime,ptime) < dt) ) then
-      pctime = (etime/sim_time)*100.0_wp
-      write(stdout,'(1x,a,i2,a)') 'TIME PERCENT : ', int(pctime), '%'
-    end if
+    ! if ( (rank == 0) .and. (mod(etime,ptime) < dt) ) then
+    !  pctime = (etime/sim_time)*100.0_wp
+    !  write(stdout,'(1x,a,i2,a)') 'TIME PERCENT : ', int(pctime), '%'
+    !end if
 
     etime = etime + dt
-    output_counter = output_counter + dt
+    !output_counter = output_counter + dt
 
-    if (output_counter >= output_freq) then
-#if defined(_OACC)
-      !$acc update self(oldstat%mem)
-#endif
-      output_counter = output_counter - output_freq
-      call write_record(oldstat,ref,etime)
-    end if
+    !if (output_counter >= output_freq) then
+!#if defined(_OACC)
+!      !$acc update self(oldstat%mem)
+!#endif
+!      output_counter = output_counter - output_freq
+!      call write_record(oldstat,ref,etime)
+!    end if
 
   end do
 
@@ -111,6 +122,10 @@ program atmosphere_model
   !$acc wait
 #endif
 
+  call mytimer_destroy(t)
+
+  call mytimer_gather_stats()
+
   call nvtx_pop()
 
   call total_mass_energy(mass1,te1)
@@ -121,22 +136,22 @@ program atmosphere_model
   mass1 = mass_buf(1)
   te1 = mass_buf(2)
   
-  call close_output( )
+  !call close_output( )
 
-  if (rank == 0) then
-    write(stdout,'(/,A)') "----------------- Atmosphere check ----------------"
-    write(stdout,*) "Fractional Delta Mass  : ", (mass1-mass0)/mass0
-    write(stdout,*) "Fractional Delta Energy: ", (te1-te0)/te0
-    write(stdout,'(A,/)') "---------------------------------------------------"
-  end if
+  !if (rank == 0) then
+  !  write(stdout,'(/,A)') "----------------- Atmosphere check ----------------"
+  !  write(stdout,*) "Fractional Delta Mass  : ", (mass1-mass0)/mass0
+  !  write(stdout,*) "Fractional Delta Energy: ", (te1-te0)/te0
+  !  write(stdout,'(A,/)') "---------------------------------------------------"
+  !end if
 
   call finalize()
   call system_clock(t2,rate)
 
-  if (rank == 0) then
-    write(stdout,'(A)') "SIMPLE ATMOSPHERIC MODEL RUN COMPLETED."
-    write(stdout,'(A, F0.18, /)') "USED CPU TIME: ", dble(t2-t1)/dble(rate)
-  end if
+  !if (rank == 0) then
+  !  write(stdout,'(A)') "SIMPLE ATMOSPHERIC MODEL RUN COMPLETED."
+  !  write(stdout,'(A, F0.18, /)') "USED CPU TIME: ", dble(t2-t1)/dble(rate)
+  !end if
 
   call MPI_Finalize(ierr)
   

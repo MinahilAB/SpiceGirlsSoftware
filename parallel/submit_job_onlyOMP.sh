@@ -1,34 +1,34 @@
 #!/bin/bash
 #SBATCH --job-name=ATM_Model_onlyOMP
-#SBATCH --time=00:05:00
+#SBATCH --time=00:20:00
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --cpus-per-task=8
+#SBATCH --cpus-per-task=32
 #SBATCH --partition=boost_usr_prod
 #SBATCH --qos=boost_qos_dbg
 #SBATCH --gres=gpu:0
 #SBATCH --hint=nomultithread
 #SBATCH --exclusive
 #SBATCH --mem=0
-#SBATCH --output=/leonardo/home/userexternal/%u/Jobs/ATM_Model_onlyOMP/%j.out
-#SBATCH --error=/leonardo/home/userexternal/%u/Jobs/ATM_Model_onlyOMP/%j.err
+#SBATCH --output=output_omp.out
+#SBATCH --error=error_omp.err
 #SBATCH --account=ICT25_MHPC_0
 
 set -euo pipefail
 
 # Add the path to the SpiceGirlsSoftware directory
-SPG_DIR=${HOME}/MHPC_repos/SpiceGirlsSoftware/parallel
+SPG_DIR=${HOME}/SpiceGirlsSoftware/parallel
 
 # Where ou want the output to go (can leave unchanged)
-OUTDIR=${HOME}/Jobs/ATM_Model_onlyOMP
+OUTDIR=${HOME}/SpiceGirlsSoftware/parallel/Jobs/ATM_Model_onlyOMP
 mkdir -p ${OUTDIR}
 
 # Set nx gtidsize and the simulation time
-NX_SIZE=100
-SIM_TIME=1000.0
+NX_SIZE=500
+SIM_TIME=1500.0
 
 # Set Makefile flags
-DEBUG=1
+DEBUG=0
 USE_OPENACC=0
 USE_OPENMP=1
 

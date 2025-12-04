@@ -1,0 +1,110 @@
+----------------------------------------------------------------------------------------------------
+Function : exchange_halo
+Rank 0 process time : 44066953 ms
+Rank 1 process time : 72842406 ms
+Rank 2 process time : 46529138 ms
+Rank 3 process time : 65345854 ms
+Rank 4 process time : 66688674 ms
+Rank 5 process time : 80219743 ms
+Rank 6 process time : 80589985 ms
+Rank 7 process time : 74931318 ms
+Rank 8 process time : 68929364 ms
+Rank 9 process time : 62628388 ms
+Rank 10 process time : 42791828 ms
+Rank 11 process time : 47370146 ms
+Rank 12 process time : 61130498 ms
+Rank 13 process time : 80264382 ms
+Rank 14 process time : 82374761 ms
+Rank 15 process time : 85853493 ms
+Rank 16 process time : 102781136 ms
+Rank 17 process time : 70089867 ms
+Rank 18 process time : 97195139 ms
+Rank 19 process time : 99650635 ms
+Rank 20 process time : 83653353 ms
+Rank 21 process time : 122931540 ms
+Rank 22 process time : 91882960 ms
+Rank 23 process time : 106067452 ms
+Rank 24 process time : 159077578 ms
+Rank 25 process time : 140124026 ms
+Rank 26 process time : 133929022 ms
+Rank 27 process time : 138948915 ms
+Rank 28 process time : 138874907 ms
+Rank 29 process time : 137182456 ms
+Rank 30 process time : 131714203 ms
+Rank 31 process time : 134364364 ms
+----------------------------------------------------------------------------------------------------
+Function : main_loop
+Rank 0 process time : 487337513 ms
+Rank 1 process time : 488760137 ms
+Rank 2 process time : 488760118 ms
+Rank 3 process time : 488760124 ms
+Rank 4 process time : 487353867 ms
+Rank 5 process time : 487370866 ms
+Rank 6 process time : 487476386 ms
+Rank 7 process time : 488170809 ms
+Rank 8 process time : 487366283 ms
+Rank 9 process time : 487670112 ms
+Rank 10 process time : 487366313 ms
+Rank 11 process time : 488622699 ms
+Rank 12 process time : 488692439 ms
+Rank 13 process time : 488692458 ms
+Rank 14 process time : 488692443 ms
+Rank 15 process time : 488692457 ms
+Rank 16 process time : 487339329 ms
+Rank 17 process time : 487443464 ms
+Rank 18 process time : 487356326 ms
+Rank 19 process time : 487356318 ms
+Rank 20 process time : 487450074 ms
+Rank 21 process time : 488449406 ms
+Rank 22 process time : 487450134 ms
+Rank 23 process time : 488449380 ms
+Rank 24 process time : 487339530 ms
+Rank 25 process time : 487629266 ms
+Rank 26 process time : 487629275 ms
+Rank 27 process time : 488256365 ms
+Rank 28 process time : 487338606 ms
+Rank 29 process time : 488570248 ms
+Rank 30 process time : 487396067 ms
+Rank 31 process time : 487725320 ms
+----------------------------------------------------------------------------------------------------
+Function : write_record
+Rank 0 process time : 12583 ms
+Rank 1 process time : 11773 ms
+Rank 2 process time : 12057 ms
+Rank 3 process time : 12225 ms
+Rank 4 process time : 1407315 ms
+Rank 5 process time : 1390295 ms
+Rank 6 process time : 1284778 ms
+Rank 7 process time : 590288 ms
+Rank 8 process time : 1323433 ms
+Rank 9 process time : 1092123 ms
+Rank 10 process time : 1395782 ms
+Rank 11 process time : 139574 ms
+Rank 12 process time : 70167 ms
+Rank 13 process time : 70318 ms
+Rank 14 process time : 73901 ms
+Rank 15 process time : 70351 ms
+Rank 16 process time : 1044517 ms
+Rank 17 process time : 1317428 ms
+Rank 18 process time : 1317445 ms
+Rank 19 process time : 1404573 ms
+Rank 20 process time : 1043009 ms
+Rank 21 process time : 313053 ms
+Rank 22 process time : 1312471 ms
+Rank 23 process time : 313234 ms
+Rank 24 process time : 1131936 ms
+Rank 25 process time : 1131915 ms
+Rank 26 process time : 1131899 ms
+Rank 27 process time : 503923 ms
+Rank 28 process time : 1414399 ms
+Rank 29 process time : 191077 ms
+Rank 30 process time : 1365182 ms
+Rank 31 process time : 1036022 ms
+----------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
+Function : exchange_halo        Max time:     159077ms Min time:      42791ms Avg time : 92219.515125ms
+----------------------------------------------------------------------------------------------------
+Function : main_loop            Max time:     488760ms Min time:     487337ms Avg time : 487905.129125ms
+----------------------------------------------------------------------------------------------------
+Function : write_record         Max time:       1414ms Min time:         11ms Avg time : 779.0326875ms
+----------------------------------------------------------------------------------------------------
