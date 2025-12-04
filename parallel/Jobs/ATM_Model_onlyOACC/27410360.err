@@ -1,0 +1,4 @@
+gfortran: error: unrecognized command-line option '-acc'
+gfortran: error: unrecognized command-line option '-Minfo=accel'
+gfortran: error: unrecognized command-line option '-cudalib=nvtx'
+make: *** [Makefile:93: module_nvtx.o] Error 1
