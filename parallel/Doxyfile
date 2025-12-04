@@ -1,0 +1,126 @@
+Doxyfile 1.9.4
+
+Configuration file for Doxygen.
+
+#---------------------------------------------------------------------------
+
+Project related configuration options
+
+#---------------------------------------------------------------------------
+PROJECT_NAME           = "Scientific Software Development- Atmospheric Model (HPC)"
+PROJECT_BRIEF          = "A parallel Fortran implementation of a simple atmospheric simulation model."
+PROJECT_LOGO           =
+OUTPUT_DIRECTORY       = docs
+CREATE_SUBDIRS         = NO
+DOXYFILE_ENCODING      = UTF-8
+BRIEF_MEMBER_DESC      = YES
+REPEAT_BRIEF           = YES
+ABBREVIATE_BRIEF       = "The $name class"
+ALWAYS_DETAILED_SEC    = NO
+INLINE_INHERITED_BODY  = NO
+SEPARATE_MEMBER_PAGES  = NO
+OPTIMIZE_OUTPUT_FOR_C  = NO
+OPTIMIZE_OUTPUT_JAVA   = NO
+OPTIMIZE_FOR_FORTRAN   = YES
+OPTIMIZE_OUTPUT_VHDL   = NO
+EXTENSION_MAPPING      =
+MARKDOWN_SUPPORT       = YES
+AUTOLINK_SUPPORT       = YES
+BUILTIN_STL_SUPPORT    = NO
+CPP_MD_TABS_WIDTH      = 4
+SIP_SUPPORT            = NO
+IDL_PROPERTY_SUPPORT   = YES
+DISTRIBUTE_GROUP_DOC   = NO
+GROUP_PREREQUISITES    = NO
+SYMBOLS_REPLACED_BY_PATHS =
+
+#---------------------------------------------------------------------------
+
+Build related configuration options
+
+#---------------------------------------------------------------------------
+EXTRACT_ALL            = YES
+EXTRACT_PRIVATE        = YES
+EXTRACT_STATIC         = YES
+EXTRACT_LOCAL_CLASSES  = YES
+EXTRACT_LOCAL_METHODS  = YES
+EXTRACT_ANON_NSPACES   = YES
+FILE_VERSION_FILTER    =
+QUIET                  = NO
+WARNINGS               = YES
+WARN_IF_UNDOCUMENTED   = YES
+WARN_IF_DOC_ERROR      = YES
+WARN_NO_PARAMDOC       = YES
+WARN_AS_ERROR          = NO
+WARN_FORMAT            = "$file:$line: $text"
+ENABLE_PREPROCESSING   = YES
+MACRO_EXPANSION        = YES
+EXPAND_ONLY_PREDEF     = NO
+SEARCH_INCLUDES        = YES
+INCLUDE_PATH           =
+INCLUDE_LABEL          =
+SKIP_SUBDIRS           =
+EXCLUDE                =
+EXCLUDE_SYMBOLS        =
+EXAMPLE_PATH           =
+EXAMPLE_PATTERNS       = *
+EXAMPLE_RECURSIVE      = NO
+FILTER_PATTERNS        =
+
+Add the Makefile to the list of input files
+
+INPUT                  = model.f90 
+
+module_nvtx.F90 
+
+module_output.F90 
+
+module_parameters.f90 
+
+module_physics.f90 
+
+module_types.F90 
+
+Makefile
+INPUT_ENCODING         = UTF-8
+FILE_PATTERNS          = *.f90 *.F90 Makefile
+RECURSIVE              = NO
+EXCLUDE_SYMBOLS        =
+#---------------------------------------------------------------------------
+
+Configuration options related to the dot tool
+
+#---------------------------------------------------------------------------
+HAVE_DOT               = YES
+CLASS_DIAGRAMS         = YES
+COLLABORATION_DIAGRAMS = YES
+UML_LOOK               = YES
+TEMPLATE_RELATIONS     = NO
+INCLUDE_GRAPH          = YES
+INCLUDED_BY_GRAPH      = YES
+CALL_GRAPH             = YES
+CALLER_GRAPH           = YES
+GRAPHICAL_HIERARCHY    = YES
+DIRECTORY_GRAPH        = YES
+DOT_GRAPH_MAX_NODES    = 50
+MAX_DOT_GRAPH_DEPTH    = 0
+DOT_IMAGE_FORMAT       = png
+DOT_TRANSPARENT        = YES
+DOT_FONTNAME           = FreeSans
+DOT_FONTSIZE           = 10
+DOT_PATH               =
+DOTFILE_DIRS           =
+DOT_CLEANUP            = YES
+
+#---------------------------------------------------------------------------
+
+Configuration options related to Fortran
+
+#---------------------------------------------------------------------------
+FORTRAN_SUPPORT        = YES
+FORTRAN_MANGLE_CASE    = 0
+FORTRAN_RELAXED        = YES
+FORTRAN_JOIN_CONTINUATION_LINES = YES
+FORTRAN_COMMENT_IS_LOCAL = YES
+FORTRAN_KERNEL_MODULES = YES
+FORTRAN_LATEX_EXTENSIONS = NO
