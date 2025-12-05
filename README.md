@@ -1,6 +1,9 @@
 <img src="media/Powerpuff-Girls.gif" width="200">
 
 # 🌬️ Atmospheric Transport Model - SpiceGirlsSoftware
+The code is a 2D dynamical fluid flow code using dry compressible non-hydrostatic equations modified from Matthew R. Norman original code. The current implementation has been separated in multiple modules.
+
+The original code is licensed with the accluded LICENSE.
 
 We present the SpiceGirlsSoftware, a 2D atmospheric transport simulation provided to us in serial for the **MHPC P1.9 Module** written in Fortran. We add optional acceleration using OpenMP, OpenACC, and MPI parallelization. We present:
 
@@ -32,7 +35,7 @@ To build the model you will need need:
 
 - A Fortran compiler (nvfortran or gfortran for CPU-only builds)
 - An MPI compiler wrapper for Fortran and C++ (mpif90, mpicxx)
-- The NetCDF-Fortran library
+- The NetCDF-Fortran library [https://docs.unidata.ucar.edu/netcdf-fortran/current/]
 - A CUDA toolkit (only if using OpenACC/timing with NVTX)
 
 
