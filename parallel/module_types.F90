@@ -7,6 +7,8 @@ module module_types
   use legendre_quadrature
   use dimensions
   use iodir
+  use module_nvtx
+  
 
   implicit none
 
@@ -30,6 +32,8 @@ module module_types
     procedure, public :: del_ref
   end type reference_state
 
+
+
   type atmospheric_state
     real(wp), pointer, dimension(:,:,:) :: mem => null( )
     real(wp), pointer, dimension(:,:) :: dens
@@ -45,6 +49,8 @@ module module_types
     procedure, public :: exchange_halo_z
   end type atmospheric_state
 
+
+
   type atmospheric_flux
     real(wp), pointer, dimension(:,:,:) :: mem => null( )
     real(wp), pointer, dimension(:,:) :: dens
@@ -56,6 +62,8 @@ module module_types
     procedure, public :: set_flux
     procedure, public :: del_flux
   end type atmospheric_flux
+
+
 
   type atmospheric_tendency
     real(wp), pointer, dimension(:,:,:) :: mem => null( )
@@ -71,9 +79,20 @@ module module_types
     procedure, public :: ztend
   end type atmospheric_tendency
 
+
+
   interface assignment(=)
     module procedure state_equal_to_state
   end interface assignment(=)
+
+  
+#if defined(_OACC)
+  public :: send_left_d, send_right_d, recv_left_d, recv_right_d
+  real(wp), allocatable :: send_left_d(:), send_right_d(:), recv_left_d(:), recv_right_d(:)
+#else
+  public :: send_left, send_right, recv_left, recv_right
+  real(wp), allocatable :: send_left(:), send_right(:), recv_left(:), recv_right(:)
+#endif
 
   contains
 
@@ -88,24 +107,22 @@ module module_types
     atmo%rhot(1-hs:,1-hs:) => atmo%mem(:,:,I_RHOT)
   end subroutine new_state
 
+
+
   subroutine set_state(atmo, xval)
     implicit none
     class(atmospheric_state), intent(inout) :: atmo
     real(wp), intent(in) :: xval
+
     if ( .not. associated(atmo%mem) ) then
       write(stderr,*) 'NOT ALLOCATED STATE ERROR AT LINE ', __LINE__
       stop
     end if
-#if defined(_OACC)
-  !$acc kernels present(atmo)
-! #elif defined(_OMP)
-  ! $omp parallel do collapse(3) default(none) shared(atmo, xval, nx, nz, NVARS, hs)
-#endif
-    atmo%mem(1-hs:nx+hs, 1-hs:nz+hs, :) = xval
-#if defined(_OACC)
-  !$acc end kernels
-#endif
+
+    atmo%mem(1-hs:nx_loc+hs, 1-hs:nz+hs, :) = xval
   end subroutine set_state
+
+
 
   subroutine del_state(atmo)
     implicit none
@@ -117,6 +134,8 @@ module module_types
     nullify(atmo%rhot)
   end subroutine del_state
 
+
+
   subroutine update(s2,s0,tend,dt)
     implicit none
     class(atmospheric_state), intent(inout) :: s2
@@ -124,9 +143,9 @@ module module_types
     class(atmospheric_tendency), intent(in) :: tend
     real(wp), intent(in) :: dt
     integer :: ll, k, i
-
+    
 #if defined(_OACC)
-    !$acc parallel loop collapse(3) present(s2, s0, tend)
+    !$acc parallel loop collapse(3) present(s2%mem, s0%mem, tend%mem)
 #elif defined(_OMP)
     !$omp parallel do collapse(3) default(none) shared(s2, s0, tend, nx_loc, nz, dt) private(ll, k, i)
 #endif
@@ -137,10 +156,14 @@ module module_types
         end do
       end do
     end do
-#if defined(_OMP)
+#if defined(_OACC)
+    !$acc end parallel
+#elif defined(_OMP)
     !$omp end parallel do
 #endif
   end subroutine update
+
+
 
   subroutine xtend(tendency,flux,ref,atmostat,dx,dt)
     implicit none
@@ -157,9 +180,12 @@ module module_types
     ! Halo exchange must complete before flux calculation
     call atmostat%exchange_halo_x( )
 
+    call nvtx_push('xtend')
+
     hv_coef = -hv_beta * dx / (16.0_wp*dt)
 #if defined(_OACC)
-    !$acc parallel loop collapse(2) present(flux, ref, atmostat) &
+    !$acc parallel loop collapse(2) &
+    !$acc& present(flux%mem, atmostat%mem, ref%density, ref%denstheta) &
     !$acc& private(i, k, ll, s, r, u, w, t, p, stencil, d3_vals, vals)
 #elif defined(_OMP)
     !$omp parallel do collapse(2) default(none) shared(flux, ref, atmostat, dx, dt, hv_coef, nx_loc, nz) &
@@ -185,21 +211,23 @@ module module_types
         w = vals(I_WMOM) / r
         t = ( vals(I_RHOT) + ref%denstheta(k) ) / r
         p = c0*(r*t)**cdocv
-        flux%dens(i,k) = r*u - hv_coef*d3_vals(I_DENS)
-        flux%umom(i,k) = r*u*u+p - hv_coef*d3_vals(I_UMOM)
-        flux%wmom(i,k) = r*u*w - hv_coef*d3_vals(I_WMOM)
-        flux%rhot(i,k) = r*u*t - hv_coef*d3_vals(I_RHOT)
+        flux%mem(i, k, I_DENS) = r*u - hv_coef*d3_vals(I_DENS)
+        flux%mem(i, k, I_UMOM) = r*u*u+p - hv_coef*d3_vals(I_UMOM)
+        flux%mem(i, k, I_WMOM) = r*u*w - hv_coef*d3_vals(I_WMOM)
+        flux%mem(i, k, I_RHOT) = r*u*t - hv_coef*d3_vals(I_RHOT)
       end do
     end do
-#if defined(_OMP)
-  !$omp end parallel do
+#if defined(_OACC)
+    !$acc end parallel
+#elif defined(_OMP)
+    !$omp end parallel do
 #endif
 
-  ! Second loop for tendency calculation
+    ! Second loop for tendency calculation
 #if defined(_OACC)
-  !$acc parallel loop collapse(3) present(tendency, flux)
+    !$acc parallel loop collapse(3) present(tendency%mem, flux%mem)
 #elif defined(_OMP)
-  !$omp parallel do collapse(3) default(none) shared(tendency, flux, dx, nx_loc, nz) private(ll, k, i)
+    !$omp parallel do collapse(3) default(none) shared(tendency, flux, dx, nx_loc, nz) private(ll, k, i)
 #endif
     do ll = 1, NVARS
       do k = 1, nz
@@ -209,10 +237,16 @@ module module_types
         end do
       end do
     end do
-#if defined(_OMP)
-  !$omp end parallel do
+#if defined(_OACC)
+    !$acc end parallel
+#elif defined(_OMP)
+    !$omp end parallel do
 #endif
+
+    call nvtx_pop()
   end subroutine xtend
+
+
 
   subroutine ztend(tendency,flux,ref,atmostat,dz,dt)
     implicit none
@@ -226,16 +260,18 @@ module module_types
     real(wp), dimension(STEN_SIZE) :: stencil
     real(wp), dimension(NVARS) :: d3_vals, vals
 
+    call nvtx_push('ztend')
+
     ! Halo exchange must complete before flux calculation
     call atmostat%exchange_halo_z(ref)
 
     hv_coef = -hv_beta * dz / (16.0_wp*dt)
 #if defined(_OACC)
-  !$acc parallel loop collapse(2) present(flux, ref, atmostat) &
-  !$acc& private(i, k, ll, s, r, u, w, t, p, stencil, d3_vals, vals)
+    !$acc parallel loop collapse(2) present(flux%mem, atmostat%mem, ref%idens, ref%idenstheta, ref%pressure) &
+    !$acc& private(i, k, ll, s, r, u, w, t, p, stencil, d3_vals, vals)
 #elif defined(_OMP)
-  !$omp parallel do collapse(2) default(none) shared(flux, ref, atmostat, dz, dt, hv_coef, nx_loc, nz) &
-  !$omp& private(i, k, ll, s, r, u, w, t, p, stencil, d3_vals, vals)
+    !$omp parallel do collapse(2) default(none) shared(flux, ref, atmostat, dz, dt, hv_coef, nx_loc, nz) &
+    !$omp& private(i, k, ll, s, r, u, w, t, p, stencil, d3_vals, vals)
 #endif
     do k = 1, nz+1
       do i = 1, nx_loc
@@ -261,19 +297,21 @@ module module_types
           w = 0.0_wp
           d3_vals(I_DENS) = 0.0_wp
         end if
-        flux%dens(i,k) = r*w - hv_coef*d3_vals(I_DENS)
-        flux%umom(i,k) = r*w*u - hv_coef*d3_vals(I_UMOM)
-        flux%wmom(i,k) = r*w*w+p - hv_coef*d3_vals(I_WMOM)
-        flux%rhot(i,k) = r*w*t - hv_coef*d3_vals(I_RHOT)
+        flux%mem(i, k, I_DENS) = r*w - hv_coef*d3_vals(I_DENS)
+        flux%mem(i, k, I_UMOM) = r*w*u - hv_coef*d3_vals(I_UMOM)
+        flux%mem(i, k, I_WMOM) = r*w*w+p - hv_coef*d3_vals(I_WMOM)
+        flux%mem(i, k, I_RHOT) = r*w*t - hv_coef*d3_vals(I_RHOT)
       end do
     end do
-#if defined(_OMP)
-  !$omp end parallel do
+#if defined(_OACC)
+    !$acc end parallel
+#elif defined(_OMP)
+    !$omp end parallel do
 #endif
 
     ! Second loop for tendency calculation
 #if defined(_OACC)
-    !$acc parallel loop collapse(3) present(tendency, flux, atmostat)
+    !$acc parallel loop collapse(3) present(tendency%mem, flux%mem, atmostat%mem)
 #elif defined(_OMP)
     !$omp parallel do collapse(3) default(none) shared(tendency, flux, atmostat, dz, nx_loc, nz) private(ll, k, i)
 #endif
@@ -284,79 +322,154 @@ module module_types
               -( flux%mem(i,k+1,ll) - flux%mem(i,k,ll) ) / dz
           ! Source term application (gravity)
           if (ll == I_WMOM) then
-            tendency%wmom(i,k) = tendency%wmom(i,k) - atmostat%dens(i,k)*grav
+            tendency%mem(i,k,ll) = tendency%mem(i,k,ll) - atmostat%mem(i,k,I_DENS)*grav
           end if
         end do
       end do
     end do
-#if defined(_OMP)
-  !$omp end parallel do
+#if defined(_OACC)
+    !$acc end parallel
+#elif defined(_OMP)
+    !$omp end parallel do
 #endif
+
+    call nvtx_pop()
   end subroutine ztend
 
 
-  subroutine exchange_halo_x(s)
-    use mpi
-    use dimensions, only : nz, nx_loc
-    class(atmospheric_state), intent(inout) :: s
-    integer :: ierr, ncount
-    integer :: reqs(4)
-    real(wp), allocatable :: send_left(:), send_right(:), recv_left(:), recv_right(:)
 
-    ncount = hs * nz * NVARS
-    allocate(send_left(ncount), send_right(ncount), recv_left(ncount), recv_right(ncount))
-    
-    call pack_strip(s%mem, 1, 1, nx_loc, hs, send_left)
+    subroutine exchange_halo_x(s)
+      use dimensions, only : nz, nx_loc
+      class(atmospheric_state), intent(inout) :: s
+      integer :: ncount
+      integer :: reqs(4), ierr
+
+      call nvtx_push('exchange_halo')
+
+      ncount = hs * nz * NVARS
+
+  #if defined(_OACC)
+
+      call pack_strip(s%mem, 1,           1, nx_loc, hs, send_left_d)
+      call pack_strip(s%mem, nx_loc-hs+1, 1, nx_loc, hs, send_right_d)
+      !$acc host_data use_device(send_left_d, send_right_d, recv_left_d, recv_right_d)
+        call MPI_Irecv(recv_left_d,  ncount, MPI_DOUBLE_PRECISION, left_rank,  102, cart_comm, reqs(1), ierr)
+        call MPI_Irecv(recv_right_d, ncount, MPI_DOUBLE_PRECISION, right_rank, 101, cart_comm, reqs(2), ierr)
+        call MPI_Isend(send_right_d, ncount, MPI_DOUBLE_PRECISION, right_rank, 102, cart_comm, reqs(3), ierr)
+        call MPI_Isend(send_left_d,  ncount, MPI_DOUBLE_PRECISION, left_rank,  101, cart_comm, reqs(4), ierr)
+      !$acc end host_data
+
+      call MPI_Waitall(4, reqs, MPI_STATUSES_IGNORE, ierr)
+
+      call unpack_strip(recv_left_d,  s%mem, 1-hs,    1, nx_loc, hs)
+      call unpack_strip(recv_right_d, s%mem, nx_loc+1,1, nx_loc, hs)
+
+  #else
+
+    call pack_strip(s%mem, 1,           1, nx_loc, hs, send_left)
     call pack_strip(s%mem, nx_loc-hs+1, 1, nx_loc, hs, send_right)
-    
-    call MPI_Irecv(recv_left, ncount, MPI_DOUBLE_PRECISION, left_rank, 102, MPI_COMM_WORLD, reqs(1), ierr)
-    call MPI_Irecv(recv_right, ncount, MPI_DOUBLE_PRECISION, right_rank, 101, MPI_COMM_WORLD, reqs(2), ierr)
-    call MPI_Isend(send_right, ncount, MPI_DOUBLE_PRECISION, right_rank, 102, MPI_COMM_WORLD, reqs(3), ierr)
-    call MPI_Isend(send_left, ncount, MPI_DOUBLE_PRECISION, left_rank, 101, MPI_COMM_WORLD, reqs(4), ierr)
-    
+      
+    call MPI_Irecv(recv_left,  ncount, MPI_DOUBLE_PRECISION, left_rank,  102, cart_comm, reqs(1), ierr)
+    call MPI_Irecv(recv_right, ncount, MPI_DOUBLE_PRECISION, right_rank, 101, cart_comm, reqs(2), ierr)
+    call MPI_Isend(send_right, ncount, MPI_DOUBLE_PRECISION, right_rank, 102, cart_comm, reqs(3), ierr)
+    call MPI_Isend(send_left,  ncount, MPI_DOUBLE_PRECISION, left_rank,  101, cart_comm, reqs(4), ierr)
+      
     call MPI_Waitall(4, reqs, MPI_STATUSES_IGNORE, ierr)
+      
+    call unpack_strip(recv_left,  s%mem, 1-hs,    1, nx_loc, hs)
+    call unpack_strip(recv_right, s%mem, nx_loc+1, 1, nx_loc, hs)
+      
+  #endif
+
+      call nvtx_pop()
+    end subroutine exchange_halo_x
+
+
+
+  ! subroutine pack_strip(mem, i_start, k_start, nx_loc, width, buffer)
+  !   real(wp), intent(in) :: mem(1-hs:nx_loc+hs,1-hs:nz+hs,NVARS)
+  !   integer, intent(in) :: i_start, k_start, nx_loc, width
+  !   real(wp), intent(out) :: buffer(:)
+  !   integer :: ll, k, i, pos
+  !   pos = 0
     
-    call unpack_strip(recv_left, s%mem, 1-hs, 1)
-    call unpack_strip(recv_right, s%mem, nx_loc+1, 1)
-    
-    deallocate(send_left, send_right, recv_left, recv_right)
-  end subroutine exchange_halo_x
+  !   do ll = 1, NVARS
+  !     do k = k_start, k_start+nz-1
+  !       do i = i_start, i_start+width-1
+  !         pos = pos + 1
+  !         buffer(pos) = mem(i,k,ll)
+  !       end do
+  !     end do
+  !   end do
+  ! end subroutine pack_strip
+
+
+
+  ! subroutine unpack_strip(buffer, mem, i_start, k_start)
+  !   real(wp), intent(in) :: buffer(:)
+  !   real(wp), intent(inout) :: mem(1-hs:nx_loc+hs,1-hs:nz+hs,NVARS)
+  !   integer, intent(in) :: i_start, k_start
+  !   integer :: ll, k, i, pos
+  !   pos = 0
+
+  !   do ll = 1, NVARS
+  !     do k = k_start, k_start+nz-1
+  !       do i = i_start, i_start+hs-1
+  !         pos = pos + 1
+  !         mem(i,k,ll) = buffer(pos)
+  !       end do
+  !     end do
+  !   end do
+  ! end subroutine unpack_strip
+
 
 
   subroutine pack_strip(mem, i_start, k_start, nx_loc, width, buffer)
-    real(wp), intent(in) :: mem(1-hs:nx_loc+hs,1-hs:nz+hs,NVARS)
-    integer, intent(in) :: i_start, k_start, nx_loc, width
+    implicit none
+    ! Note: the bounds here should match the actual halo extents
+    real(wp), intent(in)  :: mem(1-hs:nx_loc+hs, 1-hs:nz+hs, NVARS)
+    integer, intent(in)   :: i_start, k_start, nx_loc, width
     real(wp), intent(out) :: buffer(:)
-    integer :: ll, k, i, pos
-    pos = 0
-
+    integer :: ll, k, i, idx
+  
+    ! buffer is of length width * nz * NVARS
+  
+    !$acc parallel loop collapse(3) present(mem, buffer)
     do ll = 1, NVARS
-      do k = k_start, k_start+nz-1
-        do i = i_start, i_start+width-1
-          pos = pos + 1
-          buffer(pos) = mem(i,k,ll)
+      do k = 1, nz
+        do i = 1, width
+          ! Map (ll,k,i) → linear index in buffer
+          idx = ((ll - 1) * nz + (k - 1)) * width + i
+          buffer(idx) = mem(i_start + i - 1, k_start + k - 1, ll)
         end do
       end do
     end do
+    !$acc end parallel
+  
   end subroutine pack_strip
-
-
-  subroutine unpack_strip(buffer, mem, i_start, k_start)
-    real(wp), intent(in) :: buffer(:)
-    real(wp), intent(inout) :: mem(1-hs:nx_loc+hs,1-hs:nz+hs,NVARS)
-    integer, intent(in) :: i_start, k_start
-    integer :: ll, k, i, pos
-    pos = 0
-
+  
+  
+  
+  subroutine unpack_strip(buffer, mem, i_start, k_start, nx_loc, width)
+    implicit none
+    real(wp), intent(in)    :: buffer(:)
+    real(wp), intent(inout) :: mem(1-hs:nx_loc+hs, 1-hs:nz+hs, NVARS)
+    integer, intent(in)     :: i_start, k_start, nx_loc, width
+    integer :: ll, k, i, idx
+  
+    !$acc parallel loop collapse(3) present(mem, buffer)
     do ll = 1, NVARS
-      do k = k_start, k_start+nz-1
-        do i = i_start, i_start+hs-1
-          pos = pos + 1
-          mem(i,k,ll) = buffer(pos)
+      do k = 1, nz
+        do i = 1, width
+          idx = ((ll - 1) * nz + (k - 1)) * width + i
+          mem(i_start + i - 1, k_start + k - 1, ll) = buffer(idx)
         end do
       end do
     end do
+    !$acc end parallel
+  
   end subroutine unpack_strip
+
 
 
   subroutine exchange_halo_z(s,ref)
@@ -365,7 +478,7 @@ module module_types
     class(reference_state), intent(in) :: ref
     integer :: i, ll
 #if defined(_OACC)
-    !$acc parallel loop collapse(2) present(s, ref)
+    !$acc parallel loop collapse(2) present(s%mem, ref%density)
 #elif defined(_OMP)
     !$omp parallel do private(ll, i) shared(s, ref)
 #endif
@@ -393,10 +506,14 @@ module module_types
         end if
       end do
     end do
-#if defined(_OMP)
-  !$omp end parallel do
+#if defined(_OACC)
+    !$acc end parallel
+#elif defined(_OMP)
+    !$omp end parallel do
 #endif
   end subroutine exchange_halo_z
+
+
 
   subroutine new_ref(ref)
     implicit none
@@ -408,6 +525,7 @@ module module_types
     allocate(ref%pressure(nz+1))
   end subroutine new_ref
 
+
   subroutine del_ref(ref)
     implicit none
     class(reference_state), intent(inout) :: ref
@@ -417,6 +535,8 @@ module module_types
     deallocate(ref%idenstheta)
     deallocate(ref%pressure)
   end subroutine del_ref
+
+
 
   subroutine new_flux(flux)
     implicit none
@@ -429,6 +549,8 @@ module module_types
     flux%rhot => flux%mem(:,:,I_RHOT)
   end subroutine new_flux
 
+
+
   subroutine set_flux(flux, xval)
     implicit none
     class(atmospheric_flux), intent(inout) :: flux
@@ -437,16 +559,20 @@ module module_types
       write(stderr,*) 'NOT ALLOCATED FLUX ERROR AT LINE ', __LINE__
       stop
     end if
+
 #if defined(_OACC)
-  !$acc kernels present(flux)
-! #elif defined(_OMP)
-! !$omp parallel do collapse(3) default(none) shared(flux, xval, nx, nz, NVARS)
+    !$acc kernels present(flux%mem)
 #endif
+
   flux%mem(:,:,:) = xval
+
 #if defined(_OACC)
   !$acc end kernels
 #endif
+
   end subroutine set_flux
+
+
 
   subroutine del_flux(flux)
     implicit none
@@ -457,6 +583,8 @@ module module_types
     nullify(flux%wmom)
     nullify(flux%rhot)
   end subroutine del_flux
+
+
 
   subroutine new_tendency(tend)
     implicit none
@@ -469,6 +597,8 @@ module module_types
     tend%rhot => tend%mem(:,:,I_RHOT)
   end subroutine new_tendency
 
+
+
   subroutine set_tendency(tend, xval)
     implicit none
     class(atmospheric_tendency), intent(inout) :: tend
@@ -477,16 +607,20 @@ module module_types
       write(stderr,*) 'NOT ALLOCATED FLUX ERROR AT LINE ', __LINE__
       stop
     end if
+
 #if defined(_OACC)
-    !$acc kernels present(tend)
-! #elif defined(_OMP)
-! !$omp parallel do collapse(3) default(none) shared(tend, xval, nx, nz, NVARS)
+    !$acc kernels present(tend%mem)
 #endif
+
     tend%mem(:,:,:) = xval
+
 #if defined(_OACC)
     !$acc end kernels
 #endif
+
   end subroutine set_tendency
+
+
 
   subroutine del_tendency(tend)
     implicit none
@@ -498,19 +632,28 @@ module module_types
     nullify(tend%rhot)
   end subroutine del_tendency
 
+
+
   subroutine state_equal_to_state(x,y)
     implicit none
     type(atmospheric_state), intent(inout) :: x
     type(atmospheric_state), intent(in) :: y
-#if defined(_OACC)
-!$acc kernels present(x, y)
-! #elif defined(_OMP)
-! !$omp parallel do collapse(3) default(none) shared(x, y, nx, nz, NVARS, hs)
+    integer :: ll, k, i
+
+#if defined(_OMP)
+    !$omp parallel do collapse(3) default(none) shared(x, y, nx_loc, nz, hs, NVARS) private(ll, k, i)
 #endif
-    x%mem(1-hs:nx+hs, 1-hs:nz+hs, :) = y%mem(1-hs:nx+hs, 1-hs:nz+hs, :)
-#if defined(_OACC)
-!$acc end kernels
+    do ll = 1, NVARS
+      do k = 1-hs, nz+hs
+        do i = 1-hs, nx_loc+hs
+          x%mem(i,k,ll) = y%mem(i,k,ll)
+        end do
+      end do
+    end do
+#if defined(_OMP)
+    !$omp end parallel do
 #endif
   end subroutine state_equal_to_state
 
+  
 end module module_types
