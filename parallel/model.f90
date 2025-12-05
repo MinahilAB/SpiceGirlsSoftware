@@ -43,7 +43,7 @@ program atmosphere_model
   nz = int(nx * zlen/xlen)
 
   ! Initialisation
-  ! if (rank == 0) write(stdout, '(/,A,/)') 'SIMPLE ATMOSPHERIC MODEL STARTING.'
+  if (rank == 0) write(stdout, '(/,A,/)') 'SIMPLE ATMOSPHERIC MODEL STARTING.'
 
   ! Use NVTX to mark the main computational region for profiling
   ! call nvtx_push('tot')
@@ -51,10 +51,10 @@ program atmosphere_model
   call init(etime,output_counter,dt)
 
   call total_mass_energy(mass0,te0)
-  ! call create_output( )
-  ! call write_record(oldstat,ref,etime)
+  call create_output( )
+  call write_record(oldstat,ref,etime)
 
-  ! call system_clock(t1)
+  call system_clock(t1)
 
   ptime = int(sim_time/10.0)
 
@@ -64,18 +64,18 @@ program atmosphere_model
     if (etime + dt > sim_time) dt = sim_time - etime
       call rungekutta(oldstat,newstat,flux,tend,dt)
     
-    ! if ( (rank == 0) .and. (mod(etime,ptime) < dt) ) then
-    !   pctime = (etime/sim_time)*100.0_wp
-    !   write(stdout,'(1x,a,i2,a)') 'TIME PERCENT : ', int(pctime), '%'
-    ! end if
+    if ( (rank == 0) .and. (mod(etime,ptime) < dt) ) then
+      pctime = (etime/sim_time)*100.0_wp
+      write(stdout,'(1x,a,i2,a)') 'TIME PERCENT : ', int(pctime), '%'
+    end if
 
     etime = etime + dt
-    ! output_counter = output_counter + dt
+    output_counter = output_counter + dt
 
-    ! if (output_counter >= output_freq) then
-      ! output_counter = output_counter - output_freq
-      ! call write_record(oldstat,ref,etime)
-    ! end if
+    if (output_counter >= output_freq) then
+      output_counter = output_counter - output_freq
+      call write_record(oldstat,ref,etime)
+    end if
 
   end do
 
@@ -83,22 +83,22 @@ program atmosphere_model
 
   
   call total_mass_energy(mass1,te1)
-  ! call close_output( )
+  call close_output( )
 
-  ! if (rank == 0) then
-  !   write(stdout,'(/,A)') "----------------- Atmosphere check ----------------"
-  !   write(stdout,*) "Fractional Delta Mass  : ", (mass1-mass0)/mass0
-  !   write(stdout,*) "Fractional Delta Energy: ", (te1-te0)/te0
-  !   write(stdout,'(A,/)') "---------------------------------------------------"
-  ! end if
+  if (rank == 0) then
+    write(stdout,'(/,A)') "----------------- Atmosphere check ----------------"
+    write(stdout,*) "Fractional Delta Mass  : ", (mass1-mass0)/mass0
+    write(stdout,*) "Fractional Delta Energy: ", (te1-te0)/te0
+    write(stdout,'(A,/)') "---------------------------------------------------"
+  end if
 
   call finalize()
-  ! call system_clock(t2,rate)
+  call system_clock(t2,rate)
 
-  ! if (rank == 0) then
-  !   write(stdout,'(A)') "SIMPLE ATMOSPHERIC MODEL RUN COMPLETED."
-  !   write(stdout,'(A, F0.18, /)') "USED CPU TIME: ", dble(t2-t1)/dble(rate)
-  ! end if
+  if (rank == 0) then
+    write(stdout,'(A)') "SIMPLE ATMOSPHERIC MODEL RUN COMPLETED."
+    write(stdout,'(A, F0.18, /)') "USED CPU TIME: ", dble(t2-t1)/dble(rate)
+  end if
 
   ! call nvtx_pop()
 

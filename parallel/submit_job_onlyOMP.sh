@@ -16,7 +16,7 @@
 
 set -euo pipefail
 
-# Add the path to the SpiceGirlsSoftware directory
+# Add the path to the SpiceGirlsSoftware directory -- IMPORTANT
 SPG_DIR=${HOME}/MHPC_repos/SpiceGirlsSoftware/parallel
 
 # Where ou want the output to go (can leave unchanged)
@@ -28,7 +28,7 @@ NX_SIZE=100
 SIM_TIME=1000.0
 
 # Set Makefile flags
-DEBUG=1
+DEBUG=0
 USE_OPENACC=0
 USE_OPENMP=1
 
@@ -52,9 +52,7 @@ WORK_DIR="${WORK_ROOT}/parallel"
 make -C "${WORK_DIR}" clean
 make -C "${WORK_DIR}" DEBUG=${DEBUG} USE_OPENACC=${USE_OPENACC} USE_OPENMP=${USE_OPENMP}
 
-srun nsys profile \
-    --trace=cuda,nvtx \
-    -o "${OUTDIR}/%q{SLURM_JOB_ID}_N%q{SLURM_JOB_NUM_NODES}_%q{SLURM_PROCID}" ${WORK_DIR}/model ${NX_SIZE} ${SIM_TIME}
+srun ${WORK_DIR}/model ${NX_SIZE} ${SIM_TIME}
 
 mv output.nc "${OUTDIR}/${SLURM_JOB_ID}_output.nc"
 mv statistics_*.txt ${OUTDIR}/${SLURM_JOB_ID}_statistics_*.txt

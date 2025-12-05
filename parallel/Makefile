@@ -6,9 +6,9 @@ F_COMP					:= $(MPIF90)
 CPP_COMP				:= $(MPICXX) -std=c++17
 
 # Feature toggles
-DEBUG        			?= 1    # 1 = debug, 0 = release
+DEBUG        			?= 0    # 1 = debug, 0 = release
 USE_OPENACC  			?= 0
-USE_OPENMP   			?= 0
+USE_OPENMP   			?= 1
 
 # GPU architecture
 CUDA_ARCH				= -gpu=cc80
