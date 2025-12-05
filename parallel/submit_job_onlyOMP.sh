@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=ATM_Model_onlyOMP
-#SBATCH --time=00:05:00
+#SBATCH --time=00:20:00
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=8
@@ -24,7 +24,7 @@ OUTDIR=${HOME}/Jobs/ATM_Model_onlyOMP
 mkdir -p ${OUTDIR}
 
 # Set nx gtidsize and the simulation time
-NX_SIZE=100
+NX_SIZE=500
 SIM_TIME=1000.0
 
 # Set Makefile flags
@@ -40,8 +40,10 @@ export OMP_PROC_BIND=close
 echo " ==== Loading modules... ===== "
 module purge
 module load cuda/12.6
+module load nvhpc/24.5
+module load hpcx-mpi/2.19
 module load gcc/12.2.0
-module load netcdf-fortran/4.6.1--openmpi--4.1.6--gcc--12.2.0-spack0.22
+module load netcdf-fortran/4.6.1--hpcx-mpi--2.19--nvhpc--24.5
 
 echo " ==== Building Project... ===== "
 WORK_ROOT=$(mktemp -d "${SCRATCH}/${SLURM_JOB_NAME}_XXXXXX")
@@ -54,8 +56,8 @@ make -C "${WORK_DIR}" DEBUG=${DEBUG} USE_OPENACC=${USE_OPENACC} USE_OPENMP=${USE
 
 srun ${WORK_DIR}/model ${NX_SIZE} ${SIM_TIME}
 
-mv output.nc "${OUTDIR}/${SLURM_JOB_ID}_output.nc"
-mv statistics_*.txt ${OUTDIR}/${SLURM_JOB_ID}_statistics_*.txt
+mv output.nc "${OUTDIR}/${SLURM_JOB_ID}_output.nc" 2>/dev/null
+mv statistics_*.txt ${OUTDIR}/${SLURM_JOB_ID}_statistics_*.txt 2>/dev/null
 
 rm -rf "${WORK_ROOT}"
 echo "==== Cleanup Done! ==== "
