@@ -1,5 +1,132 @@
-# SpiceGirlsSoftware
-#serial diagram
+# 🌬️ Atmospheric Transport Model - SpiceGirlsSoftware
+
+We present the SpiceGirlsSoftware, a 2D atmospheric transport simulation provided to us in serial for the **MHPC P1.9 Module** written in Fortran. We add optional acceleration using OpenMP, OpenACC, and MPI parallelization. We present:
+
+- Cuda-aware MPI support
+- Optional compile options for OpenMP
+- Optional OpenACC GPU offloading with NVIDIA GPUs using Device to Device memory tranfers
+- Configurable Grid Size + Simulation Time
+- Parallel NetCDF writes
+
+The project files are organised as follow:
+
+```
+parallel/
+├── Makefile          (Sample for you to follow!)
+├── model.f90
+├── module_parameters.f90
+├── module_types.F90
+├── module_physics.f90
+├── module_output.F90
+├── module_nvtx.F90   (timing utilities)
+└── parallel_timer*   (timing utilities)
+```
+<br>
+<br>
+
+# 🔧 Requirements
+
+To build the model you will need need:
+
+- A Fortran compiler (nvfortran or gfortran for CPU-only builds)
+- An MPI compiler wrapper for Fortran and C++ (mpif90, mpicxx)
+- The NetCDF-Fortran library
+- A CUDA toolkit (only if using OpenACC/timing with NVTX)
+
+
+Fortunately, Leonardo has suitabkle modules to provide all of these requirements. The module load combination used in provided Makefile (and the one we would recommend) is as follows:
+
+
+```
+module purge
+
+module load cuda/12.6
+module load nvhpc/24.5
+module load hpcx-mpi/2.19
+module load gcc/12.2.0
+module load netcdf-fortran/4.6.1--hpcx-mpi--2.19--nvhpc--24.5
+```
+
+<br>
+<br>
+
+# 🏗️ Compilation
+
+The provided Makefile supports several build options:
+
+
+| Variable        | Meaning                         |
+| --------------- | ------------------------------- |
+| `DEBUG=1`       | Add debugging flags (default)   |
+| `DEBUG=0`       | Build optimized release version |
+| `USE_OPENACC=1` | Enable GPU acceleration         |
+| `USE_OPENMP=1`  | Enable OpenMP threading         |
+
+
+#### Building a CPU version with no OMP multithreading:
+```
+make clean
+make DEBUG=0 USE_OPENACC=0 USE_OPENMP=0
+```
+
+#### Building a CPU version with OMP multithreading:
+```
+make clean
+make DEBUG=0 USE_OPENACC=0 USE_OPENMP=1
+```
+
+#### Build GPU (OpenACC + MPI):
+```
+make clean
+make DEBUG=0 USE_OPENACC=1 USE_OPENMP=0
+```
+
+#### Build GPU version with OMP init + GPU Offloading: (OpenACC + MPI + OACC):
+```
+make clean
+make DEBUG=0 USE_OPENACC=1 USE_OPENMP=1
+```
+
+#### Building with debugging flags (for developers!)
+
+Simply build your desired combination with `make DEBUG=0 USE_OPENACC=<1 or 0> USE_OPENMP=<1 or 0>` and the sutomatic switching in the makefile will apply appropriate flags to the relevant compiler.
+
+<br>
+<br>
+
+
+# ▶️ Running the Model
+
+Building will provide with the `model` executable, which takes two arguments
+
+```
+./model nx_size sim_time
+```
+
+For example:
+
+```
+./model 2000 1000.0
+```
+
+The provided sbatch files are user-agnostic and are ready to work on Leonardo. If you use using the programme outisde Leonardo, the sbatch files will provide a blueprint on which to base your batch submission files.
+
+<br>
+<br>
+
+# 📊 Output Files
+
+`output.nc`: NetCDF file containing density field $\rho$(x, z, t), momentum fields $u$(x, z, t) and $\omega$(x, z, t). The output also has grid configuration metadata.
+
+### For developers
+`statistics_*.txt` and `.nsys-rep` files provide diagnostic data.
+
+<br>
+<br>
+
+# ✏️ Comparing the Serial vs. Parallel verions
+
+#### Serial
 ```mermaid
 graph TD
     %% Main flow
@@ -108,8 +235,9 @@ graph TD
         style D4 fill:#e0f7fa,color:#000
     end
 ```
-# SpiceGirlsSoftware
-#parallel diagram
+
+
+#### Parallel
 ```mermaid
 
   flowchart TD
