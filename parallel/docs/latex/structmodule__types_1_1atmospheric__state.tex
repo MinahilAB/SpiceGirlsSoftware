@@ -1,0 +1,191 @@
+\doxysection{module\+\_\+types\+::atmospheric\+\_\+state Type Reference}
+\hypertarget{structmodule__types_1_1atmospheric__state}{}\label{structmodule__types_1_1atmospheric__state}\index{module\_types::atmospheric\_state@{module\_types::atmospheric\_state}}
+
+
+Derived type for the time-\/dependent atmospheric state variables.  
+
+
+
+
+Collaboration diagram for module\+\_\+types\+::atmospheric\+\_\+state\+:
+% FIG 0
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+procedure, public \mbox{\hyperlink{structmodule__types_1_1atmospheric__state_ab863469bd89a1f89f2a37cc159bdfdd5}{new\+\_\+state}} (atmo)
+\begin{DoxyCompactList}\small\item\em Allocates memory for an atmospheric state type instance. \end{DoxyCompactList}\item 
+procedure, public \mbox{\hyperlink{structmodule__types_1_1atmospheric__state_ab47a095f20c13cc755d180601809f592}{set\+\_\+state}} (atmo, xval)
+\begin{DoxyCompactList}\small\item\em Sets all grid points of a state to a scalar value. \end{DoxyCompactList}\item 
+procedure, public \mbox{\hyperlink{structmodule__types_1_1atmospheric__state_a4fa0c288543143c3a6c4c297ce8517da}{del\+\_\+state}} (atmo)
+\begin{DoxyCompactList}\small\item\em Deallocates memory for an atmospheric state type instance. \end{DoxyCompactList}\item 
+procedure, public \mbox{\hyperlink{structmodule__types_1_1atmospheric__state_a8cd19034d09afcb79a0a2c799f226112}{update}} (s2, s0, tend, dt)
+\begin{DoxyCompactList}\small\item\em Performs a time integration update step. \end{DoxyCompactList}\item 
+procedure, public \mbox{\hyperlink{structmodule__types_1_1atmospheric__state_a2db4da25c17476f40b29a2bcc78acfcd}{exchange\+\_\+halo\+\_\+x}} (s)
+\begin{DoxyCompactList}\small\item\em Performs the MPI-\/based halo exchange in the X-\/dimension. \end{DoxyCompactList}\item 
+procedure, public \mbox{\hyperlink{structmodule__types_1_1atmospheric__state_aad1cd35a6c7007ffa52f8da7b98505a0}{exchange\+\_\+halo\+\_\+z}} (s, ref)
+\begin{DoxyCompactList}\small\item\em Implements the Z-\/dimension (vertical) halo exchange. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+real(wp), dimension(\+:,\+:,\+:), pointer \mbox{\hyperlink{structmodule__types_1_1atmospheric__state_a9ec9a53b762df2b8746be802cc935336}{mem}} =$>$ null( )
+\item 
+real(wp), dimension(\+:,\+:), pointer \mbox{\hyperlink{structmodule__types_1_1atmospheric__state_a277e72b4e2b059036986432e6079d2ff}{dens}}
+\item 
+real(wp), dimension(\+:,\+:), pointer \mbox{\hyperlink{structmodule__types_1_1atmospheric__state_af5afc3b013358a020d5da9176d90698f}{umom}}
+\item 
+real(wp), dimension(\+:,\+:), pointer \mbox{\hyperlink{structmodule__types_1_1atmospheric__state_adaaf1237201ded96c3558793fe13ad50}{wmom}}
+\item 
+real(wp), dimension(\+:,\+:), pointer \mbox{\hyperlink{structmodule__types_1_1atmospheric__state_aa4de0634086a07f161ca24f23feef6b8}{rhot}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Derived type for the time-\/dependent atmospheric state variables. 
+
+This type holds the core prognostic variables ({\ttfamily dens}, {\ttfamily umom}, {\ttfamily wmom}, {\ttfamily rhot}) and includes halo regions ({\ttfamily hs}) for parallel exchange. 
+
+\doxysubsection{Member Function/\+Subroutine Documentation}
+\Hypertarget{structmodule__types_1_1atmospheric__state_a4fa0c288543143c3a6c4c297ce8517da}\label{structmodule__types_1_1atmospheric__state_a4fa0c288543143c3a6c4c297ce8517da} 
+\index{module\_types::atmospheric\_state@{module\_types::atmospheric\_state}!del\_state@{del\_state}}
+\index{del\_state@{del\_state}!module\_types::atmospheric\_state@{module\_types::atmospheric\_state}}
+\doxysubsubsection{\texorpdfstring{del\_state()}{del\_state()}}
+{\footnotesize\ttfamily procedure, public module\+\_\+types\+::atmospheric\+\_\+state\+::del\+\_\+state (\begin{DoxyParamCaption}\item[{class(\mbox{\hyperlink{structmodule__types_1_1atmospheric__state}{atmospheric\+\_\+state}}), intent(inout)}]{atmo }\end{DoxyParamCaption})}
+
+
+
+Deallocates memory for an atmospheric state type instance. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em atmo} & The atmospheric state instance. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{structmodule__types_1_1atmospheric__state_a2db4da25c17476f40b29a2bcc78acfcd}\label{structmodule__types_1_1atmospheric__state_a2db4da25c17476f40b29a2bcc78acfcd} 
+\index{module\_types::atmospheric\_state@{module\_types::atmospheric\_state}!exchange\_halo\_x@{exchange\_halo\_x}}
+\index{exchange\_halo\_x@{exchange\_halo\_x}!module\_types::atmospheric\_state@{module\_types::atmospheric\_state}}
+\doxysubsubsection{\texorpdfstring{exchange\_halo\_x()}{exchange\_halo\_x()}}
+{\footnotesize\ttfamily procedure, public module\+\_\+types\+::atmospheric\+\_\+state\+::exchange\+\_\+halo\+\_\+x (\begin{DoxyParamCaption}\item[{class(\mbox{\hyperlink{structmodule__types_1_1atmospheric__state}{atmospheric\+\_\+state}}), intent(inout)}]{s }\end{DoxyParamCaption})}
+
+
+
+Performs the MPI-\/based halo exchange in the X-\/dimension. 
+
+This routine is responsible for point-\/to-\/point communication with neighboring ranks. It involves packing data, initiating non-\/blocking sends/receives, and waiting for completion. The wall-\/clock time is captured by the NVTX range {\ttfamily }\+:exchange\+\_\+halo\+\_\+x.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em s} & The atmospheric state whose halo regions need updating. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{structmodule__types_1_1atmospheric__state_aad1cd35a6c7007ffa52f8da7b98505a0}\label{structmodule__types_1_1atmospheric__state_aad1cd35a6c7007ffa52f8da7b98505a0} 
+\index{module\_types::atmospheric\_state@{module\_types::atmospheric\_state}!exchange\_halo\_z@{exchange\_halo\_z}}
+\index{exchange\_halo\_z@{exchange\_halo\_z}!module\_types::atmospheric\_state@{module\_types::atmospheric\_state}}
+\doxysubsubsection{\texorpdfstring{exchange\_halo\_z()}{exchange\_halo\_z()}}
+{\footnotesize\ttfamily procedure, public module\+\_\+types\+::atmospheric\+\_\+state\+::exchange\+\_\+halo\+\_\+z (\begin{DoxyParamCaption}\item[{class(\mbox{\hyperlink{structmodule__types_1_1atmospheric__state}{atmospheric\+\_\+state}}), intent(inout)}]{s,  }\item[{class(\mbox{\hyperlink{structmodule__types_1_1reference__state}{reference\+\_\+state}}), intent(in)}]{ref }\end{DoxyParamCaption})}
+
+
+
+Implements the Z-\/dimension (vertical) halo exchange. 
+
+Since the Z-\/dimension is not parallelized, this involves applying local, non-\/communicative boundary conditions (e.\+g., free slip, fixed values) to the halo regions. The wall-\/clock time is captured by the NVTX range {\ttfamily }\+:exchange\+\_\+halo\+\_\+z.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em s} & The atmospheric state to apply boundary conditions to. \\
+\hline
+\mbox{\texttt{ in}}  & {\em ref} & The reference state used to calculate some boundary values. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{structmodule__types_1_1atmospheric__state_ab863469bd89a1f89f2a37cc159bdfdd5}\label{structmodule__types_1_1atmospheric__state_ab863469bd89a1f89f2a37cc159bdfdd5} 
+\index{module\_types::atmospheric\_state@{module\_types::atmospheric\_state}!new\_state@{new\_state}}
+\index{new\_state@{new\_state}!module\_types::atmospheric\_state@{module\_types::atmospheric\_state}}
+\doxysubsubsection{\texorpdfstring{new\_state()}{new\_state()}}
+{\footnotesize\ttfamily procedure, public module\+\_\+types\+::atmospheric\+\_\+state\+::new\+\_\+state (\begin{DoxyParamCaption}\item[{class(\mbox{\hyperlink{structmodule__types_1_1atmospheric__state}{atmospheric\+\_\+state}}), intent(inout)}]{atmo }\end{DoxyParamCaption})}
+
+
+
+Allocates memory for an atmospheric state type instance. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em atmo} & The atmospheric state instance. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{structmodule__types_1_1atmospheric__state_ab47a095f20c13cc755d180601809f592}\label{structmodule__types_1_1atmospheric__state_ab47a095f20c13cc755d180601809f592} 
+\index{module\_types::atmospheric\_state@{module\_types::atmospheric\_state}!set\_state@{set\_state}}
+\index{set\_state@{set\_state}!module\_types::atmospheric\_state@{module\_types::atmospheric\_state}}
+\doxysubsubsection{\texorpdfstring{set\_state()}{set\_state()}}
+{\footnotesize\ttfamily procedure, public module\+\_\+types\+::atmospheric\+\_\+state\+::set\+\_\+state (\begin{DoxyParamCaption}\item[{class(\mbox{\hyperlink{structmodule__types_1_1atmospheric__state}{atmospheric\+\_\+state}}), intent(inout)}]{atmo,  }\item[{real(wp), intent(in)}]{xval }\end{DoxyParamCaption})}
+
+
+
+Sets all grid points of a state to a scalar value. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em atmo} & The atmospheric state instance. \\
+\hline
+\mbox{\texttt{ in}}  & {\em xval} & The scalar value to set. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{structmodule__types_1_1atmospheric__state_a8cd19034d09afcb79a0a2c799f226112}\label{structmodule__types_1_1atmospheric__state_a8cd19034d09afcb79a0a2c799f226112} 
+\index{module\_types::atmospheric\_state@{module\_types::atmospheric\_state}!update@{update}}
+\index{update@{update}!module\_types::atmospheric\_state@{module\_types::atmospheric\_state}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily procedure, public module\+\_\+types\+::atmospheric\+\_\+state\+::update (\begin{DoxyParamCaption}\item[{class(\mbox{\hyperlink{structmodule__types_1_1atmospheric__state}{atmospheric\+\_\+state}}), intent(inout)}]{s2,  }\item[{class(\mbox{\hyperlink{structmodule__types_1_1atmospheric__state}{atmospheric\+\_\+state}}), intent(in)}]{s0,  }\item[{class(\mbox{\hyperlink{structmodule__types_1_1atmospheric__tendency}{atmospheric\+\_\+tendency}}), intent(in)}]{tend,  }\item[{real(wp), intent(in)}]{dt }\end{DoxyParamCaption})}
+
+
+
+Performs a time integration update step. 
+
+Uses a simple explicit time integration formula\+: $ S^{n+1} = S^n + \Delta t \cdot Tendency $. The wall-\/clock time is captured by the NVTX range {\ttfamily }\+:update.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em s2} & The state at the new time level ( $S^{n+1}$). \\
+\hline
+\mbox{\texttt{ in}}  & {\em s0} & The state at the current time level ( $S^n$). \\
+\hline
+\mbox{\texttt{ in}}  & {\em tend} & The calculated tendency ( $ \frac{dS}{dt} $). \\
+\hline
+\mbox{\texttt{ in}}  & {\em dt} & The time step size ( $\Delta t$). \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{structmodule__types_1_1atmospheric__state_a277e72b4e2b059036986432e6079d2ff}\label{structmodule__types_1_1atmospheric__state_a277e72b4e2b059036986432e6079d2ff} 
+\index{module\_types::atmospheric\_state@{module\_types::atmospheric\_state}!dens@{dens}}
+\index{dens@{dens}!module\_types::atmospheric\_state@{module\_types::atmospheric\_state}}
+\doxysubsubsection{\texorpdfstring{dens}{dens}}
+{\footnotesize\ttfamily real(wp), dimension(\+:,\+:), pointer module\+\_\+types\+::atmospheric\+\_\+state\+::dens}
+
+\Hypertarget{structmodule__types_1_1atmospheric__state_a9ec9a53b762df2b8746be802cc935336}\label{structmodule__types_1_1atmospheric__state_a9ec9a53b762df2b8746be802cc935336} 
+\index{module\_types::atmospheric\_state@{module\_types::atmospheric\_state}!mem@{mem}}
+\index{mem@{mem}!module\_types::atmospheric\_state@{module\_types::atmospheric\_state}}
+\doxysubsubsection{\texorpdfstring{mem}{mem}}
+{\footnotesize\ttfamily real(wp), dimension(\+:,\+:,\+:), pointer module\+\_\+types\+::atmospheric\+\_\+state\+::mem =$>$ null( )}
+
+\Hypertarget{structmodule__types_1_1atmospheric__state_aa4de0634086a07f161ca24f23feef6b8}\label{structmodule__types_1_1atmospheric__state_aa4de0634086a07f161ca24f23feef6b8} 
+\index{module\_types::atmospheric\_state@{module\_types::atmospheric\_state}!rhot@{rhot}}
+\index{rhot@{rhot}!module\_types::atmospheric\_state@{module\_types::atmospheric\_state}}
+\doxysubsubsection{\texorpdfstring{rhot}{rhot}}
+{\footnotesize\ttfamily real(wp), dimension(\+:,\+:), pointer module\+\_\+types\+::atmospheric\+\_\+state\+::rhot}
+
+\Hypertarget{structmodule__types_1_1atmospheric__state_af5afc3b013358a020d5da9176d90698f}\label{structmodule__types_1_1atmospheric__state_af5afc3b013358a020d5da9176d90698f} 
+\index{module\_types::atmospheric\_state@{module\_types::atmospheric\_state}!umom@{umom}}
+\index{umom@{umom}!module\_types::atmospheric\_state@{module\_types::atmospheric\_state}}
+\doxysubsubsection{\texorpdfstring{umom}{umom}}
+{\footnotesize\ttfamily real(wp), dimension(\+:,\+:), pointer module\+\_\+types\+::atmospheric\+\_\+state\+::umom}
+
+\Hypertarget{structmodule__types_1_1atmospheric__state_adaaf1237201ded96c3558793fe13ad50}\label{structmodule__types_1_1atmospheric__state_adaaf1237201ded96c3558793fe13ad50} 
+\index{module\_types::atmospheric\_state@{module\_types::atmospheric\_state}!wmom@{wmom}}
+\index{wmom@{wmom}!module\_types::atmospheric\_state@{module\_types::atmospheric\_state}}
+\doxysubsubsection{\texorpdfstring{wmom}{wmom}}
+{\footnotesize\ttfamily real(wp), dimension(\+:,\+:), pointer module\+\_\+types\+::atmospheric\+\_\+state\+::wmom}
+
+
+
+The documentation for this type was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{module__types_8F90}{module\+\_\+types.\+F90}}\end{DoxyCompactItemize}

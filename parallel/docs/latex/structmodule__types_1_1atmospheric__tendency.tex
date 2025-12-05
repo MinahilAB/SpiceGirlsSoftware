@@ -1,0 +1,184 @@
+\doxysection{module\+\_\+types\+::atmospheric\+\_\+tendency Type Reference}
+\hypertarget{structmodule__types_1_1atmospheric__tendency}{}\label{structmodule__types_1_1atmospheric__tendency}\index{module\_types::atmospheric\_tendency@{module\_types::atmospheric\_tendency}}
+
+
+Derived type for storing calculated tendencies (time derivatives).  
+
+
+
+
+Collaboration diagram for module\+\_\+types\+::atmospheric\+\_\+tendency\+:
+% FIG 0
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+procedure, public \mbox{\hyperlink{structmodule__types_1_1atmospheric__tendency_ae777c018d7392783779aff4d7906b1a8}{new\+\_\+tendency}} (tend)
+\begin{DoxyCompactList}\small\item\em Allocates memory for an atmospheric tendency type instance. \end{DoxyCompactList}\item 
+procedure, public \mbox{\hyperlink{structmodule__types_1_1atmospheric__tendency_ab12cb599bd3d0900884abfb45beeffe1}{set\+\_\+tendency}} (tend, xval)
+\begin{DoxyCompactList}\small\item\em Sets all grid points of a tendency field to a scalar value. \end{DoxyCompactList}\item 
+procedure, public \mbox{\hyperlink{structmodule__types_1_1atmospheric__tendency_a06864a1910e4fa726f01f8ed7f6cce8e}{del\+\_\+tendency}} (tend)
+\begin{DoxyCompactList}\small\item\em Deallocates memory for an atmospheric tendency type instance. \end{DoxyCompactList}\item 
+procedure, public \mbox{\hyperlink{structmodule__types_1_1atmospheric__tendency_ad0a0b3603f6e2e67e34d6682e58bc235}{xtend}} (tendency, flux, ref, atmostat, dx, dt)
+\begin{DoxyCompactList}\small\item\em Calculates the X-\/dimension contribution to the total tendency. \end{DoxyCompactList}\item 
+procedure, public \mbox{\hyperlink{structmodule__types_1_1atmospheric__tendency_ae6069cc388aec5fadc13a42fe7c66950}{ztend}} (tendency, flux, ref, atmostat, dz, dt)
+\begin{DoxyCompactList}\small\item\em Calculates the Z-\/dimension contribution to the total tendency. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+real(wp), dimension(\+:,\+:,\+:), pointer \mbox{\hyperlink{structmodule__types_1_1atmospheric__tendency_a7aedf178ecdfde028f1b5384da1549ab}{mem}} =$>$ null( )
+\item 
+real(wp), dimension(\+:,\+:), pointer \mbox{\hyperlink{structmodule__types_1_1atmospheric__tendency_af8a38124b50e4d62174227c12164934d}{dens}}
+\item 
+real(wp), dimension(\+:,\+:), pointer \mbox{\hyperlink{structmodule__types_1_1atmospheric__tendency_a5bdf9ed721285ed8e1ac135c441dbed6}{umom}}
+\item 
+real(wp), dimension(\+:,\+:), pointer \mbox{\hyperlink{structmodule__types_1_1atmospheric__tendency_a7d06ed03d8ed5e8ff500f325fb85f30d}{wmom}}
+\item 
+real(wp), dimension(\+:,\+:), pointer \mbox{\hyperlink{structmodule__types_1_1atmospheric__tendency_a77cf0343b5fbefa790f9a70e5d094dcd}{rhot}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Derived type for storing calculated tendencies (time derivatives). 
+
+Tendency fields are computed in the interior cells only. 
+
+\doxysubsection{Member Function/\+Subroutine Documentation}
+\Hypertarget{structmodule__types_1_1atmospheric__tendency_a06864a1910e4fa726f01f8ed7f6cce8e}\label{structmodule__types_1_1atmospheric__tendency_a06864a1910e4fa726f01f8ed7f6cce8e} 
+\index{module\_types::atmospheric\_tendency@{module\_types::atmospheric\_tendency}!del\_tendency@{del\_tendency}}
+\index{del\_tendency@{del\_tendency}!module\_types::atmospheric\_tendency@{module\_types::atmospheric\_tendency}}
+\doxysubsubsection{\texorpdfstring{del\_tendency()}{del\_tendency()}}
+{\footnotesize\ttfamily procedure, public module\+\_\+types\+::atmospheric\+\_\+tendency\+::del\+\_\+tendency (\begin{DoxyParamCaption}\item[{class(\mbox{\hyperlink{structmodule__types_1_1atmospheric__tendency}{atmospheric\+\_\+tendency}}), intent(inout)}]{tend }\end{DoxyParamCaption})}
+
+
+
+Deallocates memory for an atmospheric tendency type instance. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em tend} & The atmospheric tendency instance. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{structmodule__types_1_1atmospheric__tendency_ae777c018d7392783779aff4d7906b1a8}\label{structmodule__types_1_1atmospheric__tendency_ae777c018d7392783779aff4d7906b1a8} 
+\index{module\_types::atmospheric\_tendency@{module\_types::atmospheric\_tendency}!new\_tendency@{new\_tendency}}
+\index{new\_tendency@{new\_tendency}!module\_types::atmospheric\_tendency@{module\_types::atmospheric\_tendency}}
+\doxysubsubsection{\texorpdfstring{new\_tendency()}{new\_tendency()}}
+{\footnotesize\ttfamily procedure, public module\+\_\+types\+::atmospheric\+\_\+tendency\+::new\+\_\+tendency (\begin{DoxyParamCaption}\item[{class(\mbox{\hyperlink{structmodule__types_1_1atmospheric__tendency}{atmospheric\+\_\+tendency}}), intent(inout)}]{tend }\end{DoxyParamCaption})}
+
+
+
+Allocates memory for an atmospheric tendency type instance. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em tend} & The atmospheric tendency instance. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{structmodule__types_1_1atmospheric__tendency_ab12cb599bd3d0900884abfb45beeffe1}\label{structmodule__types_1_1atmospheric__tendency_ab12cb599bd3d0900884abfb45beeffe1} 
+\index{module\_types::atmospheric\_tendency@{module\_types::atmospheric\_tendency}!set\_tendency@{set\_tendency}}
+\index{set\_tendency@{set\_tendency}!module\_types::atmospheric\_tendency@{module\_types::atmospheric\_tendency}}
+\doxysubsubsection{\texorpdfstring{set\_tendency()}{set\_tendency()}}
+{\footnotesize\ttfamily procedure, public module\+\_\+types\+::atmospheric\+\_\+tendency\+::set\+\_\+tendency (\begin{DoxyParamCaption}\item[{class(\mbox{\hyperlink{structmodule__types_1_1atmospheric__tendency}{atmospheric\+\_\+tendency}}), intent(inout)}]{tend,  }\item[{real(wp), intent(in)}]{xval }\end{DoxyParamCaption})}
+
+
+
+Sets all grid points of a tendency field to a scalar value. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em tend} & The atmospheric tendency instance. \\
+\hline
+\mbox{\texttt{ in}}  & {\em xval} & The scalar value to set. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{structmodule__types_1_1atmospheric__tendency_ad0a0b3603f6e2e67e34d6682e58bc235}\label{structmodule__types_1_1atmospheric__tendency_ad0a0b3603f6e2e67e34d6682e58bc235} 
+\index{module\_types::atmospheric\_tendency@{module\_types::atmospheric\_tendency}!xtend@{xtend}}
+\index{xtend@{xtend}!module\_types::atmospheric\_tendency@{module\_types::atmospheric\_tendency}}
+\doxysubsubsection{\texorpdfstring{xtend()}{xtend()}}
+{\footnotesize\ttfamily procedure, public module\+\_\+types\+::atmospheric\+\_\+tendency\+::xtend (\begin{DoxyParamCaption}\item[{class(\mbox{\hyperlink{structmodule__types_1_1atmospheric__tendency}{atmospheric\+\_\+tendency}}), intent(inout)}]{tendency,  }\item[{class(\mbox{\hyperlink{structmodule__types_1_1atmospheric__flux}{atmospheric\+\_\+flux}}), intent(inout)}]{flux,  }\item[{class(\mbox{\hyperlink{structmodule__types_1_1reference__state}{reference\+\_\+state}}), intent(in)}]{ref,  }\item[{class(\mbox{\hyperlink{structmodule__types_1_1atmospheric__state}{atmospheric\+\_\+state}}), intent(inout)}]{atmostat,  }\item[{real(wp), intent(in)}]{dx,  }\item[{real(wp), intent(in)}]{dt }\end{DoxyParamCaption})}
+
+
+
+Calculates the X-\/dimension contribution to the total tendency. 
+
+This routine involves two main steps\+: flux calculation (using a 4-\/point stencil) and tendency calculation (flux difference). It requires an X-\/halo exchange beforehand. The wall-\/clock time is captured by the NVTX range {\ttfamily }\+:xtend.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em tendency} & The resulting time tendency array. \\
+\hline
+\mbox{\texttt{ in,out}}  & {\em flux} & Temporary flux array used for calculation. \\
+\hline
+\mbox{\texttt{ in}}  & {\em ref} & Reference state data. \\
+\hline
+\mbox{\texttt{ in,out}}  & {\em atmostat} & Current atmospheric state (required for halo data). \\
+\hline
+\mbox{\texttt{ in}}  & {\em dx} & Grid spacing in the X-\/direction. \\
+\hline
+\mbox{\texttt{ in}}  & {\em dt} & Time step size (used for hyperviscosity coefficient). \\
+\hline
+\end{DoxyParams}
+\Hypertarget{structmodule__types_1_1atmospheric__tendency_ae6069cc388aec5fadc13a42fe7c66950}\label{structmodule__types_1_1atmospheric__tendency_ae6069cc388aec5fadc13a42fe7c66950} 
+\index{module\_types::atmospheric\_tendency@{module\_types::atmospheric\_tendency}!ztend@{ztend}}
+\index{ztend@{ztend}!module\_types::atmospheric\_tendency@{module\_types::atmospheric\_tendency}}
+\doxysubsubsection{\texorpdfstring{ztend()}{ztend()}}
+{\footnotesize\ttfamily procedure, public module\+\_\+types\+::atmospheric\+\_\+tendency\+::ztend (\begin{DoxyParamCaption}\item[{class(\mbox{\hyperlink{structmodule__types_1_1atmospheric__tendency}{atmospheric\+\_\+tendency}}), intent(inout)}]{tendency,  }\item[{class(\mbox{\hyperlink{structmodule__types_1_1atmospheric__flux}{atmospheric\+\_\+flux}}), intent(inout)}]{flux,  }\item[{class(\mbox{\hyperlink{structmodule__types_1_1reference__state}{reference\+\_\+state}}), intent(in)}]{ref,  }\item[{class(\mbox{\hyperlink{structmodule__types_1_1atmospheric__state}{atmospheric\+\_\+state}}), intent(inout)}]{atmostat,  }\item[{real(wp), intent(in)}]{dz,  }\item[{real(wp), intent(in)}]{dt }\end{DoxyParamCaption})}
+
+
+
+Calculates the Z-\/dimension contribution to the total tendency. 
+
+This routine involves two main steps\+: flux calculation (using a 4-\/point stencil) and tendency calculation (flux difference), plus the application of gravity as a source term. It requires a Z-\/halo exchange beforehand (local boundary condition setting). The wall-\/clock time is captured by the NVTX range {\ttfamily }\+:ztend.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em tendency} & The resulting time tendency array. \\
+\hline
+\mbox{\texttt{ in,out}}  & {\em flux} & Temporary flux array used for calculation. \\
+\hline
+\mbox{\texttt{ in}}  & {\em ref} & Reference state data. \\
+\hline
+\mbox{\texttt{ in,out}}  & {\em atmostat} & Current atmospheric state (required for halo data). \\
+\hline
+\mbox{\texttt{ in}}  & {\em dz} & Grid spacing in the Z-\/direction. \\
+\hline
+\mbox{\texttt{ in}}  & {\em dt} & Time step size (used for hyperviscosity coefficient). \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{structmodule__types_1_1atmospheric__tendency_af8a38124b50e4d62174227c12164934d}\label{structmodule__types_1_1atmospheric__tendency_af8a38124b50e4d62174227c12164934d} 
+\index{module\_types::atmospheric\_tendency@{module\_types::atmospheric\_tendency}!dens@{dens}}
+\index{dens@{dens}!module\_types::atmospheric\_tendency@{module\_types::atmospheric\_tendency}}
+\doxysubsubsection{\texorpdfstring{dens}{dens}}
+{\footnotesize\ttfamily real(wp), dimension(\+:,\+:), pointer module\+\_\+types\+::atmospheric\+\_\+tendency\+::dens}
+
+\Hypertarget{structmodule__types_1_1atmospheric__tendency_a7aedf178ecdfde028f1b5384da1549ab}\label{structmodule__types_1_1atmospheric__tendency_a7aedf178ecdfde028f1b5384da1549ab} 
+\index{module\_types::atmospheric\_tendency@{module\_types::atmospheric\_tendency}!mem@{mem}}
+\index{mem@{mem}!module\_types::atmospheric\_tendency@{module\_types::atmospheric\_tendency}}
+\doxysubsubsection{\texorpdfstring{mem}{mem}}
+{\footnotesize\ttfamily real(wp), dimension(\+:,\+:,\+:), pointer module\+\_\+types\+::atmospheric\+\_\+tendency\+::mem =$>$ null( )}
+
+\Hypertarget{structmodule__types_1_1atmospheric__tendency_a77cf0343b5fbefa790f9a70e5d094dcd}\label{structmodule__types_1_1atmospheric__tendency_a77cf0343b5fbefa790f9a70e5d094dcd} 
+\index{module\_types::atmospheric\_tendency@{module\_types::atmospheric\_tendency}!rhot@{rhot}}
+\index{rhot@{rhot}!module\_types::atmospheric\_tendency@{module\_types::atmospheric\_tendency}}
+\doxysubsubsection{\texorpdfstring{rhot}{rhot}}
+{\footnotesize\ttfamily real(wp), dimension(\+:,\+:), pointer module\+\_\+types\+::atmospheric\+\_\+tendency\+::rhot}
+
+\Hypertarget{structmodule__types_1_1atmospheric__tendency_a5bdf9ed721285ed8e1ac135c441dbed6}\label{structmodule__types_1_1atmospheric__tendency_a5bdf9ed721285ed8e1ac135c441dbed6} 
+\index{module\_types::atmospheric\_tendency@{module\_types::atmospheric\_tendency}!umom@{umom}}
+\index{umom@{umom}!module\_types::atmospheric\_tendency@{module\_types::atmospheric\_tendency}}
+\doxysubsubsection{\texorpdfstring{umom}{umom}}
+{\footnotesize\ttfamily real(wp), dimension(\+:,\+:), pointer module\+\_\+types\+::atmospheric\+\_\+tendency\+::umom}
+
+\Hypertarget{structmodule__types_1_1atmospheric__tendency_a7d06ed03d8ed5e8ff500f325fb85f30d}\label{structmodule__types_1_1atmospheric__tendency_a7d06ed03d8ed5e8ff500f325fb85f30d} 
+\index{module\_types::atmospheric\_tendency@{module\_types::atmospheric\_tendency}!wmom@{wmom}}
+\index{wmom@{wmom}!module\_types::atmospheric\_tendency@{module\_types::atmospheric\_tendency}}
+\doxysubsubsection{\texorpdfstring{wmom}{wmom}}
+{\footnotesize\ttfamily real(wp), dimension(\+:,\+:), pointer module\+\_\+types\+::atmospheric\+\_\+tendency\+::wmom}
+
+
+
+The documentation for this type was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{module__types_8F90}{module\+\_\+types.\+F90}}\end{DoxyCompactItemize}

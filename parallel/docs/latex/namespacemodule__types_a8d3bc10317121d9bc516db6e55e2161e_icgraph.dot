@@ -1,0 +1,11 @@
+digraph "module_types::pack_strip"
+{
+ // LATEX_PDF_SIZE
+  bgcolor="transparent";
+  edge [fontname=FreeSans,fontsize=10,labelfontname=FreeSans,labelfontsize=10];
+  node [fontname=FreeSans,fontsize=10,shape=box,height=0.2,width=0.4];
+  rankdir="RL";
+  Node1 [id="Node000001",label="module_types::pack\l_strip",height=0.2,width=0.4,color="gray40", fillcolor="grey60", style="filled", fontcolor="black",tooltip="Packs a strip of data (e.g., the halo region) into a 1D send buffer."];
+  Node1 -> Node2 [id="edge2_Node000001_Node000002",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node2 [id="Node000002",label="module_types::exchange\l_halo_x",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$namespacemodule__types.html#ab2b054b141f61d80aa631f0fde492a49",tooltip="Performs the MPI-based halo exchange in the X-dimension."];
+}

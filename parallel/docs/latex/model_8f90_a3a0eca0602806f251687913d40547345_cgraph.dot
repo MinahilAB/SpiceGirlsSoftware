@@ -1,0 +1,49 @@
+digraph "atmosphere_model"
+{
+ // LATEX_PDF_SIZE
+  bgcolor="transparent";
+  edge [fontname=FreeSans,fontsize=10,labelfontname=FreeSans,labelfontsize=10];
+  node [fontname=FreeSans,fontsize=10,shape=box,height=0.2,width=0.4];
+  rankdir="LR";
+  Node1 [id="Node000001",label="atmosphere_model",height=0.2,width=0.4,color="gray40", fillcolor="grey60", style="filled", fontcolor="black",tooltip=" "];
+  Node1 -> Node2 [id="edge27_Node000001_Node000002",color="steelblue1",style="solid",tooltip=" "];
+  Node2 [id="Node000002",label="module_output::close\l_output",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$namespacemodule__output.html#ad95a6ca2864d195b2f6feb2c4d500909",tooltip="Closes the NetCDF file, frees the MPI communicator, and deallocates arrays."];
+  Node2 -> Node3 [id="edge28_Node000002_Node000003",color="steelblue1",style="solid",tooltip=" "];
+  Node3 [id="Node000003",label="module_output::ncwrap",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$namespacemodule__output.html#a2e3279b425b65134d44ff700b6bb801e",tooltip="NetCDF error-wrapping subroutine."];
+  Node2 -> Node4 [id="edge29_Node000002_Node000004",color="steelblue1",style="solid",tooltip=" "];
+  Node4 [id="Node000004",label="module_nvtx::nvtx_pop",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$namespacemodule__nvtx.html#af66a9c0fc507e53e595fd890a763d28e",tooltip=" "];
+  Node2 -> Node5 [id="edge30_Node000002_Node000005",color="steelblue1",style="solid",tooltip=" "];
+  Node5 [id="Node000005",label="module_nvtx::nvtx_push",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$namespacemodule__nvtx.html#adf21b3a2539b95570b4aec5c080ba7c9",tooltip=" "];
+  Node1 -> Node6 [id="edge31_Node000001_Node000006",color="steelblue1",style="solid",tooltip=" "];
+  Node6 [id="Node000006",label="module_output::create\l_output",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$namespacemodule__output.html#a7a6044e87cf5c229bfb53c2e0ddb561d",tooltip="Creates the NetCDF output file and defines dimensions and variables."];
+  Node6 -> Node3 [id="edge32_Node000006_Node000003",color="steelblue1",style="solid",tooltip=" "];
+  Node6 -> Node4 [id="edge33_Node000006_Node000004",color="steelblue1",style="solid",tooltip=" "];
+  Node6 -> Node5 [id="edge34_Node000006_Node000005",color="steelblue1",style="solid",tooltip=" "];
+  Node1 -> Node7 [id="edge35_Node000001_Node000007",color="steelblue1",style="solid",tooltip=" "];
+  Node7 [id="Node000007",label="module_physics::finalize",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$namespacemodule__physics.html#a5f613f80cdbf71e8e0280a69bda19f36",tooltip="Deallocates all dynamically allocated memory and finalizes MPI/OpenACC resources."];
+  Node1 -> Node8 [id="edge36_Node000001_Node000008",color="steelblue1",style="solid",tooltip=" "];
+  Node8 [id="Node000008",label="module_physics::init",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$namespacemodule__physics.html#ae1fe02f4b28a385c8f831662384972d3",tooltip="Initializes the MPI/OpenACC environment, grid dimensions, and initial atmospheric state."];
+  Node8 -> Node4 [id="edge37_Node000008_Node000004",color="steelblue1",style="solid",tooltip=" "];
+  Node8 -> Node5 [id="edge38_Node000008_Node000005",color="steelblue1",style="solid",tooltip=" "];
+  Node8 -> Node9 [id="edge39_Node000008_Node000009",color="steelblue1",style="solid",tooltip=" "];
+  Node9 [id="Node000009",label="module_physics::thermal",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$namespacemodule__physics.html#a98d11a39c948a714560500cef9252995",tooltip="Calculates the state variables and reference state at a given physical point (x, z)."];
+  Node9 -> Node10 [id="edge40_Node000009_Node000010",color="steelblue1",style="solid",tooltip=" "];
+  Node10 [id="Node000010",label="module_physics::ellipse",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$namespacemodule__physics.html#a8ce13dc780b59866bfa31412c6ed671e",tooltip="Calculates a thermal perturbation using a cosine-squared profile within an elliptical region."];
+  Node9 -> Node11 [id="edge41_Node000009_Node000011",color="steelblue1",style="solid",tooltip=" "];
+  Node11 [id="Node000011",label="module_physics::hydrostatic\l_const_theta",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$namespacemodule__physics.html#ade9df465551218b4998ab68a01de8c15",tooltip="Calculates the hydrostatic background reference state (r, t) based on constant potential temperature ..."];
+  Node1 -> Node4 [id="edge42_Node000001_Node000004",color="steelblue1",style="solid",tooltip=" "];
+  Node1 -> Node5 [id="edge43_Node000001_Node000005",color="steelblue1",style="solid",tooltip=" "];
+  Node1 -> Node12 [id="edge44_Node000001_Node000012",color="steelblue1",style="solid",tooltip=" "];
+  Node12 [id="Node000012",label="module_physics::rungekutta",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$namespacemodule__physics.html#abb9976555d993ec55ec0b23022d3ca37",tooltip="Performs the 6-stage Runge-Kutta time integration using a dimensionally split approach."];
+  Node12 -> Node4 [id="edge45_Node000012_Node000004",color="steelblue1",style="solid",tooltip=" "];
+  Node12 -> Node5 [id="edge46_Node000012_Node000005",color="steelblue1",style="solid",tooltip=" "];
+  Node12 -> Node13 [id="edge47_Node000012_Node000013",color="steelblue1",style="solid",tooltip=" "];
+  Node13 [id="Node000013",label="module_physics::step",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$namespacemodule__physics.html#a9aab24d98317aae97cc902837ccf0356",tooltip="Calculates the tendency (RHS) for a given direction and updates the state."];
+  Node1 -> Node14 [id="edge48_Node000001_Node000014",color="steelblue1",style="solid",tooltip=" "];
+  Node14 [id="Node000014",label="module_physics::total\l_mass_energy",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$namespacemodule__physics.html#a033eff726731ee4a14a07ba0aa50826b",tooltip="Calculates the total mass and total energy of the domain."];
+  Node1 -> Node15 [id="edge49_Node000001_Node000015",color="steelblue1",style="solid",tooltip=" "];
+  Node15 [id="Node000015",label="module_output::write\l_record",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$namespacemodule__output.html#a23fefa7b7fadf77a32eff52aaf49558e",tooltip="Writes a single record of the atmospheric state to the NetCDF file."];
+  Node15 -> Node3 [id="edge50_Node000015_Node000003",color="steelblue1",style="solid",tooltip=" "];
+  Node15 -> Node4 [id="edge51_Node000015_Node000004",color="steelblue1",style="solid",tooltip=" "];
+  Node15 -> Node5 [id="edge52_Node000015_Node000005",color="steelblue1",style="solid",tooltip=" "];
+}

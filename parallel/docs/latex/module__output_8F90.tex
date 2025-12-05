@@ -1,0 +1,45 @@
+\doxysection{module\+\_\+output.\+F90 File Reference}
+\hypertarget{module__output_8F90}{}\label{module__output_8F90}\index{module\_output.F90@{module\_output.F90}}
+\doxysubsubsection*{Modules}
+\begin{DoxyCompactItemize}
+\item 
+module \mbox{\hyperlink{namespacemodule__output}{module\+\_\+output}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions/\+Subroutines}
+\begin{DoxyCompactItemize}
+\item 
+subroutine, public \mbox{\hyperlink{namespacemodule__output_a7a6044e87cf5c229bfb53c2e0ddb561d}{module\+\_\+output\+::create\+\_\+output}}
+\begin{DoxyCompactList}\small\item\em Creates the Net\+CDF output file and defines dimensions and variables. \end{DoxyCompactList}\item 
+subroutine, public \mbox{\hyperlink{namespacemodule__output_a23fefa7b7fadf77a32eff52aaf49558e}{module\+\_\+output\+::write\+\_\+record}} (atmostat, ref, etime)
+\begin{DoxyCompactList}\small\item\em Writes a single record of the atmospheric state to the Net\+CDF file. \end{DoxyCompactList}\item 
+subroutine, public \mbox{\hyperlink{namespacemodule__output_ad95a6ca2864d195b2f6feb2c4d500909}{module\+\_\+output\+::close\+\_\+output}}
+\begin{DoxyCompactList}\small\item\em Closes the Net\+CDF file, frees the MPI communicator, and deallocates arrays. \end{DoxyCompactList}\item 
+subroutine \mbox{\hyperlink{namespacemodule__output_a2e3279b425b65134d44ff700b6bb801e}{module\+\_\+output\+::ncwrap}} (ierr, line)
+\begin{DoxyCompactList}\small\item\em Net\+CDF error-\/wrapping subroutine. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+real(wp), dimension(\+:,\+:), allocatable \mbox{\hyperlink{namespacemodule__output_a9fed724b66111882e72d113971ce6359}{module\+\_\+output\+::dens}}
+\item 
+real(wp), dimension(\+:,\+:), allocatable \mbox{\hyperlink{namespacemodule__output_a57815b5bb187c1cde46e536ce7fe41b0}{module\+\_\+output\+::uwnd}}
+\item 
+real(wp), dimension(\+:,\+:), allocatable \mbox{\hyperlink{namespacemodule__output_a6bf7d0d18a2d24edee0d0008530f6dc8}{module\+\_\+output\+::wwnd}}
+\item 
+real(wp), dimension(\+:,\+:), allocatable \mbox{\hyperlink{namespacemodule__output_aebaa7832f84f9eea80c0a52da53dac2f}{module\+\_\+output\+::theta}}
+\item 
+integer \mbox{\hyperlink{namespacemodule__output_aed0bb858d4a87205339251b13b04b959}{module\+\_\+output\+::ncid}}
+\item 
+integer \mbox{\hyperlink{namespacemodule__output_a8525871ac79f662df5cc735275b6454f}{module\+\_\+output\+::dens\+\_\+varid}}
+\item 
+integer \mbox{\hyperlink{namespacemodule__output_a50334569f4192721b69a059b8f4028ad}{module\+\_\+output\+::uwnd\+\_\+varid}}
+\item 
+integer \mbox{\hyperlink{namespacemodule__output_a51bf937c0221986a75d8c599e0f0ff6f}{module\+\_\+output\+::wwnd\+\_\+varid}}
+\item 
+integer \mbox{\hyperlink{namespacemodule__output_aed26ad71ac3a0a8cff347e4d27992f75}{module\+\_\+output\+::theta\+\_\+varid}}
+\item 
+integer \mbox{\hyperlink{namespacemodule__output_a76c918f0833f998557bfcb3a6e2438f1}{module\+\_\+output\+::t\+\_\+varid}}
+\item 
+integer \mbox{\hyperlink{namespacemodule__output_a726b9741b0bc19ba1c99b2a77b446a36}{module\+\_\+output\+::rec\+\_\+out}}
+\item 
+integer \mbox{\hyperlink{namespacemodule__output_a47545552fc5ef03b6b878dda79d2a20f}{module\+\_\+output\+::nc\+\_\+comm}}
+\end{DoxyCompactItemize}

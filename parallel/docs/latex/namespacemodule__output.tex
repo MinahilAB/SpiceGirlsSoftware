@@ -1,0 +1,188 @@
+\doxysection{module\+\_\+output Module Reference}
+\hypertarget{namespacemodule__output}{}\label{namespacemodule__output}\index{module\_output@{module\_output}}
+\doxysubsubsection*{Functions/\+Subroutines}
+\begin{DoxyCompactItemize}
+\item 
+subroutine, public \mbox{\hyperlink{namespacemodule__output_a7a6044e87cf5c229bfb53c2e0ddb561d}{create\+\_\+output}}
+\begin{DoxyCompactList}\small\item\em Creates the Net\+CDF output file and defines dimensions and variables. \end{DoxyCompactList}\item 
+subroutine, public \mbox{\hyperlink{namespacemodule__output_a23fefa7b7fadf77a32eff52aaf49558e}{write\+\_\+record}} (atmostat, ref, etime)
+\begin{DoxyCompactList}\small\item\em Writes a single record of the atmospheric state to the Net\+CDF file. \end{DoxyCompactList}\item 
+subroutine, public \mbox{\hyperlink{namespacemodule__output_ad95a6ca2864d195b2f6feb2c4d500909}{close\+\_\+output}}
+\begin{DoxyCompactList}\small\item\em Closes the Net\+CDF file, frees the MPI communicator, and deallocates arrays. \end{DoxyCompactList}\item 
+subroutine \mbox{\hyperlink{namespacemodule__output_a2e3279b425b65134d44ff700b6bb801e}{ncwrap}} (ierr, line)
+\begin{DoxyCompactList}\small\item\em Net\+CDF error-\/wrapping subroutine. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+real(wp), dimension(\+:,\+:), allocatable \mbox{\hyperlink{namespacemodule__output_a9fed724b66111882e72d113971ce6359}{dens}}
+\item 
+real(wp), dimension(\+:,\+:), allocatable \mbox{\hyperlink{namespacemodule__output_a57815b5bb187c1cde46e536ce7fe41b0}{uwnd}}
+\item 
+real(wp), dimension(\+:,\+:), allocatable \mbox{\hyperlink{namespacemodule__output_a6bf7d0d18a2d24edee0d0008530f6dc8}{wwnd}}
+\item 
+real(wp), dimension(\+:,\+:), allocatable \mbox{\hyperlink{namespacemodule__output_aebaa7832f84f9eea80c0a52da53dac2f}{theta}}
+\item 
+integer \mbox{\hyperlink{namespacemodule__output_aed0bb858d4a87205339251b13b04b959}{ncid}}
+\item 
+integer \mbox{\hyperlink{namespacemodule__output_a8525871ac79f662df5cc735275b6454f}{dens\+\_\+varid}}
+\item 
+integer \mbox{\hyperlink{namespacemodule__output_a50334569f4192721b69a059b8f4028ad}{uwnd\+\_\+varid}}
+\item 
+integer \mbox{\hyperlink{namespacemodule__output_a51bf937c0221986a75d8c599e0f0ff6f}{wwnd\+\_\+varid}}
+\item 
+integer \mbox{\hyperlink{namespacemodule__output_aed26ad71ac3a0a8cff347e4d27992f75}{theta\+\_\+varid}}
+\item 
+integer \mbox{\hyperlink{namespacemodule__output_a76c918f0833f998557bfcb3a6e2438f1}{t\+\_\+varid}}
+\item 
+integer \mbox{\hyperlink{namespacemodule__output_a726b9741b0bc19ba1c99b2a77b446a36}{rec\+\_\+out}}
+\item 
+integer \mbox{\hyperlink{namespacemodule__output_a47545552fc5ef03b6b878dda79d2a20f}{nc\+\_\+comm}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function/\+Subroutine Documentation}
+\Hypertarget{namespacemodule__output_ad95a6ca2864d195b2f6feb2c4d500909}\label{namespacemodule__output_ad95a6ca2864d195b2f6feb2c4d500909} 
+\index{module\_output@{module\_output}!close\_output@{close\_output}}
+\index{close\_output@{close\_output}!module\_output@{module\_output}}
+\doxysubsubsection{\texorpdfstring{close\_output()}{close\_output()}}
+{\footnotesize\ttfamily subroutine, public module\+\_\+output\+::close\+\_\+output}
+
+
+
+Closes the Net\+CDF file, frees the MPI communicator, and deallocates arrays. 
+
+Here is the call graph for this function\+:
+% FIG 0
+Here is the caller graph for this function\+:
+% FIG 1
+\Hypertarget{namespacemodule__output_a7a6044e87cf5c229bfb53c2e0ddb561d}\label{namespacemodule__output_a7a6044e87cf5c229bfb53c2e0ddb561d} 
+\index{module\_output@{module\_output}!create\_output@{create\_output}}
+\index{create\_output@{create\_output}!module\_output@{module\_output}}
+\doxysubsubsection{\texorpdfstring{create\_output()}{create\_output()}}
+{\footnotesize\ttfamily subroutine, public module\+\_\+output\+::create\+\_\+output}
+
+
+
+Creates the Net\+CDF output file and defines dimensions and variables. 
+
+Sets up parallel Net\+CDF file creation and defines 4D variables (X, Z, Time) for density, velocity components, and potential temperature. Here is the call graph for this function\+:
+% FIG 2
+Here is the caller graph for this function\+:
+% FIG 3
+\Hypertarget{namespacemodule__output_a2e3279b425b65134d44ff700b6bb801e}\label{namespacemodule__output_a2e3279b425b65134d44ff700b6bb801e} 
+\index{module\_output@{module\_output}!ncwrap@{ncwrap}}
+\index{ncwrap@{ncwrap}!module\_output@{module\_output}}
+\doxysubsubsection{\texorpdfstring{ncwrap()}{ncwrap()}}
+{\footnotesize\ttfamily subroutine module\+\_\+output\+::ncwrap (\begin{DoxyParamCaption}\item[{integer, intent(in)}]{ierr,  }\item[{integer, intent(in)}]{line }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Net\+CDF error-\/wrapping subroutine. 
+
+Prints the Net\+CDF error string and stops execution if an error is detected. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em ierr} & The Net\+CDF status code. \\
+\hline
+\mbox{\texttt{ in}}  & {\em line} & The line number where the Net\+CDF call was made. \\
+\hline
+\end{DoxyParams}
+Here is the caller graph for this function\+:
+% FIG 4
+\Hypertarget{namespacemodule__output_a23fefa7b7fadf77a32eff52aaf49558e}\label{namespacemodule__output_a23fefa7b7fadf77a32eff52aaf49558e} 
+\index{module\_output@{module\_output}!write\_record@{write\_record}}
+\index{write\_record@{write\_record}!module\_output@{module\_output}}
+\doxysubsubsection{\texorpdfstring{write\_record()}{write\_record()}}
+{\footnotesize\ttfamily subroutine, public module\+\_\+output\+::write\+\_\+record (\begin{DoxyParamCaption}\item[{type(\mbox{\hyperlink{structmodule__types_1_1atmospheric__state}{atmospheric\+\_\+state}}), intent(in)}]{atmostat,  }\item[{type(\mbox{\hyperlink{structmodule__types_1_1reference__state}{reference\+\_\+state}}), intent(in)}]{ref,  }\item[{real(wp), intent(in)}]{etime }\end{DoxyParamCaption})}
+
+
+
+Writes a single record of the atmospheric state to the Net\+CDF file. 
+
+Calculates diagnostic fields (velocity, potential temperature perturbation) from prognostic variables and reference state, then writes the data using parallel I/O with appropriate start ({\ttfamily st3}) and count ({\ttfamily ct3}) indices for the domain decomposition. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em atmostat} & The current atmospheric state (prognostic variables). \\
+\hline
+\mbox{\texttt{ in}}  & {\em ref} & The reference hydrostatic state. \\
+\hline
+\mbox{\texttt{ in}}  & {\em etime} & The current elapsed simulation time. \\
+\hline
+\end{DoxyParams}
+Here is the call graph for this function\+:
+% FIG 5
+Here is the caller graph for this function\+:
+% FIG 6
+
+
+\doxysubsection{Variable Documentation}
+\Hypertarget{namespacemodule__output_a9fed724b66111882e72d113971ce6359}\label{namespacemodule__output_a9fed724b66111882e72d113971ce6359} 
+\index{module\_output@{module\_output}!dens@{dens}}
+\index{dens@{dens}!module\_output@{module\_output}}
+\doxysubsubsection{\texorpdfstring{dens}{dens}}
+{\footnotesize\ttfamily real(wp), dimension(\+:,\+:), allocatable module\+\_\+output\+::dens\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{namespacemodule__output_a8525871ac79f662df5cc735275b6454f}\label{namespacemodule__output_a8525871ac79f662df5cc735275b6454f} 
+\index{module\_output@{module\_output}!dens\_varid@{dens\_varid}}
+\index{dens\_varid@{dens\_varid}!module\_output@{module\_output}}
+\doxysubsubsection{\texorpdfstring{dens\_varid}{dens\_varid}}
+{\footnotesize\ttfamily integer module\+\_\+output\+::dens\+\_\+varid\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{namespacemodule__output_a47545552fc5ef03b6b878dda79d2a20f}\label{namespacemodule__output_a47545552fc5ef03b6b878dda79d2a20f} 
+\index{module\_output@{module\_output}!nc\_comm@{nc\_comm}}
+\index{nc\_comm@{nc\_comm}!module\_output@{module\_output}}
+\doxysubsubsection{\texorpdfstring{nc\_comm}{nc\_comm}}
+{\footnotesize\ttfamily integer module\+\_\+output\+::nc\+\_\+comm\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{namespacemodule__output_aed0bb858d4a87205339251b13b04b959}\label{namespacemodule__output_aed0bb858d4a87205339251b13b04b959} 
+\index{module\_output@{module\_output}!ncid@{ncid}}
+\index{ncid@{ncid}!module\_output@{module\_output}}
+\doxysubsubsection{\texorpdfstring{ncid}{ncid}}
+{\footnotesize\ttfamily integer module\+\_\+output\+::ncid\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{namespacemodule__output_a726b9741b0bc19ba1c99b2a77b446a36}\label{namespacemodule__output_a726b9741b0bc19ba1c99b2a77b446a36} 
+\index{module\_output@{module\_output}!rec\_out@{rec\_out}}
+\index{rec\_out@{rec\_out}!module\_output@{module\_output}}
+\doxysubsubsection{\texorpdfstring{rec\_out}{rec\_out}}
+{\footnotesize\ttfamily integer module\+\_\+output\+::rec\+\_\+out\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{namespacemodule__output_a76c918f0833f998557bfcb3a6e2438f1}\label{namespacemodule__output_a76c918f0833f998557bfcb3a6e2438f1} 
+\index{module\_output@{module\_output}!t\_varid@{t\_varid}}
+\index{t\_varid@{t\_varid}!module\_output@{module\_output}}
+\doxysubsubsection{\texorpdfstring{t\_varid}{t\_varid}}
+{\footnotesize\ttfamily integer module\+\_\+output\+::t\+\_\+varid\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{namespacemodule__output_aebaa7832f84f9eea80c0a52da53dac2f}\label{namespacemodule__output_aebaa7832f84f9eea80c0a52da53dac2f} 
+\index{module\_output@{module\_output}!theta@{theta}}
+\index{theta@{theta}!module\_output@{module\_output}}
+\doxysubsubsection{\texorpdfstring{theta}{theta}}
+{\footnotesize\ttfamily real(wp), dimension(\+:,\+:), allocatable module\+\_\+output\+::theta\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{namespacemodule__output_aed26ad71ac3a0a8cff347e4d27992f75}\label{namespacemodule__output_aed26ad71ac3a0a8cff347e4d27992f75} 
+\index{module\_output@{module\_output}!theta\_varid@{theta\_varid}}
+\index{theta\_varid@{theta\_varid}!module\_output@{module\_output}}
+\doxysubsubsection{\texorpdfstring{theta\_varid}{theta\_varid}}
+{\footnotesize\ttfamily integer module\+\_\+output\+::theta\+\_\+varid\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{namespacemodule__output_a57815b5bb187c1cde46e536ce7fe41b0}\label{namespacemodule__output_a57815b5bb187c1cde46e536ce7fe41b0} 
+\index{module\_output@{module\_output}!uwnd@{uwnd}}
+\index{uwnd@{uwnd}!module\_output@{module\_output}}
+\doxysubsubsection{\texorpdfstring{uwnd}{uwnd}}
+{\footnotesize\ttfamily real(wp), dimension(\+:,\+:), allocatable module\+\_\+output\+::uwnd\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{namespacemodule__output_a50334569f4192721b69a059b8f4028ad}\label{namespacemodule__output_a50334569f4192721b69a059b8f4028ad} 
+\index{module\_output@{module\_output}!uwnd\_varid@{uwnd\_varid}}
+\index{uwnd\_varid@{uwnd\_varid}!module\_output@{module\_output}}
+\doxysubsubsection{\texorpdfstring{uwnd\_varid}{uwnd\_varid}}
+{\footnotesize\ttfamily integer module\+\_\+output\+::uwnd\+\_\+varid\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{namespacemodule__output_a6bf7d0d18a2d24edee0d0008530f6dc8}\label{namespacemodule__output_a6bf7d0d18a2d24edee0d0008530f6dc8} 
+\index{module\_output@{module\_output}!wwnd@{wwnd}}
+\index{wwnd@{wwnd}!module\_output@{module\_output}}
+\doxysubsubsection{\texorpdfstring{wwnd}{wwnd}}
+{\footnotesize\ttfamily real(wp), dimension(\+:,\+:), allocatable module\+\_\+output\+::wwnd\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{namespacemodule__output_a51bf937c0221986a75d8c599e0f0ff6f}\label{namespacemodule__output_a51bf937c0221986a75d8c599e0f0ff6f} 
+\index{module\_output@{module\_output}!wwnd\_varid@{wwnd\_varid}}
+\index{wwnd\_varid@{wwnd\_varid}!module\_output@{module\_output}}
+\doxysubsubsection{\texorpdfstring{wwnd\_varid}{wwnd\_varid}}
+{\footnotesize\ttfamily integer module\+\_\+output\+::wwnd\+\_\+varid\hspace{0.3cm}{\ttfamily [private]}}
+

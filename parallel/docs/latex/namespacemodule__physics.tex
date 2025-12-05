@@ -1,0 +1,286 @@
+\doxysection{module\+\_\+physics Module Reference}
+\hypertarget{namespacemodule__physics}{}\label{namespacemodule__physics}\index{module\_physics@{module\_physics}}
+\doxysubsubsection*{Functions/\+Subroutines}
+\begin{DoxyCompactItemize}
+\item 
+subroutine, public \mbox{\hyperlink{namespacemodule__physics_ae1fe02f4b28a385c8f831662384972d3}{init}} (etime, output\+\_\+counter, \mbox{\hyperlink{namespacemodule__physics_a413f15d16ee499387862601f2e2b25bb}{dt}})
+\begin{DoxyCompactList}\small\item\em Initializes the MPI/\+Open\+ACC environment, grid dimensions, and initial atmospheric state. \end{DoxyCompactList}\item 
+subroutine, public \mbox{\hyperlink{namespacemodule__physics_abb9976555d993ec55ec0b23022d3ca37}{rungekutta}} (s0, s1, fl, \mbox{\hyperlink{namespacemodule__physics_a0e6fdf56a4ae644676d8ddf7d423a937}{tend}}, \mbox{\hyperlink{namespacemodule__physics_a413f15d16ee499387862601f2e2b25bb}{dt}})
+\begin{DoxyCompactList}\small\item\em Performs the 6-\/stage Runge-\/\+Kutta time integration using a dimensionally split approach. \end{DoxyCompactList}\item 
+subroutine \mbox{\hyperlink{namespacemodule__physics_a9aab24d98317aae97cc902837ccf0356}{step}} (s0, s1, s2, \mbox{\hyperlink{namespacemodule__physics_a413f15d16ee499387862601f2e2b25bb}{dt}}, dir, fl, \mbox{\hyperlink{namespacemodule__physics_a0e6fdf56a4ae644676d8ddf7d423a937}{tend}})
+\begin{DoxyCompactList}\small\item\em Calculates the tendency (RHS) for a given direction and updates the state. \end{DoxyCompactList}\item 
+subroutine \mbox{\hyperlink{namespacemodule__physics_a98d11a39c948a714560500cef9252995}{thermal}} (x, z, r, u, w, t, hr, ht)
+\begin{DoxyCompactList}\small\item\em Calculates the state variables and reference state at a given physical point ({\ttfamily x}, {\ttfamily z}). \end{DoxyCompactList}\item 
+subroutine \mbox{\hyperlink{namespacemodule__physics_ade9df465551218b4998ab68a01de8c15}{hydrostatic\+\_\+const\+\_\+theta}} (z, r, t)
+\begin{DoxyCompactList}\small\item\em Calculates the hydrostatic background reference state ({\ttfamily r}, {\ttfamily t}) based on constant potential temperature ( $\theta_0$). \end{DoxyCompactList}\item 
+elemental real(wp) function \mbox{\hyperlink{namespacemodule__physics_a8ce13dc780b59866bfa31412c6ed671e}{ellipse}} (x, z, \mbox{\hyperlink{namespacephysical__parameters_ab72ae4548cbef7f91312e608a332e414}{amp}}, \mbox{\hyperlink{namespacephysical__parameters_a74d4846f645c6ccdfd94ed0042ea23a6}{x0}}, \mbox{\hyperlink{namespacephysical__parameters_a3099802011e57320f78a80871f15dba6}{z0}}, x1, z1)
+\begin{DoxyCompactList}\small\item\em Calculates a thermal perturbation using a cosine-\/squared profile within an elliptical region. \end{DoxyCompactList}\item 
+subroutine, public \mbox{\hyperlink{namespacemodule__physics_a5f613f80cdbf71e8e0280a69bda19f36}{finalize}} ()
+\begin{DoxyCompactList}\small\item\em Deallocates all dynamically allocated memory and finalizes MPI/\+Open\+ACC resources. \end{DoxyCompactList}\item 
+subroutine, public \mbox{\hyperlink{namespacemodule__physics_a033eff726731ee4a14a07ba0aa50826b}{total\+\_\+mass\+\_\+energy}} (mass, te)
+\begin{DoxyCompactList}\small\item\em Calculates the total mass and total energy of the domain. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+real(wp), public \mbox{\hyperlink{namespacemodule__physics_a413f15d16ee499387862601f2e2b25bb}{dt}}
+\item 
+real(wp) \mbox{\hyperlink{namespacemodule__physics_ae32130f66fd697ae3d82a8c516c738a2}{dx}}
+\item 
+real(wp) \mbox{\hyperlink{namespacemodule__physics_a0b89ace2e1de5b96fbc54f520fac8fa1}{dz}}
+\item 
+type(\mbox{\hyperlink{structmodule__types_1_1atmospheric__state}{atmospheric\+\_\+state}}), public \mbox{\hyperlink{namespacemodule__physics_a4000e3ab50633a954576e8d9a06b0e0c}{oldstat}}
+\item 
+type(\mbox{\hyperlink{structmodule__types_1_1atmospheric__state}{atmospheric\+\_\+state}}), public \mbox{\hyperlink{namespacemodule__physics_a227af77b35bcf82aa9fd6189149081ea}{newstat}}
+\item 
+type(\mbox{\hyperlink{structmodule__types_1_1atmospheric__tendency}{atmospheric\+\_\+tendency}}), public \mbox{\hyperlink{namespacemodule__physics_a0e6fdf56a4ae644676d8ddf7d423a937}{tend}}
+\item 
+type(\mbox{\hyperlink{structmodule__types_1_1atmospheric__flux}{atmospheric\+\_\+flux}}), public \mbox{\hyperlink{namespacemodule__physics_a62aab09348cbb7eb3106858eafb0e513}{flux}}
+\item 
+type(\mbox{\hyperlink{structmodule__types_1_1reference__state}{reference\+\_\+state}}), public \mbox{\hyperlink{namespacemodule__physics_a8a0754ffd53e41419ccf888f455177e2}{ref}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function/\+Subroutine Documentation}
+\Hypertarget{namespacemodule__physics_a8ce13dc780b59866bfa31412c6ed671e}\label{namespacemodule__physics_a8ce13dc780b59866bfa31412c6ed671e} 
+\index{module\_physics@{module\_physics}!ellipse@{ellipse}}
+\index{ellipse@{ellipse}!module\_physics@{module\_physics}}
+\doxysubsubsection{\texorpdfstring{ellipse()}{ellipse()}}
+{\footnotesize\ttfamily elemental real(wp) function module\+\_\+physics\+::ellipse (\begin{DoxyParamCaption}\item[{real(wp), intent(in)}]{x,  }\item[{real(wp), intent(in)}]{z,  }\item[{real(wp), intent(in)}]{amp,  }\item[{real(wp), intent(in)}]{x0,  }\item[{real(wp), intent(in)}]{z0,  }\item[{real(wp), intent(in)}]{x1,  }\item[{real(wp), intent(in)}]{z1 }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Calculates a thermal perturbation using a cosine-\/squared profile within an elliptical region. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em x} & X-\/coordinate. \\
+\hline
+\mbox{\texttt{ in}}  & {\em z} & Z-\/coordinate. \\
+\hline
+\mbox{\texttt{ in}}  & {\em amp} & Amplitude of the perturbation. \\
+\hline
+\mbox{\texttt{ in}}  & {\em x0,z0} & Center coordinates of the ellipse. \\
+\hline
+\mbox{\texttt{ in}}  & {\em x1,z1} & Half-\/axes lengths of the ellipse. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The perturbation value. 
+\end{DoxyReturn}
+Here is the caller graph for this function\+:
+% FIG 0
+\Hypertarget{namespacemodule__physics_a5f613f80cdbf71e8e0280a69bda19f36}\label{namespacemodule__physics_a5f613f80cdbf71e8e0280a69bda19f36} 
+\index{module\_physics@{module\_physics}!finalize@{finalize}}
+\index{finalize@{finalize}!module\_physics@{module\_physics}}
+\doxysubsubsection{\texorpdfstring{finalize()}{finalize()}}
+{\footnotesize\ttfamily subroutine, public module\+\_\+physics\+::finalize}
+
+
+
+Deallocates all dynamically allocated memory and finalizes MPI/\+Open\+ACC resources. 
+
+Here is the caller graph for this function\+:
+% FIG 1
+\Hypertarget{namespacemodule__physics_ade9df465551218b4998ab68a01de8c15}\label{namespacemodule__physics_ade9df465551218b4998ab68a01de8c15} 
+\index{module\_physics@{module\_physics}!hydrostatic\_const\_theta@{hydrostatic\_const\_theta}}
+\index{hydrostatic\_const\_theta@{hydrostatic\_const\_theta}!module\_physics@{module\_physics}}
+\doxysubsubsection{\texorpdfstring{hydrostatic\_const\_theta()}{hydrostatic\_const\_theta()}}
+{\footnotesize\ttfamily subroutine module\+\_\+physics\+::hydrostatic\+\_\+const\+\_\+theta (\begin{DoxyParamCaption}\item[{real(wp), intent(in)}]{z,  }\item[{real(wp), intent(out)}]{r,  }\item[{real(wp), intent(out)}]{t }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Calculates the hydrostatic background reference state ({\ttfamily r}, {\ttfamily t}) based on constant potential temperature ( $\theta_0$). 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em z} & Z-\/coordinate. \\
+\hline
+\mbox{\texttt{ out}}  & {\em r} & Reference density. \\
+\hline
+\mbox{\texttt{ out}}  & {\em t} & Reference potential temperature. \\
+\hline
+\end{DoxyParams}
+Here is the caller graph for this function\+:
+% FIG 2
+\Hypertarget{namespacemodule__physics_ae1fe02f4b28a385c8f831662384972d3}\label{namespacemodule__physics_ae1fe02f4b28a385c8f831662384972d3} 
+\index{module\_physics@{module\_physics}!init@{init}}
+\index{init@{init}!module\_physics@{module\_physics}}
+\doxysubsubsection{\texorpdfstring{init()}{init()}}
+{\footnotesize\ttfamily subroutine, public module\+\_\+physics\+::init (\begin{DoxyParamCaption}\item[{real(wp), intent(out)}]{etime,  }\item[{real(wp), intent(out)}]{output\+\_\+counter,  }\item[{real(wp), intent(out)}]{dt }\end{DoxyParamCaption})}
+
+
+
+Initializes the MPI/\+Open\+ACC environment, grid dimensions, and initial atmospheric state. 
+
+This routine sets up the domain decomposition, assigns GPU devices, allocates memory, and calculates the initial condition including the thermal bubble perturbation. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ out}}  & {\em etime} & The elapsed simulation time (set to 0.\+0 initially). \\
+\hline
+\mbox{\texttt{ out}}  & {\em output\+\_\+counter} & The output counter (set to 0.\+0 initially). \\
+\hline
+\mbox{\texttt{ out}}  & {\em dt} & The calculated time step size. \\
+\hline
+\end{DoxyParams}
+Here is the call graph for this function\+:
+% FIG 3
+Here is the caller graph for this function\+:
+% FIG 4
+\Hypertarget{namespacemodule__physics_abb9976555d993ec55ec0b23022d3ca37}\label{namespacemodule__physics_abb9976555d993ec55ec0b23022d3ca37} 
+\index{module\_physics@{module\_physics}!rungekutta@{rungekutta}}
+\index{rungekutta@{rungekutta}!module\_physics@{module\_physics}}
+\doxysubsubsection{\texorpdfstring{rungekutta()}{rungekutta()}}
+{\footnotesize\ttfamily subroutine, public module\+\_\+physics\+::rungekutta (\begin{DoxyParamCaption}\item[{type(\mbox{\hyperlink{structmodule__types_1_1atmospheric__state}{atmospheric\+\_\+state}}), intent(inout)}]{s0,  }\item[{type(\mbox{\hyperlink{structmodule__types_1_1atmospheric__state}{atmospheric\+\_\+state}}), intent(inout)}]{s1,  }\item[{type(\mbox{\hyperlink{structmodule__types_1_1atmospheric__flux}{atmospheric\+\_\+flux}}), intent(inout)}]{fl,  }\item[{type(\mbox{\hyperlink{structmodule__types_1_1atmospheric__tendency}{atmospheric\+\_\+tendency}}), intent(inout)}]{tend,  }\item[{real(wp), intent(in)}]{dt }\end{DoxyParamCaption})}
+
+
+
+Performs the 6-\/stage Runge-\/\+Kutta time integration using a dimensionally split approach. 
+
+It applies three RK steps in the X-\/direction and three RK steps in the Z-\/direction, alternating the order of direction splitting each time step. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em s0} & State used as the initial condition for the RK step. \\
+\hline
+\mbox{\texttt{ in,out}}  & {\em s1} & State used for intermediate RK steps. \\
+\hline
+\mbox{\texttt{ in,out}}  & {\em fl} & Temporary flux storage. \\
+\hline
+\mbox{\texttt{ in,out}}  & {\em tend} & Temporary tendency storage. \\
+\hline
+\mbox{\texttt{ in}}  & {\em dt} & The time step size. \\
+\hline
+\end{DoxyParams}
+Here is the call graph for this function\+:
+% FIG 5
+Here is the caller graph for this function\+:
+% FIG 6
+\Hypertarget{namespacemodule__physics_a9aab24d98317aae97cc902837ccf0356}\label{namespacemodule__physics_a9aab24d98317aae97cc902837ccf0356} 
+\index{module\_physics@{module\_physics}!step@{step}}
+\index{step@{step}!module\_physics@{module\_physics}}
+\doxysubsubsection{\texorpdfstring{step()}{step()}}
+{\footnotesize\ttfamily subroutine module\+\_\+physics\+::step (\begin{DoxyParamCaption}\item[{type(\mbox{\hyperlink{structmodule__types_1_1atmospheric__state}{atmospheric\+\_\+state}}), intent(in)}]{s0,  }\item[{type(\mbox{\hyperlink{structmodule__types_1_1atmospheric__state}{atmospheric\+\_\+state}}), intent(inout)}]{s1,  }\item[{type(\mbox{\hyperlink{structmodule__types_1_1atmospheric__state}{atmospheric\+\_\+state}}), intent(inout)}]{s2,  }\item[{real(wp), intent(in)}]{dt,  }\item[{integer, intent(in)}]{dir,  }\item[{type(\mbox{\hyperlink{structmodule__types_1_1atmospheric__flux}{atmospheric\+\_\+flux}}), intent(inout)}]{fl,  }\item[{type(\mbox{\hyperlink{structmodule__types_1_1atmospheric__tendency}{atmospheric\+\_\+tendency}}), intent(inout)}]{tend }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Calculates the tendency (RHS) for a given direction and updates the state. 
+
+This routine applies the semi-\/discretized formula\+: $ S^{n+1} = S^n + \Delta t \cdot Tendency(S^*) $. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em s0} & The state at time level $n$. \\
+\hline
+\mbox{\texttt{ in}}  & {\em s1} & The state at the intermediate time level ( $S^*$) used to calculate the tendency. \\
+\hline
+\mbox{\texttt{ in,out}}  & {\em s2} & The resulting state ( $S^{n+1}$). \\
+\hline
+\mbox{\texttt{ in}}  & {\em dt} & The time step coefficient for this stage. \\
+\hline
+\mbox{\texttt{ in}}  & {\em dir} & The direction (DIR\+\_\+X or DIR\+\_\+Z) for which to calculate the tendency. \\
+\hline
+\mbox{\texttt{ in,out}}  & {\em fl} & Temporary flux storage. \\
+\hline
+\mbox{\texttt{ in,out}}  & {\em tend} & Temporary tendency storage. \\
+\hline
+\end{DoxyParams}
+Here is the caller graph for this function\+:
+% FIG 7
+\Hypertarget{namespacemodule__physics_a98d11a39c948a714560500cef9252995}\label{namespacemodule__physics_a98d11a39c948a714560500cef9252995} 
+\index{module\_physics@{module\_physics}!thermal@{thermal}}
+\index{thermal@{thermal}!module\_physics@{module\_physics}}
+\doxysubsubsection{\texorpdfstring{thermal()}{thermal()}}
+{\footnotesize\ttfamily subroutine module\+\_\+physics\+::thermal (\begin{DoxyParamCaption}\item[{real(wp), intent(in)}]{x,  }\item[{real(wp), intent(in)}]{z,  }\item[{real(wp), intent(out)}]{r,  }\item[{real(wp), intent(out)}]{u,  }\item[{real(wp), intent(out)}]{w,  }\item[{real(wp), intent(out)}]{t,  }\item[{real(wp), intent(out)}]{hr,  }\item[{real(wp), intent(out)}]{ht }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Calculates the state variables and reference state at a given physical point ({\ttfamily x}, {\ttfamily z}). 
+
+This routine sets up the background hydrostatic state and adds the initial thermal bubble perturbation. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em x} & X-\/coordinate. \\
+\hline
+\mbox{\texttt{ in}}  & {\em z} & Z-\/coordinate. \\
+\hline
+\mbox{\texttt{ out}}  & {\em r} & Density perturbation. \\
+\hline
+\mbox{\texttt{ out}}  & {\em u} & U-\/velocity (momentum). \\
+\hline
+\mbox{\texttt{ out}}  & {\em w} & W-\/velocity (momentum). \\
+\hline
+\mbox{\texttt{ out}}  & {\em t} & Potential temperature perturbation. \\
+\hline
+\mbox{\texttt{ out}}  & {\em hr} & Reference density. \\
+\hline
+\mbox{\texttt{ out}}  & {\em ht} & Reference potential temperature. \\
+\hline
+\end{DoxyParams}
+Here is the call graph for this function\+:
+% FIG 8
+Here is the caller graph for this function\+:
+% FIG 9
+\Hypertarget{namespacemodule__physics_a033eff726731ee4a14a07ba0aa50826b}\label{namespacemodule__physics_a033eff726731ee4a14a07ba0aa50826b} 
+\index{module\_physics@{module\_physics}!total\_mass\_energy@{total\_mass\_energy}}
+\index{total\_mass\_energy@{total\_mass\_energy}!module\_physics@{module\_physics}}
+\doxysubsubsection{\texorpdfstring{total\_mass\_energy()}{total\_mass\_energy()}}
+{\footnotesize\ttfamily subroutine, public module\+\_\+physics\+::total\+\_\+mass\+\_\+energy (\begin{DoxyParamCaption}\item[{real(wp), intent(out)}]{mass,  }\item[{real(wp), intent(out)}]{te }\end{DoxyParamCaption})}
+
+
+
+Calculates the total mass and total energy of the domain. 
+
+It computes the local sum on each rank and then performs an MPI reduction (MPI\+\_\+\+Allreduce) to obtain the global total, which is useful for conservation checks. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ out}}  & {\em mass} & The total mass of the system. \\
+\hline
+\mbox{\texttt{ out}}  & {\em te} & The total energy of the system. \\
+\hline
+\end{DoxyParams}
+Here is the caller graph for this function\+:
+% FIG 10
+
+
+\doxysubsection{Variable Documentation}
+\Hypertarget{namespacemodule__physics_a413f15d16ee499387862601f2e2b25bb}\label{namespacemodule__physics_a413f15d16ee499387862601f2e2b25bb} 
+\index{module\_physics@{module\_physics}!dt@{dt}}
+\index{dt@{dt}!module\_physics@{module\_physics}}
+\doxysubsubsection{\texorpdfstring{dt}{dt}}
+{\footnotesize\ttfamily real(wp), public module\+\_\+physics\+::dt}
+
+\Hypertarget{namespacemodule__physics_ae32130f66fd697ae3d82a8c516c738a2}\label{namespacemodule__physics_ae32130f66fd697ae3d82a8c516c738a2} 
+\index{module\_physics@{module\_physics}!dx@{dx}}
+\index{dx@{dx}!module\_physics@{module\_physics}}
+\doxysubsubsection{\texorpdfstring{dx}{dx}}
+{\footnotesize\ttfamily real(wp) module\+\_\+physics\+::dx\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{namespacemodule__physics_a0b89ace2e1de5b96fbc54f520fac8fa1}\label{namespacemodule__physics_a0b89ace2e1de5b96fbc54f520fac8fa1} 
+\index{module\_physics@{module\_physics}!dz@{dz}}
+\index{dz@{dz}!module\_physics@{module\_physics}}
+\doxysubsubsection{\texorpdfstring{dz}{dz}}
+{\footnotesize\ttfamily real(wp) module\+\_\+physics\+::dz\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{namespacemodule__physics_a62aab09348cbb7eb3106858eafb0e513}\label{namespacemodule__physics_a62aab09348cbb7eb3106858eafb0e513} 
+\index{module\_physics@{module\_physics}!flux@{flux}}
+\index{flux@{flux}!module\_physics@{module\_physics}}
+\doxysubsubsection{\texorpdfstring{flux}{flux}}
+{\footnotesize\ttfamily type(\mbox{\hyperlink{structmodule__types_1_1atmospheric__flux}{atmospheric\+\_\+flux}}), public module\+\_\+physics\+::flux}
+
+\Hypertarget{namespacemodule__physics_a227af77b35bcf82aa9fd6189149081ea}\label{namespacemodule__physics_a227af77b35bcf82aa9fd6189149081ea} 
+\index{module\_physics@{module\_physics}!newstat@{newstat}}
+\index{newstat@{newstat}!module\_physics@{module\_physics}}
+\doxysubsubsection{\texorpdfstring{newstat}{newstat}}
+{\footnotesize\ttfamily type(\mbox{\hyperlink{structmodule__types_1_1atmospheric__state}{atmospheric\+\_\+state}}), public module\+\_\+physics\+::newstat}
+
+\Hypertarget{namespacemodule__physics_a4000e3ab50633a954576e8d9a06b0e0c}\label{namespacemodule__physics_a4000e3ab50633a954576e8d9a06b0e0c} 
+\index{module\_physics@{module\_physics}!oldstat@{oldstat}}
+\index{oldstat@{oldstat}!module\_physics@{module\_physics}}
+\doxysubsubsection{\texorpdfstring{oldstat}{oldstat}}
+{\footnotesize\ttfamily type(\mbox{\hyperlink{structmodule__types_1_1atmospheric__state}{atmospheric\+\_\+state}}), public module\+\_\+physics\+::oldstat}
+
+\Hypertarget{namespacemodule__physics_a8a0754ffd53e41419ccf888f455177e2}\label{namespacemodule__physics_a8a0754ffd53e41419ccf888f455177e2} 
+\index{module\_physics@{module\_physics}!ref@{ref}}
+\index{ref@{ref}!module\_physics@{module\_physics}}
+\doxysubsubsection{\texorpdfstring{ref}{ref}}
+{\footnotesize\ttfamily type(\mbox{\hyperlink{structmodule__types_1_1reference__state}{reference\+\_\+state}}), public module\+\_\+physics\+::ref}
+
+\Hypertarget{namespacemodule__physics_a0e6fdf56a4ae644676d8ddf7d423a937}\label{namespacemodule__physics_a0e6fdf56a4ae644676d8ddf7d423a937} 
+\index{module\_physics@{module\_physics}!tend@{tend}}
+\index{tend@{tend}!module\_physics@{module\_physics}}
+\doxysubsubsection{\texorpdfstring{tend}{tend}}
+{\footnotesize\ttfamily type(\mbox{\hyperlink{structmodule__types_1_1atmospheric__tendency}{atmospheric\+\_\+tendency}}), public module\+\_\+physics\+::tend}
+

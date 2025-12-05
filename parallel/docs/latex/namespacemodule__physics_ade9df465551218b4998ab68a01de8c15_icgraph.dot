@@ -1,0 +1,15 @@
+digraph "module_physics::hydrostatic_const_theta"
+{
+ // LATEX_PDF_SIZE
+  bgcolor="transparent";
+  edge [fontname=FreeSans,fontsize=10,labelfontname=FreeSans,labelfontsize=10];
+  node [fontname=FreeSans,fontsize=10,shape=box,height=0.2,width=0.4];
+  rankdir="RL";
+  Node1 [id="Node000001",label="module_physics::hydrostatic\l_const_theta",height=0.2,width=0.4,color="gray40", fillcolor="grey60", style="filled", fontcolor="black",tooltip="Calculates the hydrostatic background reference state (r, t) based on constant potential temperature ..."];
+  Node1 -> Node2 [id="edge4_Node000001_Node000002",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node2 [id="Node000002",label="module_physics::thermal",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$namespacemodule__physics.html#a98d11a39c948a714560500cef9252995",tooltip="Calculates the state variables and reference state at a given physical point (x, z)."];
+  Node2 -> Node3 [id="edge5_Node000002_Node000003",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node3 [id="Node000003",label="module_physics::init",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$namespacemodule__physics.html#ae1fe02f4b28a385c8f831662384972d3",tooltip="Initializes the MPI/OpenACC environment, grid dimensions, and initial atmospheric state."];
+  Node3 -> Node4 [id="edge6_Node000003_Node000004",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node4 [id="Node000004",label="atmosphere_model",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$model_8f90.html#a3a0eca0602806f251687913d40547345",tooltip=" "];
+}

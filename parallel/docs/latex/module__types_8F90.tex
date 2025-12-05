@@ -1,0 +1,83 @@
+\doxysection{module\+\_\+types.\+F90 File Reference}
+\hypertarget{module__types_8F90}{}\label{module__types_8F90}\index{module\_types.F90@{module\_types.F90}}
+
+
+Defines all core derived types for the atmospheric model state, fluxes, and tendencies, along with parallel data management and kernel execution routines.  
+
+
+\doxysubsubsection*{Data Types}
+\begin{DoxyCompactItemize}
+\item 
+type \mbox{\hyperlink{structmodule__types_1_1reference__state}{module\+\_\+types\+::reference\+\_\+state}}
+\begin{DoxyCompactList}\small\item\em Derived type for storing the constant reference atmospheric state. \end{DoxyCompactList}\item 
+type \mbox{\hyperlink{structmodule__types_1_1atmospheric__state}{module\+\_\+types\+::atmospheric\+\_\+state}}
+\begin{DoxyCompactList}\small\item\em Derived type for the time-\/dependent atmospheric state variables. \end{DoxyCompactList}\item 
+type \mbox{\hyperlink{structmodule__types_1_1atmospheric__flux}{module\+\_\+types\+::atmospheric\+\_\+flux}}
+\begin{DoxyCompactList}\small\item\em Derived type for storing calculated fluxes. \end{DoxyCompactList}\item 
+type \mbox{\hyperlink{structmodule__types_1_1atmospheric__tendency}{module\+\_\+types\+::atmospheric\+\_\+tendency}}
+\begin{DoxyCompactList}\small\item\em Derived type for storing calculated tendencies (time derivatives). \end{DoxyCompactList}\item 
+interface \mbox{\hyperlink{interfacemodule__types_1_1assignment_07_0a_08}{module\+\_\+types\+::assignment(=)}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Modules}
+\begin{DoxyCompactItemize}
+\item 
+module \mbox{\hyperlink{namespacemodule__types}{module\+\_\+types}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions/\+Subroutines}
+\begin{DoxyCompactItemize}
+\item 
+subroutine \mbox{\hyperlink{namespacemodule__types_a5b8cd0e0cb1dcaff286034906dacdf04}{module\+\_\+types\+::new\+\_\+state}} (atmo)
+\begin{DoxyCompactList}\small\item\em Allocates memory for an atmospheric state type instance. \end{DoxyCompactList}\item 
+subroutine \mbox{\hyperlink{namespacemodule__types_aa2182081083c614acbc514e07456b663}{module\+\_\+types\+::set\+\_\+state}} (atmo, xval)
+\begin{DoxyCompactList}\small\item\em Sets all grid points of a state to a scalar value. \end{DoxyCompactList}\item 
+subroutine \mbox{\hyperlink{namespacemodule__types_ab0250041179f10af3e1507838b32d823}{module\+\_\+types\+::del\+\_\+state}} (atmo)
+\begin{DoxyCompactList}\small\item\em Deallocates memory for an atmospheric state type instance. \end{DoxyCompactList}\item 
+subroutine \mbox{\hyperlink{namespacemodule__types_afe9fa2f2b343fb57f5ccab00f23c5319}{module\+\_\+types\+::update}} (s2, s0, tend, dt)
+\begin{DoxyCompactList}\small\item\em Performs a time integration update step. \end{DoxyCompactList}\item 
+subroutine \mbox{\hyperlink{namespacemodule__types_ab3456af815332b9f642884127999ac5f}{module\+\_\+types\+::xtend}} (tendency, flux, ref, atmostat, dx, dt)
+\begin{DoxyCompactList}\small\item\em Calculates the X-\/dimension contribution to the total tendency. \end{DoxyCompactList}\item 
+subroutine \mbox{\hyperlink{namespacemodule__types_a7c4bb05550ffff832dec90f3bcffdd9f}{module\+\_\+types\+::ztend}} (tendency, flux, ref, atmostat, dz, dt)
+\begin{DoxyCompactList}\small\item\em Calculates the Z-\/dimension contribution to the total tendency. \end{DoxyCompactList}\item 
+subroutine \mbox{\hyperlink{namespacemodule__types_ab2b054b141f61d80aa631f0fde492a49}{module\+\_\+types\+::exchange\+\_\+halo\+\_\+x}} (s)
+\begin{DoxyCompactList}\small\item\em Performs the MPI-\/based halo exchange in the X-\/dimension. \end{DoxyCompactList}\item 
+subroutine \mbox{\hyperlink{namespacemodule__types_a8d3bc10317121d9bc516db6e55e2161e}{module\+\_\+types\+::pack\+\_\+strip}} (mem, i\+\_\+start, k\+\_\+start, \mbox{\hyperlink{namespacedimensions_a427e047257b9e7e90fb9ddfc23d808a4}{nx\+\_\+loc}}, width, buffer)
+\begin{DoxyCompactList}\small\item\em Packs a strip of data (e.\+g., the halo region) into a 1D send buffer. \end{DoxyCompactList}\item 
+subroutine \mbox{\hyperlink{namespacemodule__types_aac2f133a12508fa6394d789d7b6186e0}{module\+\_\+types\+::unpack\+\_\+strip}} (buffer, mem, i\+\_\+start, k\+\_\+start)
+\begin{DoxyCompactList}\small\item\em Unpacks data from a 1D receive buffer into the state\textquotesingle{}s halo region. \end{DoxyCompactList}\item 
+subroutine \mbox{\hyperlink{namespacemodule__types_a3e0efbac2fc1466310290014b1fb5bbd}{module\+\_\+types\+::exchange\+\_\+halo\+\_\+z}} (s, ref)
+\begin{DoxyCompactList}\small\item\em Implements the Z-\/dimension (vertical) halo exchange. \end{DoxyCompactList}\item 
+subroutine \mbox{\hyperlink{namespacemodule__types_a9ff6dddddc17e60a941fb8eb7185b355}{module\+\_\+types\+::new\+\_\+ref}} (ref)
+\begin{DoxyCompactList}\small\item\em Allocates memory for the reference state. \end{DoxyCompactList}\item 
+subroutine \mbox{\hyperlink{namespacemodule__types_a80fc0a2a1cf0f8e123088de5c8663c06}{module\+\_\+types\+::del\+\_\+ref}} (ref)
+\begin{DoxyCompactList}\small\item\em Deallocates memory for the reference state. \end{DoxyCompactList}\item 
+subroutine \mbox{\hyperlink{namespacemodule__types_a1f723bba8f127c3672b0df63da373f52}{module\+\_\+types\+::new\+\_\+flux}} (flux)
+\begin{DoxyCompactList}\small\item\em Allocates memory for an atmospheric flux type instance. \end{DoxyCompactList}\item 
+subroutine \mbox{\hyperlink{namespacemodule__types_a648446aa2fa918ac96a24e2564e3b811}{module\+\_\+types\+::set\+\_\+flux}} (flux, xval)
+\begin{DoxyCompactList}\small\item\em Sets all grid points of a flux field to a scalar value. \end{DoxyCompactList}\item 
+subroutine \mbox{\hyperlink{namespacemodule__types_a3bc9a92dffe823efcdc74bdcc3827e0d}{module\+\_\+types\+::del\+\_\+flux}} (flux)
+\begin{DoxyCompactList}\small\item\em Deallocates memory for an atmospheric flux type instance. \end{DoxyCompactList}\item 
+subroutine \mbox{\hyperlink{namespacemodule__types_a43dc1b960be6642570f3d95c67df50bd}{module\+\_\+types\+::new\+\_\+tendency}} (tend)
+\begin{DoxyCompactList}\small\item\em Allocates memory for an atmospheric tendency type instance. \end{DoxyCompactList}\item 
+subroutine \mbox{\hyperlink{namespacemodule__types_a9a9e0e3511f0def81fe3fd87c9e95491}{module\+\_\+types\+::set\+\_\+tendency}} (tend, xval)
+\begin{DoxyCompactList}\small\item\em Sets all grid points of a tendency field to a scalar value. \end{DoxyCompactList}\item 
+subroutine \mbox{\hyperlink{namespacemodule__types_ab3ee36e990c1dafd444784e338a36fde}{module\+\_\+types\+::del\+\_\+tendency}} (tend)
+\begin{DoxyCompactList}\small\item\em Deallocates memory for an atmospheric tendency type instance. \end{DoxyCompactList}\item 
+subroutine \mbox{\hyperlink{namespacemodule__types_a78b4f7e68e7992245d72eeeaa39cd465}{module\+\_\+types\+::state\+\_\+equal\+\_\+to\+\_\+state}} (x, y)
+\begin{DoxyCompactList}\small\item\em Overloaded assignment operator to copy one state to another. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+real(wp), dimension(\+:), allocatable, public \mbox{\hyperlink{namespacemodule__types_a73f80f27cfea22d2fc25092f73b15b34}{module\+\_\+types\+::send\+\_\+left}}
+\item 
+real(wp), dimension(\+:), allocatable, public \mbox{\hyperlink{namespacemodule__types_a11bf980fdae338b3bb8c12fd1ba15851}{module\+\_\+types\+::send\+\_\+right}}
+\item 
+real(wp), dimension(\+:), allocatable, public \mbox{\hyperlink{namespacemodule__types_a8ed31509d12e1e8b4d4731b35e9bce8a}{module\+\_\+types\+::recv\+\_\+left}}
+\item 
+real(wp), dimension(\+:), allocatable, public \mbox{\hyperlink{namespacemodule__types_aa50946d459c40ef67efead9b3b54a4ef}{module\+\_\+types\+::recv\+\_\+right}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Defines all core derived types for the atmospheric model state, fluxes, and tendencies, along with parallel data management and kernel execution routines. 
+
+This module establishes the data structures and core subroutines (like {\ttfamily xtend}, {\ttfamily ztend}, and halo exchange) that drive the 3D stencil computation. It is crucial for understanding the data layout and the structure of the time integration step. 

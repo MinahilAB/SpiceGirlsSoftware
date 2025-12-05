@@ -1,0 +1,107 @@
+\doxysection{module\+\_\+types\+::reference\+\_\+state Type Reference}
+\hypertarget{structmodule__types_1_1reference__state}{}\label{structmodule__types_1_1reference__state}\index{module\_types::reference\_state@{module\_types::reference\_state}}
+
+
+Derived type for storing the constant reference atmospheric state.  
+
+
+
+
+Collaboration diagram for module\+\_\+types\+::reference\+\_\+state\+:
+% FIG 0
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+procedure, public \mbox{\hyperlink{structmodule__types_1_1reference__state_ae36d43a82dfe87982df4b482069accb6}{new\+\_\+ref}} (ref)
+\begin{DoxyCompactList}\small\item\em Allocates memory for the reference state. \end{DoxyCompactList}\item 
+procedure, public \mbox{\hyperlink{structmodule__types_1_1reference__state_a178e452a55f5bb171ae1eaf259db11ac}{del\+\_\+ref}} (ref)
+\begin{DoxyCompactList}\small\item\em Deallocates memory for the reference state. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+real(wp), dimension(\+:), allocatable \mbox{\hyperlink{structmodule__types_1_1reference__state_a6561413b5a3cbcae255f898c3a863b50}{density}}
+\item 
+real(wp), dimension(\+:), allocatable \mbox{\hyperlink{structmodule__types_1_1reference__state_accfc96ada909816daaf5133a35722c7a}{denstheta}}
+\item 
+real(wp), dimension(\+:), allocatable \mbox{\hyperlink{structmodule__types_1_1reference__state_a0fde53461459dac9c481f09df4615e9e}{idens}}
+\item 
+real(wp), dimension(\+:), allocatable \mbox{\hyperlink{structmodule__types_1_1reference__state_ab70186e9167b7ff5207c45fcdc9d83eb}{idenstheta}}
+\item 
+real(wp), dimension(\+:), allocatable \mbox{\hyperlink{structmodule__types_1_1reference__state_a46a086869b0c9c77a3db89d8082cd1b0}{pressure}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Derived type for storing the constant reference atmospheric state. 
+
+This state is typically independent of time and is used to linearize the equations or define background fields. 
+
+\doxysubsection{Member Function/\+Subroutine Documentation}
+\Hypertarget{structmodule__types_1_1reference__state_a178e452a55f5bb171ae1eaf259db11ac}\label{structmodule__types_1_1reference__state_a178e452a55f5bb171ae1eaf259db11ac} 
+\index{module\_types::reference\_state@{module\_types::reference\_state}!del\_ref@{del\_ref}}
+\index{del\_ref@{del\_ref}!module\_types::reference\_state@{module\_types::reference\_state}}
+\doxysubsubsection{\texorpdfstring{del\_ref()}{del\_ref()}}
+{\footnotesize\ttfamily procedure, public module\+\_\+types\+::reference\+\_\+state\+::del\+\_\+ref (\begin{DoxyParamCaption}\item[{class(\mbox{\hyperlink{structmodule__types_1_1reference__state}{reference\+\_\+state}}), intent(inout)}]{ref }\end{DoxyParamCaption})}
+
+
+
+Deallocates memory for the reference state. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em ref} & The reference state instance. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{structmodule__types_1_1reference__state_ae36d43a82dfe87982df4b482069accb6}\label{structmodule__types_1_1reference__state_ae36d43a82dfe87982df4b482069accb6} 
+\index{module\_types::reference\_state@{module\_types::reference\_state}!new\_ref@{new\_ref}}
+\index{new\_ref@{new\_ref}!module\_types::reference\_state@{module\_types::reference\_state}}
+\doxysubsubsection{\texorpdfstring{new\_ref()}{new\_ref()}}
+{\footnotesize\ttfamily procedure, public module\+\_\+types\+::reference\+\_\+state\+::new\+\_\+ref (\begin{DoxyParamCaption}\item[{class(\mbox{\hyperlink{structmodule__types_1_1reference__state}{reference\+\_\+state}}), intent(inout)}]{ref }\end{DoxyParamCaption})}
+
+
+
+Allocates memory for the reference state. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em ref} & The reference state instance. \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{structmodule__types_1_1reference__state_a6561413b5a3cbcae255f898c3a863b50}\label{structmodule__types_1_1reference__state_a6561413b5a3cbcae255f898c3a863b50} 
+\index{module\_types::reference\_state@{module\_types::reference\_state}!density@{density}}
+\index{density@{density}!module\_types::reference\_state@{module\_types::reference\_state}}
+\doxysubsubsection{\texorpdfstring{density}{density}}
+{\footnotesize\ttfamily real(wp), dimension(\+:), allocatable module\+\_\+types\+::reference\+\_\+state\+::density}
+
+\Hypertarget{structmodule__types_1_1reference__state_accfc96ada909816daaf5133a35722c7a}\label{structmodule__types_1_1reference__state_accfc96ada909816daaf5133a35722c7a} 
+\index{module\_types::reference\_state@{module\_types::reference\_state}!denstheta@{denstheta}}
+\index{denstheta@{denstheta}!module\_types::reference\_state@{module\_types::reference\_state}}
+\doxysubsubsection{\texorpdfstring{denstheta}{denstheta}}
+{\footnotesize\ttfamily real(wp), dimension(\+:), allocatable module\+\_\+types\+::reference\+\_\+state\+::denstheta}
+
+\Hypertarget{structmodule__types_1_1reference__state_a0fde53461459dac9c481f09df4615e9e}\label{structmodule__types_1_1reference__state_a0fde53461459dac9c481f09df4615e9e} 
+\index{module\_types::reference\_state@{module\_types::reference\_state}!idens@{idens}}
+\index{idens@{idens}!module\_types::reference\_state@{module\_types::reference\_state}}
+\doxysubsubsection{\texorpdfstring{idens}{idens}}
+{\footnotesize\ttfamily real(wp), dimension(\+:), allocatable module\+\_\+types\+::reference\+\_\+state\+::idens}
+
+\Hypertarget{structmodule__types_1_1reference__state_ab70186e9167b7ff5207c45fcdc9d83eb}\label{structmodule__types_1_1reference__state_ab70186e9167b7ff5207c45fcdc9d83eb} 
+\index{module\_types::reference\_state@{module\_types::reference\_state}!idenstheta@{idenstheta}}
+\index{idenstheta@{idenstheta}!module\_types::reference\_state@{module\_types::reference\_state}}
+\doxysubsubsection{\texorpdfstring{idenstheta}{idenstheta}}
+{\footnotesize\ttfamily real(wp), dimension(\+:), allocatable module\+\_\+types\+::reference\+\_\+state\+::idenstheta}
+
+\Hypertarget{structmodule__types_1_1reference__state_a46a086869b0c9c77a3db89d8082cd1b0}\label{structmodule__types_1_1reference__state_a46a086869b0c9c77a3db89d8082cd1b0} 
+\index{module\_types::reference\_state@{module\_types::reference\_state}!pressure@{pressure}}
+\index{pressure@{pressure}!module\_types::reference\_state@{module\_types::reference\_state}}
+\doxysubsubsection{\texorpdfstring{pressure}{pressure}}
+{\footnotesize\ttfamily real(wp), dimension(\+:), allocatable module\+\_\+types\+::reference\+\_\+state\+::pressure}
+
+
+
+The documentation for this type was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{module__types_8F90}{module\+\_\+types.\+F90}}\end{DoxyCompactItemize}

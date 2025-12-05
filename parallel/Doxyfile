@@ -69,17 +69,7 @@ FILTER_PATTERNS        =
 
 Add the Makefile to the list of input files
 
-INPUT                  = model.f90 
-
-module_nvtx.F90 
-
-module_output.F90 
-
-module_parameters.f90 
-
-module_physics.f90 
-
-module_types.F90 
+INPUT                  = model.f90 module_nvtx.F90 module_output.F90 module_parameters.f90 module_physics.f90 module_types.F90 
 
 Makefile
 INPUT_ENCODING         = UTF-8

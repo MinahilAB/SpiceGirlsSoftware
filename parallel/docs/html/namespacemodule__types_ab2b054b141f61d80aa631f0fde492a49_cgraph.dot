@@ -1,0 +1,17 @@
+digraph "module_types::exchange_halo_x"
+{
+ // LATEX_PDF_SIZE
+  bgcolor="transparent";
+  edge [fontname=FreeSans,fontsize=10,labelfontname=FreeSans,labelfontsize=10];
+  node [fontname=FreeSans,fontsize=10,shape=box,height=0.2,width=0.4];
+  rankdir="LR";
+  Node1 [id="Node000001",label="module_types::exchange\l_halo_x",height=0.2,width=0.4,color="gray40", fillcolor="grey60", style="filled", fontcolor="black",tooltip="Performs the MPI-based halo exchange in the X-dimension."];
+  Node1 -> Node2 [id="edge1_Node000001_Node000002",color="steelblue1",style="solid",tooltip=" "];
+  Node2 [id="Node000002",label="module_nvtx::nvtx_pop",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$namespacemodule__nvtx.html#af66a9c0fc507e53e595fd890a763d28e",tooltip=" "];
+  Node1 -> Node3 [id="edge2_Node000001_Node000003",color="steelblue1",style="solid",tooltip=" "];
+  Node3 [id="Node000003",label="module_nvtx::nvtx_push",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$namespacemodule__nvtx.html#adf21b3a2539b95570b4aec5c080ba7c9",tooltip=" "];
+  Node1 -> Node4 [id="edge3_Node000001_Node000004",color="steelblue1",style="solid",tooltip=" "];
+  Node4 [id="Node000004",label="module_types::pack\l_strip",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$namespacemodule__types.html#a8d3bc10317121d9bc516db6e55e2161e",tooltip="Packs a strip of data (e.g., the halo region) into a 1D send buffer."];
+  Node1 -> Node5 [id="edge4_Node000001_Node000005",color="steelblue1",style="solid",tooltip=" "];
+  Node5 [id="Node000005",label="module_types::unpack\l_strip",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$namespacemodule__types.html#aac2f133a12508fa6394d789d7b6186e0",tooltip="Unpacks data from a 1D receive buffer into the state's halo region."];
+}

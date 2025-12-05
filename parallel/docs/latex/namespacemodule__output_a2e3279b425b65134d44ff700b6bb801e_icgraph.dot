@@ -1,0 +1,19 @@
+digraph "module_output::ncwrap"
+{
+ // LATEX_PDF_SIZE
+  bgcolor="transparent";
+  edge [fontname=FreeSans,fontsize=10,labelfontname=FreeSans,labelfontsize=10];
+  node [fontname=FreeSans,fontsize=10,shape=box,height=0.2,width=0.4];
+  rankdir="RL";
+  Node1 [id="Node000001",label="module_output::ncwrap",height=0.2,width=0.4,color="gray40", fillcolor="grey60", style="filled", fontcolor="black",tooltip="NetCDF error-wrapping subroutine."];
+  Node1 -> Node2 [id="edge7_Node000001_Node000002",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node2 [id="Node000002",label="module_output::close\l_output",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$namespacemodule__output.html#ad95a6ca2864d195b2f6feb2c4d500909",tooltip="Closes the NetCDF file, frees the MPI communicator, and deallocates arrays."];
+  Node2 -> Node3 [id="edge8_Node000002_Node000003",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node3 [id="Node000003",label="atmosphere_model",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$model_8f90.html#a3a0eca0602806f251687913d40547345",tooltip=" "];
+  Node1 -> Node4 [id="edge9_Node000001_Node000004",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node4 [id="Node000004",label="module_output::create\l_output",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$namespacemodule__output.html#a7a6044e87cf5c229bfb53c2e0ddb561d",tooltip="Creates the NetCDF output file and defines dimensions and variables."];
+  Node4 -> Node3 [id="edge10_Node000004_Node000003",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node1 -> Node5 [id="edge11_Node000001_Node000005",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node5 [id="Node000005",label="module_output::write\l_record",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$namespacemodule__output.html#a23fefa7b7fadf77a32eff52aaf49558e",tooltip="Writes a single record of the atmospheric state to the NetCDF file."];
+  Node5 -> Node3 [id="edge12_Node000005_Node000003",dir="back",color="steelblue1",style="solid",tooltip=" "];
+}

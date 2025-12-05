@@ -1,0 +1,136 @@
+\doxysection{parallel\+\_\+parameters Module Reference}
+\hypertarget{namespaceparallel__parameters}{}\label{namespaceparallel__parameters}\index{parallel\_parameters@{parallel\_parameters}}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+integer \mbox{\hyperlink{namespaceparallel__parameters_aaf3a2558922c5bd51ace7aba6fcb4514}{ierr}}
+\item 
+integer \mbox{\hyperlink{namespaceparallel__parameters_a068cb180a4876bdc001bbdacb73fff6f}{csize}}
+\item 
+integer \mbox{\hyperlink{namespaceparallel__parameters_a0ab773fb663487e2b79f322ae749c3bf}{rank}}
+\item 
+integer \mbox{\hyperlink{namespaceparallel__parameters_ae864a771b7637cbbb70f88a998625479}{rank\+\_\+source\+\_\+dummy}}
+\item 
+integer \mbox{\hyperlink{namespaceparallel__parameters_aab56b610d3db5e5cc2f292b67bda8c9e}{left\+\_\+rank}}
+\item 
+integer \mbox{\hyperlink{namespaceparallel__parameters_afc1fa1950b35a6b9d6222cde1514530c}{right\+\_\+rank}}
+\item 
+integer \mbox{\hyperlink{namespaceparallel__parameters_a32754696578399304cf597f1157e8263}{i\+\_\+beg}}
+\item 
+integer \mbox{\hyperlink{namespaceparallel__parameters_a0636e72535bc540df81832f038ee7ae1}{i\+\_\+end}}
+\item 
+integer \mbox{\hyperlink{namespaceparallel__parameters_ac27d97f16782b12faa9fb127133e5a2c}{cart\+\_\+comm}} = MPI\+\_\+\+COMM\+\_\+\+WORLD
+\item 
+integer, dimension(1) \mbox{\hyperlink{namespaceparallel__parameters_adf6ddf38064823b538cc3e0227298952}{dims}}
+\item 
+logical, dimension(1) \mbox{\hyperlink{namespaceparallel__parameters_aa56658ac8b49a44fd1b6ba8ab250c97d}{periods}}
+\item 
+logical \mbox{\hyperlink{namespaceparallel__parameters_acdbd1887a51ac4da17f9c12b7fecc0b4}{reorder}}
+\item 
+integer, parameter \mbox{\hyperlink{namespaceparallel__parameters_afe08563405e2865a044b5f17c16b0b31}{k\+\_\+beg}} = 1
+\item 
+integer, parameter \mbox{\hyperlink{namespaceparallel__parameters_a957bcb02170c1d0b937823cd5dc7ec23}{hs}} = 2
+\item 
+integer \mbox{\hyperlink{namespaceparallel__parameters_a66e8978f18f7f8e902820a08f9b36955}{num\+\_\+devices}}
+\item 
+integer \mbox{\hyperlink{namespaceparallel__parameters_ae1a70341497b6742d14afa868337c72d}{device\+\_\+id}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Variable Documentation}
+\Hypertarget{namespaceparallel__parameters_ac27d97f16782b12faa9fb127133e5a2c}\label{namespaceparallel__parameters_ac27d97f16782b12faa9fb127133e5a2c} 
+\index{parallel\_parameters@{parallel\_parameters}!cart\_comm@{cart\_comm}}
+\index{cart\_comm@{cart\_comm}!parallel\_parameters@{parallel\_parameters}}
+\doxysubsubsection{\texorpdfstring{cart\_comm}{cart\_comm}}
+{\footnotesize\ttfamily integer parallel\+\_\+parameters\+::cart\+\_\+comm = MPI\+\_\+\+COMM\+\_\+\+WORLD}
+
+\Hypertarget{namespaceparallel__parameters_a068cb180a4876bdc001bbdacb73fff6f}\label{namespaceparallel__parameters_a068cb180a4876bdc001bbdacb73fff6f} 
+\index{parallel\_parameters@{parallel\_parameters}!csize@{csize}}
+\index{csize@{csize}!parallel\_parameters@{parallel\_parameters}}
+\doxysubsubsection{\texorpdfstring{csize}{csize}}
+{\footnotesize\ttfamily integer parallel\+\_\+parameters\+::csize}
+
+\Hypertarget{namespaceparallel__parameters_ae1a70341497b6742d14afa868337c72d}\label{namespaceparallel__parameters_ae1a70341497b6742d14afa868337c72d} 
+\index{parallel\_parameters@{parallel\_parameters}!device\_id@{device\_id}}
+\index{device\_id@{device\_id}!parallel\_parameters@{parallel\_parameters}}
+\doxysubsubsection{\texorpdfstring{device\_id}{device\_id}}
+{\footnotesize\ttfamily integer parallel\+\_\+parameters\+::device\+\_\+id}
+
+\Hypertarget{namespaceparallel__parameters_adf6ddf38064823b538cc3e0227298952}\label{namespaceparallel__parameters_adf6ddf38064823b538cc3e0227298952} 
+\index{parallel\_parameters@{parallel\_parameters}!dims@{dims}}
+\index{dims@{dims}!parallel\_parameters@{parallel\_parameters}}
+\doxysubsubsection{\texorpdfstring{dims}{dims}}
+{\footnotesize\ttfamily integer, dimension(1) parallel\+\_\+parameters\+::dims}
+
+\Hypertarget{namespaceparallel__parameters_a957bcb02170c1d0b937823cd5dc7ec23}\label{namespaceparallel__parameters_a957bcb02170c1d0b937823cd5dc7ec23} 
+\index{parallel\_parameters@{parallel\_parameters}!hs@{hs}}
+\index{hs@{hs}!parallel\_parameters@{parallel\_parameters}}
+\doxysubsubsection{\texorpdfstring{hs}{hs}}
+{\footnotesize\ttfamily integer, parameter parallel\+\_\+parameters\+::hs = 2}
+
+\Hypertarget{namespaceparallel__parameters_a32754696578399304cf597f1157e8263}\label{namespaceparallel__parameters_a32754696578399304cf597f1157e8263} 
+\index{parallel\_parameters@{parallel\_parameters}!i\_beg@{i\_beg}}
+\index{i\_beg@{i\_beg}!parallel\_parameters@{parallel\_parameters}}
+\doxysubsubsection{\texorpdfstring{i\_beg}{i\_beg}}
+{\footnotesize\ttfamily integer parallel\+\_\+parameters\+::i\+\_\+beg}
+
+\Hypertarget{namespaceparallel__parameters_a0636e72535bc540df81832f038ee7ae1}\label{namespaceparallel__parameters_a0636e72535bc540df81832f038ee7ae1} 
+\index{parallel\_parameters@{parallel\_parameters}!i\_end@{i\_end}}
+\index{i\_end@{i\_end}!parallel\_parameters@{parallel\_parameters}}
+\doxysubsubsection{\texorpdfstring{i\_end}{i\_end}}
+{\footnotesize\ttfamily integer parallel\+\_\+parameters\+::i\+\_\+end}
+
+\Hypertarget{namespaceparallel__parameters_aaf3a2558922c5bd51ace7aba6fcb4514}\label{namespaceparallel__parameters_aaf3a2558922c5bd51ace7aba6fcb4514} 
+\index{parallel\_parameters@{parallel\_parameters}!ierr@{ierr}}
+\index{ierr@{ierr}!parallel\_parameters@{parallel\_parameters}}
+\doxysubsubsection{\texorpdfstring{ierr}{ierr}}
+{\footnotesize\ttfamily integer parallel\+\_\+parameters\+::ierr}
+
+\Hypertarget{namespaceparallel__parameters_afe08563405e2865a044b5f17c16b0b31}\label{namespaceparallel__parameters_afe08563405e2865a044b5f17c16b0b31} 
+\index{parallel\_parameters@{parallel\_parameters}!k\_beg@{k\_beg}}
+\index{k\_beg@{k\_beg}!parallel\_parameters@{parallel\_parameters}}
+\doxysubsubsection{\texorpdfstring{k\_beg}{k\_beg}}
+{\footnotesize\ttfamily integer, parameter parallel\+\_\+parameters\+::k\+\_\+beg = 1}
+
+\Hypertarget{namespaceparallel__parameters_aab56b610d3db5e5cc2f292b67bda8c9e}\label{namespaceparallel__parameters_aab56b610d3db5e5cc2f292b67bda8c9e} 
+\index{parallel\_parameters@{parallel\_parameters}!left\_rank@{left\_rank}}
+\index{left\_rank@{left\_rank}!parallel\_parameters@{parallel\_parameters}}
+\doxysubsubsection{\texorpdfstring{left\_rank}{left\_rank}}
+{\footnotesize\ttfamily integer parallel\+\_\+parameters\+::left\+\_\+rank}
+
+\Hypertarget{namespaceparallel__parameters_a66e8978f18f7f8e902820a08f9b36955}\label{namespaceparallel__parameters_a66e8978f18f7f8e902820a08f9b36955} 
+\index{parallel\_parameters@{parallel\_parameters}!num\_devices@{num\_devices}}
+\index{num\_devices@{num\_devices}!parallel\_parameters@{parallel\_parameters}}
+\doxysubsubsection{\texorpdfstring{num\_devices}{num\_devices}}
+{\footnotesize\ttfamily integer parallel\+\_\+parameters\+::num\+\_\+devices}
+
+\Hypertarget{namespaceparallel__parameters_aa56658ac8b49a44fd1b6ba8ab250c97d}\label{namespaceparallel__parameters_aa56658ac8b49a44fd1b6ba8ab250c97d} 
+\index{parallel\_parameters@{parallel\_parameters}!periods@{periods}}
+\index{periods@{periods}!parallel\_parameters@{parallel\_parameters}}
+\doxysubsubsection{\texorpdfstring{periods}{periods}}
+{\footnotesize\ttfamily logical, dimension(1) parallel\+\_\+parameters\+::periods}
+
+\Hypertarget{namespaceparallel__parameters_a0ab773fb663487e2b79f322ae749c3bf}\label{namespaceparallel__parameters_a0ab773fb663487e2b79f322ae749c3bf} 
+\index{parallel\_parameters@{parallel\_parameters}!rank@{rank}}
+\index{rank@{rank}!parallel\_parameters@{parallel\_parameters}}
+\doxysubsubsection{\texorpdfstring{rank}{rank}}
+{\footnotesize\ttfamily integer parallel\+\_\+parameters\+::rank}
+
+\Hypertarget{namespaceparallel__parameters_ae864a771b7637cbbb70f88a998625479}\label{namespaceparallel__parameters_ae864a771b7637cbbb70f88a998625479} 
+\index{parallel\_parameters@{parallel\_parameters}!rank\_source\_dummy@{rank\_source\_dummy}}
+\index{rank\_source\_dummy@{rank\_source\_dummy}!parallel\_parameters@{parallel\_parameters}}
+\doxysubsubsection{\texorpdfstring{rank\_source\_dummy}{rank\_source\_dummy}}
+{\footnotesize\ttfamily integer parallel\+\_\+parameters\+::rank\+\_\+source\+\_\+dummy}
+
+\Hypertarget{namespaceparallel__parameters_acdbd1887a51ac4da17f9c12b7fecc0b4}\label{namespaceparallel__parameters_acdbd1887a51ac4da17f9c12b7fecc0b4} 
+\index{parallel\_parameters@{parallel\_parameters}!reorder@{reorder}}
+\index{reorder@{reorder}!parallel\_parameters@{parallel\_parameters}}
+\doxysubsubsection{\texorpdfstring{reorder}{reorder}}
+{\footnotesize\ttfamily logical parallel\+\_\+parameters\+::reorder}
+
+\Hypertarget{namespaceparallel__parameters_afc1fa1950b35a6b9d6222cde1514530c}\label{namespaceparallel__parameters_afc1fa1950b35a6b9d6222cde1514530c} 
+\index{parallel\_parameters@{parallel\_parameters}!right\_rank@{right\_rank}}
+\index{right\_rank@{right\_rank}!parallel\_parameters@{parallel\_parameters}}
+\doxysubsubsection{\texorpdfstring{right\_rank}{right\_rank}}
+{\footnotesize\ttfamily integer parallel\+\_\+parameters\+::right\+\_\+rank}
+

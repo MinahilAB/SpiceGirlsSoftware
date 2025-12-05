@@ -1,0 +1,25 @@
+\doxysection{module\+\_\+nvtx\+::nvtxrangepop Interface Reference}
+\hypertarget{interfacemodule__nvtx_1_1nvtxrangepop}{}\label{interfacemodule__nvtx_1_1nvtxrangepop}\index{module\_nvtx::nvtxrangepop@{module\_nvtx::nvtxrangepop}}
+
+
+Collaboration diagram for module\+\_\+nvtx\+::nvtxrangepop\+:
+% FIG 0
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+integer(c\+\_\+int) function \mbox{\hyperlink{interfacemodule__nvtx_1_1nvtxrangepop_ac6ba7c20dfa0068d3e2e468ea1684301}{nvtxrangepop}} ()
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{interfacemodule__nvtx_1_1nvtxrangepop_ac6ba7c20dfa0068d3e2e468ea1684301}\label{interfacemodule__nvtx_1_1nvtxrangepop_ac6ba7c20dfa0068d3e2e468ea1684301} 
+\index{module\_nvtx::nvtxrangepop@{module\_nvtx::nvtxrangepop}!nvtxrangepop@{nvtxrangepop}}
+\index{nvtxrangepop@{nvtxrangepop}!module\_nvtx::nvtxrangepop@{module\_nvtx::nvtxrangepop}}
+\doxysubsubsection{\texorpdfstring{nvtxrangepop()}{nvtxrangepop()}}
+{\footnotesize\ttfamily integer(c\+\_\+int) function module\+\_\+nvtx\+::nvtxrangepop\+::nvtxrangepop}
+
+
+
+The documentation for this interface was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{module__nvtx_8F90}{module\+\_\+nvtx.\+F90}}\end{DoxyCompactItemize}

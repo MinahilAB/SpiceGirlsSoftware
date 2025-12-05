@@ -1,0 +1,19 @@
+digraph "module_physics::init"
+{
+ // LATEX_PDF_SIZE
+  bgcolor="transparent";
+  edge [fontname=FreeSans,fontsize=10,labelfontname=FreeSans,labelfontsize=10];
+  node [fontname=FreeSans,fontsize=10,shape=box,height=0.2,width=0.4];
+  rankdir="LR";
+  Node1 [id="Node000001",label="module_physics::init",height=0.2,width=0.4,color="gray40", fillcolor="grey60", style="filled", fontcolor="black",tooltip="Initializes the MPI/OpenACC environment, grid dimensions, and initial atmospheric state."];
+  Node1 -> Node2 [id="edge1_Node000001_Node000002",color="steelblue1",style="solid",tooltip=" "];
+  Node2 [id="Node000002",label="module_nvtx::nvtx_pop",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$namespacemodule__nvtx.html#af66a9c0fc507e53e595fd890a763d28e",tooltip=" "];
+  Node1 -> Node3 [id="edge2_Node000001_Node000003",color="steelblue1",style="solid",tooltip=" "];
+  Node3 [id="Node000003",label="module_nvtx::nvtx_push",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$namespacemodule__nvtx.html#adf21b3a2539b95570b4aec5c080ba7c9",tooltip=" "];
+  Node1 -> Node4 [id="edge3_Node000001_Node000004",color="steelblue1",style="solid",tooltip=" "];
+  Node4 [id="Node000004",label="module_physics::thermal",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$namespacemodule__physics.html#a98d11a39c948a714560500cef9252995",tooltip="Calculates the state variables and reference state at a given physical point (x, z)."];
+  Node4 -> Node5 [id="edge4_Node000004_Node000005",color="steelblue1",style="solid",tooltip=" "];
+  Node5 [id="Node000005",label="module_physics::ellipse",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$namespacemodule__physics.html#a8ce13dc780b59866bfa31412c6ed671e",tooltip="Calculates a thermal perturbation using a cosine-squared profile within an elliptical region."];
+  Node4 -> Node6 [id="edge5_Node000004_Node000006",color="steelblue1",style="solid",tooltip=" "];
+  Node6 [id="Node000006",label="module_physics::hydrostatic\l_const_theta",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$namespacemodule__physics.html#ade9df465551218b4998ab68a01de8c15",tooltip="Calculates the hydrostatic background reference state (r, t) based on constant potential temperature ..."];
+}

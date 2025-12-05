@@ -1,0 +1,22 @@
+var searchData=
+[
+  ['navgdr_0',['navgdr',['../namespacephysical__constants.html#a4ca4afa0ba1173c6827ddc838496e3b7',1,'physical_constants']]],
+  ['nc_5fcomm_1',['nc_comm',['../namespacemodule__output.html#a47545552fc5ef03b6b878dda79d2a20f',1,'module_output']]],
+  ['ncid_2',['ncid',['../namespacemodule__output.html#aed0bb858d4a87205339251b13b04b959',1,'module_output']]],
+  ['ncwrap_3',['ncwrap',['../namespacemodule__output.html#a2e3279b425b65134d44ff700b6bb801e',1,'module_output']]],
+  ['new_5fflux_4',['new_flux',['../structmodule__types_1_1atmospheric__flux.html#a1ed75066910685493f3cf287c1dabb10',1,'module_types::atmospheric_flux::new_flux()'],['../namespacemodule__types.html#a1f723bba8f127c3672b0df63da373f52',1,'module_types::new_flux()']]],
+  ['new_5fref_5',['new_ref',['../structmodule__types_1_1reference__state.html#ae36d43a82dfe87982df4b482069accb6',1,'module_types::reference_state::new_ref()'],['../namespacemodule__types.html#a9ff6dddddc17e60a941fb8eb7185b355',1,'module_types::new_ref()']]],
+  ['new_5fstate_6',['new_state',['../structmodule__types_1_1atmospheric__state.html#ab863469bd89a1f89f2a37cc159bdfdd5',1,'module_types::atmospheric_state::new_state()'],['../namespacemodule__types.html#a5b8cd0e0cb1dcaff286034906dacdf04',1,'module_types::new_state(atmo)']]],
+  ['new_5ftendency_7',['new_tendency',['../namespacemodule__types.html#a43dc1b960be6642570f3d95c67df50bd',1,'module_types::new_tendency()'],['../structmodule__types_1_1atmospheric__tendency.html#ae777c018d7392783779aff4d7906b1a8',1,'module_types::atmospheric_tendency::new_tendency()']]],
+  ['newstat_8',['newstat',['../namespacemodule__physics.html#a227af77b35bcf82aa9fd6189149081ea',1,'module_physics']]],
+  ['nqpoints_9',['nqpoints',['../namespacelegendre__quadrature.html#a4bed1aa02ad336724dfceac8d30e97fb',1,'legendre_quadrature']]],
+  ['num_5fdevices_10',['num_devices',['../namespaceparallel__parameters.html#a66e8978f18f7f8e902820a08f9b36955',1,'parallel_parameters']]],
+  ['nvars_11',['nvars',['../namespaceindexing.html#ad8e25db3906251a8f9ead4033cd8d0fc',1,'indexing']]],
+  ['nvtx_5fpop_12',['nvtx_pop',['../namespacemodule__nvtx.html#af66a9c0fc507e53e595fd890a763d28e',1,'module_nvtx']]],
+  ['nvtx_5fpush_13',['nvtx_push',['../namespacemodule__nvtx.html#adf21b3a2539b95570b4aec5c080ba7c9',1,'module_nvtx']]],
+  ['nvtxrangepop_14',['nvtxrangepop',['../interfacemodule__nvtx_1_1nvtxrangepop.html#ac6ba7c20dfa0068d3e2e468ea1684301',1,'module_nvtx::nvtxrangepop::nvtxrangepop()'],['../interfacemodule__nvtx_1_1nvtxrangepop.html',1,'module_nvtx::nvtxrangepop']]],
+  ['nvtxrangepusha_15',['nvtxrangepusha',['../interfacemodule__nvtx_1_1nvtxrangepusha.html',1,'module_nvtx::nvtxrangepusha'],['../interfacemodule__nvtx_1_1nvtxrangepusha.html#a62894cd2a67879514690171d42df773d',1,'module_nvtx::nvtxrangepusha::nvtxrangepusha()']]],
+  ['nx_16',['nx',['../namespacedimensions.html#a1563443cb8272383019274652afa69fc',1,'dimensions']]],
+  ['nx_5floc_17',['nx_loc',['../namespacedimensions.html#a427e047257b9e7e90fb9ddfc23d808a4',1,'dimensions']]],
+  ['nz_18',['nz',['../namespacedimensions.html#a3068b14b8e188bc128814b0b3d420056',1,'dimensions']]]
+];

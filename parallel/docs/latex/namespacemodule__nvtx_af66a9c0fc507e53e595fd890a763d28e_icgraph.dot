@@ -1,0 +1,28 @@
+digraph "module_nvtx::nvtx_pop"
+{
+ // LATEX_PDF_SIZE
+  bgcolor="transparent";
+  edge [fontname=FreeSans,fontsize=10,labelfontname=FreeSans,labelfontsize=10];
+  node [fontname=FreeSans,fontsize=10,shape=box,height=0.2,width=0.4];
+  rankdir="RL";
+  Node1 [id="Node000001",label="module_nvtx::nvtx_pop",height=0.2,width=0.4,color="gray40", fillcolor="grey60", style="filled", fontcolor="black",tooltip=" "];
+  Node1 -> Node2 [id="edge13_Node000001_Node000002",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node2 [id="Node000002",label="atmosphere_model",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$model_8f90.html#a3a0eca0602806f251687913d40547345",tooltip=" "];
+  Node1 -> Node3 [id="edge14_Node000001_Node000003",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node3 [id="Node000003",label="module_output::close\l_output",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$namespacemodule__output.html#ad95a6ca2864d195b2f6feb2c4d500909",tooltip="Closes the NetCDF file, frees the MPI communicator, and deallocates arrays."];
+  Node3 -> Node2 [id="edge15_Node000003_Node000002",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node1 -> Node4 [id="edge16_Node000001_Node000004",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node4 [id="Node000004",label="module_output::create\l_output",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$namespacemodule__output.html#a7a6044e87cf5c229bfb53c2e0ddb561d",tooltip="Creates the NetCDF output file and defines dimensions and variables."];
+  Node4 -> Node2 [id="edge17_Node000004_Node000002",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node1 -> Node5 [id="edge18_Node000001_Node000005",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node5 [id="Node000005",label="module_types::exchange\l_halo_x",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$namespacemodule__types.html#ab2b054b141f61d80aa631f0fde492a49",tooltip="Performs the MPI-based halo exchange in the X-dimension."];
+  Node1 -> Node6 [id="edge19_Node000001_Node000006",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node6 [id="Node000006",label="module_physics::init",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$namespacemodule__physics.html#ae1fe02f4b28a385c8f831662384972d3",tooltip="Initializes the MPI/OpenACC environment, grid dimensions, and initial atmospheric state."];
+  Node6 -> Node2 [id="edge20_Node000006_Node000002",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node1 -> Node7 [id="edge21_Node000001_Node000007",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node7 [id="Node000007",label="module_physics::rungekutta",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$namespacemodule__physics.html#abb9976555d993ec55ec0b23022d3ca37",tooltip="Performs the 6-stage Runge-Kutta time integration using a dimensionally split approach."];
+  Node7 -> Node2 [id="edge22_Node000007_Node000002",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node1 -> Node8 [id="edge23_Node000001_Node000008",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node8 [id="Node000008",label="module_output::write\l_record",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$namespacemodule__output.html#a23fefa7b7fadf77a32eff52aaf49558e",tooltip="Writes a single record of the atmospheric state to the NetCDF file."];
+  Node8 -> Node2 [id="edge24_Node000008_Node000002",dir="back",color="steelblue1",style="solid",tooltip=" "];
+}

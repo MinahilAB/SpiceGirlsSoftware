@@ -1,0 +1,450 @@
+\doxysection{module\+\_\+types Module Reference}
+\hypertarget{namespacemodule__types}{}\label{namespacemodule__types}\index{module\_types@{module\_types}}
+\doxysubsubsection*{Data Types}
+\begin{DoxyCompactItemize}
+\item 
+interface \mbox{\hyperlink{interfacemodule__types_1_1assignment_07_0a_08}{assignment(=)}}
+\item 
+type \mbox{\hyperlink{structmodule__types_1_1atmospheric__flux}{atmospheric\+\_\+flux}}
+\begin{DoxyCompactList}\small\item\em Derived type for storing calculated fluxes. \end{DoxyCompactList}\item 
+type \mbox{\hyperlink{structmodule__types_1_1atmospheric__state}{atmospheric\+\_\+state}}
+\begin{DoxyCompactList}\small\item\em Derived type for the time-\/dependent atmospheric state variables. \end{DoxyCompactList}\item 
+type \mbox{\hyperlink{structmodule__types_1_1atmospheric__tendency}{atmospheric\+\_\+tendency}}
+\begin{DoxyCompactList}\small\item\em Derived type for storing calculated tendencies (time derivatives). \end{DoxyCompactList}\item 
+type \mbox{\hyperlink{structmodule__types_1_1reference__state}{reference\+\_\+state}}
+\begin{DoxyCompactList}\small\item\em Derived type for storing the constant reference atmospheric state. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions/\+Subroutines}
+\begin{DoxyCompactItemize}
+\item 
+subroutine \mbox{\hyperlink{namespacemodule__types_a5b8cd0e0cb1dcaff286034906dacdf04}{new\+\_\+state}} (atmo)
+\begin{DoxyCompactList}\small\item\em Allocates memory for an atmospheric state type instance. \end{DoxyCompactList}\item 
+subroutine \mbox{\hyperlink{namespacemodule__types_aa2182081083c614acbc514e07456b663}{set\+\_\+state}} (atmo, xval)
+\begin{DoxyCompactList}\small\item\em Sets all grid points of a state to a scalar value. \end{DoxyCompactList}\item 
+subroutine \mbox{\hyperlink{namespacemodule__types_ab0250041179f10af3e1507838b32d823}{del\+\_\+state}} (atmo)
+\begin{DoxyCompactList}\small\item\em Deallocates memory for an atmospheric state type instance. \end{DoxyCompactList}\item 
+subroutine \mbox{\hyperlink{namespacemodule__types_afe9fa2f2b343fb57f5ccab00f23c5319}{update}} (s2, s0, tend, dt)
+\begin{DoxyCompactList}\small\item\em Performs a time integration update step. \end{DoxyCompactList}\item 
+subroutine \mbox{\hyperlink{namespacemodule__types_ab3456af815332b9f642884127999ac5f}{xtend}} (tendency, flux, ref, atmostat, dx, dt)
+\begin{DoxyCompactList}\small\item\em Calculates the X-\/dimension contribution to the total tendency. \end{DoxyCompactList}\item 
+subroutine \mbox{\hyperlink{namespacemodule__types_a7c4bb05550ffff832dec90f3bcffdd9f}{ztend}} (tendency, flux, ref, atmostat, dz, dt)
+\begin{DoxyCompactList}\small\item\em Calculates the Z-\/dimension contribution to the total tendency. \end{DoxyCompactList}\item 
+subroutine \mbox{\hyperlink{namespacemodule__types_ab2b054b141f61d80aa631f0fde492a49}{exchange\+\_\+halo\+\_\+x}} (s)
+\begin{DoxyCompactList}\small\item\em Performs the MPI-\/based halo exchange in the X-\/dimension. \end{DoxyCompactList}\item 
+subroutine \mbox{\hyperlink{namespacemodule__types_a8d3bc10317121d9bc516db6e55e2161e}{pack\+\_\+strip}} (mem, i\+\_\+start, k\+\_\+start, \mbox{\hyperlink{namespacedimensions_a427e047257b9e7e90fb9ddfc23d808a4}{nx\+\_\+loc}}, width, buffer)
+\begin{DoxyCompactList}\small\item\em Packs a strip of data (e.\+g., the halo region) into a 1D send buffer. \end{DoxyCompactList}\item 
+subroutine \mbox{\hyperlink{namespacemodule__types_aac2f133a12508fa6394d789d7b6186e0}{unpack\+\_\+strip}} (buffer, mem, i\+\_\+start, k\+\_\+start)
+\begin{DoxyCompactList}\small\item\em Unpacks data from a 1D receive buffer into the state\textquotesingle{}s halo region. \end{DoxyCompactList}\item 
+subroutine \mbox{\hyperlink{namespacemodule__types_a3e0efbac2fc1466310290014b1fb5bbd}{exchange\+\_\+halo\+\_\+z}} (s, ref)
+\begin{DoxyCompactList}\small\item\em Implements the Z-\/dimension (vertical) halo exchange. \end{DoxyCompactList}\item 
+subroutine \mbox{\hyperlink{namespacemodule__types_a9ff6dddddc17e60a941fb8eb7185b355}{new\+\_\+ref}} (ref)
+\begin{DoxyCompactList}\small\item\em Allocates memory for the reference state. \end{DoxyCompactList}\item 
+subroutine \mbox{\hyperlink{namespacemodule__types_a80fc0a2a1cf0f8e123088de5c8663c06}{del\+\_\+ref}} (ref)
+\begin{DoxyCompactList}\small\item\em Deallocates memory for the reference state. \end{DoxyCompactList}\item 
+subroutine \mbox{\hyperlink{namespacemodule__types_a1f723bba8f127c3672b0df63da373f52}{new\+\_\+flux}} (flux)
+\begin{DoxyCompactList}\small\item\em Allocates memory for an atmospheric flux type instance. \end{DoxyCompactList}\item 
+subroutine \mbox{\hyperlink{namespacemodule__types_a648446aa2fa918ac96a24e2564e3b811}{set\+\_\+flux}} (flux, xval)
+\begin{DoxyCompactList}\small\item\em Sets all grid points of a flux field to a scalar value. \end{DoxyCompactList}\item 
+subroutine \mbox{\hyperlink{namespacemodule__types_a3bc9a92dffe823efcdc74bdcc3827e0d}{del\+\_\+flux}} (flux)
+\begin{DoxyCompactList}\small\item\em Deallocates memory for an atmospheric flux type instance. \end{DoxyCompactList}\item 
+subroutine \mbox{\hyperlink{namespacemodule__types_a43dc1b960be6642570f3d95c67df50bd}{new\+\_\+tendency}} (tend)
+\begin{DoxyCompactList}\small\item\em Allocates memory for an atmospheric tendency type instance. \end{DoxyCompactList}\item 
+subroutine \mbox{\hyperlink{namespacemodule__types_a9a9e0e3511f0def81fe3fd87c9e95491}{set\+\_\+tendency}} (tend, xval)
+\begin{DoxyCompactList}\small\item\em Sets all grid points of a tendency field to a scalar value. \end{DoxyCompactList}\item 
+subroutine \mbox{\hyperlink{namespacemodule__types_ab3ee36e990c1dafd444784e338a36fde}{del\+\_\+tendency}} (tend)
+\begin{DoxyCompactList}\small\item\em Deallocates memory for an atmospheric tendency type instance. \end{DoxyCompactList}\item 
+subroutine \mbox{\hyperlink{namespacemodule__types_a78b4f7e68e7992245d72eeeaa39cd465}{state\+\_\+equal\+\_\+to\+\_\+state}} (x, y)
+\begin{DoxyCompactList}\small\item\em Overloaded assignment operator to copy one state to another. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+real(wp), dimension(\+:), allocatable, public \mbox{\hyperlink{namespacemodule__types_a73f80f27cfea22d2fc25092f73b15b34}{send\+\_\+left}}
+\item 
+real(wp), dimension(\+:), allocatable, public \mbox{\hyperlink{namespacemodule__types_a11bf980fdae338b3bb8c12fd1ba15851}{send\+\_\+right}}
+\item 
+real(wp), dimension(\+:), allocatable, public \mbox{\hyperlink{namespacemodule__types_a8ed31509d12e1e8b4d4731b35e9bce8a}{recv\+\_\+left}}
+\item 
+real(wp), dimension(\+:), allocatable, public \mbox{\hyperlink{namespacemodule__types_aa50946d459c40ef67efead9b3b54a4ef}{recv\+\_\+right}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function/\+Subroutine Documentation}
+\Hypertarget{namespacemodule__types_a3bc9a92dffe823efcdc74bdcc3827e0d}\label{namespacemodule__types_a3bc9a92dffe823efcdc74bdcc3827e0d} 
+\index{module\_types@{module\_types}!del\_flux@{del\_flux}}
+\index{del\_flux@{del\_flux}!module\_types@{module\_types}}
+\doxysubsubsection{\texorpdfstring{del\_flux()}{del\_flux()}}
+{\footnotesize\ttfamily subroutine module\+\_\+types\+::del\+\_\+flux (\begin{DoxyParamCaption}\item[{class(\mbox{\hyperlink{structmodule__types_1_1atmospheric__flux}{atmospheric\+\_\+flux}}), intent(inout)}]{flux }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Deallocates memory for an atmospheric flux type instance. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em flux} & The atmospheric flux instance. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{namespacemodule__types_a80fc0a2a1cf0f8e123088de5c8663c06}\label{namespacemodule__types_a80fc0a2a1cf0f8e123088de5c8663c06} 
+\index{module\_types@{module\_types}!del\_ref@{del\_ref}}
+\index{del\_ref@{del\_ref}!module\_types@{module\_types}}
+\doxysubsubsection{\texorpdfstring{del\_ref()}{del\_ref()}}
+{\footnotesize\ttfamily subroutine module\+\_\+types\+::del\+\_\+ref (\begin{DoxyParamCaption}\item[{class(\mbox{\hyperlink{structmodule__types_1_1reference__state}{reference\+\_\+state}}), intent(inout)}]{ref }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Deallocates memory for the reference state. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em ref} & The reference state instance. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{namespacemodule__types_ab0250041179f10af3e1507838b32d823}\label{namespacemodule__types_ab0250041179f10af3e1507838b32d823} 
+\index{module\_types@{module\_types}!del\_state@{del\_state}}
+\index{del\_state@{del\_state}!module\_types@{module\_types}}
+\doxysubsubsection{\texorpdfstring{del\_state()}{del\_state()}}
+{\footnotesize\ttfamily subroutine module\+\_\+types\+::del\+\_\+state (\begin{DoxyParamCaption}\item[{class(\mbox{\hyperlink{structmodule__types_1_1atmospheric__state}{atmospheric\+\_\+state}}), intent(inout)}]{atmo }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Deallocates memory for an atmospheric state type instance. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em atmo} & The atmospheric state instance. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{namespacemodule__types_ab3ee36e990c1dafd444784e338a36fde}\label{namespacemodule__types_ab3ee36e990c1dafd444784e338a36fde} 
+\index{module\_types@{module\_types}!del\_tendency@{del\_tendency}}
+\index{del\_tendency@{del\_tendency}!module\_types@{module\_types}}
+\doxysubsubsection{\texorpdfstring{del\_tendency()}{del\_tendency()}}
+{\footnotesize\ttfamily subroutine module\+\_\+types\+::del\+\_\+tendency (\begin{DoxyParamCaption}\item[{class(\mbox{\hyperlink{structmodule__types_1_1atmospheric__tendency}{atmospheric\+\_\+tendency}}), intent(inout)}]{tend }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Deallocates memory for an atmospheric tendency type instance. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em tend} & The atmospheric tendency instance. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{namespacemodule__types_ab2b054b141f61d80aa631f0fde492a49}\label{namespacemodule__types_ab2b054b141f61d80aa631f0fde492a49} 
+\index{module\_types@{module\_types}!exchange\_halo\_x@{exchange\_halo\_x}}
+\index{exchange\_halo\_x@{exchange\_halo\_x}!module\_types@{module\_types}}
+\doxysubsubsection{\texorpdfstring{exchange\_halo\_x()}{exchange\_halo\_x()}}
+{\footnotesize\ttfamily subroutine module\+\_\+types\+::exchange\+\_\+halo\+\_\+x (\begin{DoxyParamCaption}\item[{class(\mbox{\hyperlink{structmodule__types_1_1atmospheric__state}{atmospheric\+\_\+state}}), intent(inout)}]{s }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Performs the MPI-\/based halo exchange in the X-\/dimension. 
+
+This routine is responsible for point-\/to-\/point communication with neighboring ranks. It involves packing data, initiating non-\/blocking sends/receives, and waiting for completion. The wall-\/clock time is captured by the NVTX range {\ttfamily }\+:exchange\+\_\+halo\+\_\+x.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em s} & The atmospheric state whose halo regions need updating. \\
+\hline
+\end{DoxyParams}
+Here is the call graph for this function\+:
+% FIG 0
+\Hypertarget{namespacemodule__types_a3e0efbac2fc1466310290014b1fb5bbd}\label{namespacemodule__types_a3e0efbac2fc1466310290014b1fb5bbd} 
+\index{module\_types@{module\_types}!exchange\_halo\_z@{exchange\_halo\_z}}
+\index{exchange\_halo\_z@{exchange\_halo\_z}!module\_types@{module\_types}}
+\doxysubsubsection{\texorpdfstring{exchange\_halo\_z()}{exchange\_halo\_z()}}
+{\footnotesize\ttfamily subroutine module\+\_\+types\+::exchange\+\_\+halo\+\_\+z (\begin{DoxyParamCaption}\item[{class(\mbox{\hyperlink{structmodule__types_1_1atmospheric__state}{atmospheric\+\_\+state}}), intent(inout)}]{s,  }\item[{class(\mbox{\hyperlink{structmodule__types_1_1reference__state}{reference\+\_\+state}}), intent(in)}]{ref }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Implements the Z-\/dimension (vertical) halo exchange. 
+
+Since the Z-\/dimension is not parallelized, this involves applying local, non-\/communicative boundary conditions (e.\+g., free slip, fixed values) to the halo regions. The wall-\/clock time is captured by the NVTX range {\ttfamily }\+:exchange\+\_\+halo\+\_\+z.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em s} & The atmospheric state to apply boundary conditions to. \\
+\hline
+\mbox{\texttt{ in}}  & {\em ref} & The reference state used to calculate some boundary values. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{namespacemodule__types_a1f723bba8f127c3672b0df63da373f52}\label{namespacemodule__types_a1f723bba8f127c3672b0df63da373f52} 
+\index{module\_types@{module\_types}!new\_flux@{new\_flux}}
+\index{new\_flux@{new\_flux}!module\_types@{module\_types}}
+\doxysubsubsection{\texorpdfstring{new\_flux()}{new\_flux()}}
+{\footnotesize\ttfamily subroutine module\+\_\+types\+::new\+\_\+flux (\begin{DoxyParamCaption}\item[{class(\mbox{\hyperlink{structmodule__types_1_1atmospheric__flux}{atmospheric\+\_\+flux}}), intent(inout)}]{flux }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Allocates memory for an atmospheric flux type instance. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em flux} & The atmospheric flux instance. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{namespacemodule__types_a9ff6dddddc17e60a941fb8eb7185b355}\label{namespacemodule__types_a9ff6dddddc17e60a941fb8eb7185b355} 
+\index{module\_types@{module\_types}!new\_ref@{new\_ref}}
+\index{new\_ref@{new\_ref}!module\_types@{module\_types}}
+\doxysubsubsection{\texorpdfstring{new\_ref()}{new\_ref()}}
+{\footnotesize\ttfamily subroutine module\+\_\+types\+::new\+\_\+ref (\begin{DoxyParamCaption}\item[{class(\mbox{\hyperlink{structmodule__types_1_1reference__state}{reference\+\_\+state}}), intent(inout)}]{ref }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Allocates memory for the reference state. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em ref} & The reference state instance. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{namespacemodule__types_a5b8cd0e0cb1dcaff286034906dacdf04}\label{namespacemodule__types_a5b8cd0e0cb1dcaff286034906dacdf04} 
+\index{module\_types@{module\_types}!new\_state@{new\_state}}
+\index{new\_state@{new\_state}!module\_types@{module\_types}}
+\doxysubsubsection{\texorpdfstring{new\_state()}{new\_state()}}
+{\footnotesize\ttfamily subroutine module\+\_\+types\+::new\+\_\+state (\begin{DoxyParamCaption}\item[{class(\mbox{\hyperlink{structmodule__types_1_1atmospheric__state}{atmospheric\+\_\+state}}), intent(inout)}]{atmo }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Allocates memory for an atmospheric state type instance. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em atmo} & The atmospheric state instance. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{namespacemodule__types_a43dc1b960be6642570f3d95c67df50bd}\label{namespacemodule__types_a43dc1b960be6642570f3d95c67df50bd} 
+\index{module\_types@{module\_types}!new\_tendency@{new\_tendency}}
+\index{new\_tendency@{new\_tendency}!module\_types@{module\_types}}
+\doxysubsubsection{\texorpdfstring{new\_tendency()}{new\_tendency()}}
+{\footnotesize\ttfamily subroutine module\+\_\+types\+::new\+\_\+tendency (\begin{DoxyParamCaption}\item[{class(\mbox{\hyperlink{structmodule__types_1_1atmospheric__tendency}{atmospheric\+\_\+tendency}}), intent(inout)}]{tend }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Allocates memory for an atmospheric tendency type instance. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em tend} & The atmospheric tendency instance. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{namespacemodule__types_a8d3bc10317121d9bc516db6e55e2161e}\label{namespacemodule__types_a8d3bc10317121d9bc516db6e55e2161e} 
+\index{module\_types@{module\_types}!pack\_strip@{pack\_strip}}
+\index{pack\_strip@{pack\_strip}!module\_types@{module\_types}}
+\doxysubsubsection{\texorpdfstring{pack\_strip()}{pack\_strip()}}
+{\footnotesize\ttfamily subroutine module\+\_\+types\+::pack\+\_\+strip (\begin{DoxyParamCaption}\item[{real(wp), dimension(1-\/hs\+:nx\+\_\+loc+\mbox{\hyperlink{namespaceparallel__parameters_a957bcb02170c1d0b937823cd5dc7ec23}{hs}},1-\/hs\+:nz+\mbox{\hyperlink{namespaceparallel__parameters_a957bcb02170c1d0b937823cd5dc7ec23}{hs}},\mbox{\hyperlink{namespaceindexing_ad8e25db3906251a8f9ead4033cd8d0fc}{nvars}}), intent(in)}]{mem,  }\item[{integer, intent(in)}]{i\+\_\+start,  }\item[{integer, intent(in)}]{k\+\_\+start,  }\item[{integer, intent(in)}]{nx\+\_\+loc,  }\item[{integer, intent(in)}]{width,  }\item[{real(wp), dimension(\+:), intent(out)}]{buffer }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Packs a strip of data (e.\+g., the halo region) into a 1D send buffer. 
+
+The wall-\/clock time is captured by the NVTX range {\ttfamily }\+:pack\+\_\+strip. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em mem} & The source 3D memory block. \\
+\hline
+\mbox{\texttt{ in}}  & {\em i\+\_\+start} & Starting index in the X-\/direction. \\
+\hline
+\mbox{\texttt{ in}}  & {\em k\+\_\+start} & Starting index in the Z-\/direction. \\
+\hline
+\mbox{\texttt{ in}}  & {\em nx\+\_\+loc} & Local X-\/dimension size. \\
+\hline
+\mbox{\texttt{ in}}  & {\em width} & Width of the strip (usually {\ttfamily hs}). \\
+\hline
+\mbox{\texttt{ out}}  & {\em buffer} & The resulting 1D communication buffer. \\
+\hline
+\end{DoxyParams}
+Here is the caller graph for this function\+:
+% FIG 1
+\Hypertarget{namespacemodule__types_a648446aa2fa918ac96a24e2564e3b811}\label{namespacemodule__types_a648446aa2fa918ac96a24e2564e3b811} 
+\index{module\_types@{module\_types}!set\_flux@{set\_flux}}
+\index{set\_flux@{set\_flux}!module\_types@{module\_types}}
+\doxysubsubsection{\texorpdfstring{set\_flux()}{set\_flux()}}
+{\footnotesize\ttfamily subroutine module\+\_\+types\+::set\+\_\+flux (\begin{DoxyParamCaption}\item[{class(\mbox{\hyperlink{structmodule__types_1_1atmospheric__flux}{atmospheric\+\_\+flux}}), intent(inout)}]{flux,  }\item[{real(wp), intent(in)}]{xval }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Sets all grid points of a flux field to a scalar value. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em flux} & The atmospheric flux instance. \\
+\hline
+\mbox{\texttt{ in}}  & {\em xval} & The scalar value to set. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{namespacemodule__types_aa2182081083c614acbc514e07456b663}\label{namespacemodule__types_aa2182081083c614acbc514e07456b663} 
+\index{module\_types@{module\_types}!set\_state@{set\_state}}
+\index{set\_state@{set\_state}!module\_types@{module\_types}}
+\doxysubsubsection{\texorpdfstring{set\_state()}{set\_state()}}
+{\footnotesize\ttfamily subroutine module\+\_\+types\+::set\+\_\+state (\begin{DoxyParamCaption}\item[{class(\mbox{\hyperlink{structmodule__types_1_1atmospheric__state}{atmospheric\+\_\+state}}), intent(inout)}]{atmo,  }\item[{real(wp), intent(in)}]{xval }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Sets all grid points of a state to a scalar value. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em atmo} & The atmospheric state instance. \\
+\hline
+\mbox{\texttt{ in}}  & {\em xval} & The scalar value to set. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{namespacemodule__types_a9a9e0e3511f0def81fe3fd87c9e95491}\label{namespacemodule__types_a9a9e0e3511f0def81fe3fd87c9e95491} 
+\index{module\_types@{module\_types}!set\_tendency@{set\_tendency}}
+\index{set\_tendency@{set\_tendency}!module\_types@{module\_types}}
+\doxysubsubsection{\texorpdfstring{set\_tendency()}{set\_tendency()}}
+{\footnotesize\ttfamily subroutine module\+\_\+types\+::set\+\_\+tendency (\begin{DoxyParamCaption}\item[{class(\mbox{\hyperlink{structmodule__types_1_1atmospheric__tendency}{atmospheric\+\_\+tendency}}), intent(inout)}]{tend,  }\item[{real(wp), intent(in)}]{xval }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Sets all grid points of a tendency field to a scalar value. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em tend} & The atmospheric tendency instance. \\
+\hline
+\mbox{\texttt{ in}}  & {\em xval} & The scalar value to set. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{namespacemodule__types_a78b4f7e68e7992245d72eeeaa39cd465}\label{namespacemodule__types_a78b4f7e68e7992245d72eeeaa39cd465} 
+\index{module\_types@{module\_types}!state\_equal\_to\_state@{state\_equal\_to\_state}}
+\index{state\_equal\_to\_state@{state\_equal\_to\_state}!module\_types@{module\_types}}
+\doxysubsubsection{\texorpdfstring{state\_equal\_to\_state()}{state\_equal\_to\_state()}}
+{\footnotesize\ttfamily subroutine module\+\_\+types\+::state\+\_\+equal\+\_\+to\+\_\+state (\begin{DoxyParamCaption}\item[{type(\mbox{\hyperlink{structmodule__types_1_1atmospheric__state}{atmospheric\+\_\+state}}), intent(inout)}]{x,  }\item[{type(\mbox{\hyperlink{structmodule__types_1_1atmospheric__state}{atmospheric\+\_\+state}}), intent(in)}]{y }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Overloaded assignment operator to copy one state to another. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em x} & The destination state. \\
+\hline
+\mbox{\texttt{ in}}  & {\em y} & The source state. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{namespacemodule__types_aac2f133a12508fa6394d789d7b6186e0}\label{namespacemodule__types_aac2f133a12508fa6394d789d7b6186e0} 
+\index{module\_types@{module\_types}!unpack\_strip@{unpack\_strip}}
+\index{unpack\_strip@{unpack\_strip}!module\_types@{module\_types}}
+\doxysubsubsection{\texorpdfstring{unpack\_strip()}{unpack\_strip()}}
+{\footnotesize\ttfamily subroutine module\+\_\+types\+::unpack\+\_\+strip (\begin{DoxyParamCaption}\item[{real(wp), dimension(\+:), intent(in)}]{buffer,  }\item[{real(wp), dimension(1-\/hs\+:nx\+\_\+loc+\mbox{\hyperlink{namespaceparallel__parameters_a957bcb02170c1d0b937823cd5dc7ec23}{hs}},1-\/hs\+:nz+\mbox{\hyperlink{namespaceparallel__parameters_a957bcb02170c1d0b937823cd5dc7ec23}{hs}},\mbox{\hyperlink{namespaceindexing_ad8e25db3906251a8f9ead4033cd8d0fc}{nvars}}), intent(inout)}]{mem,  }\item[{integer, intent(in)}]{i\+\_\+start,  }\item[{integer, intent(in)}]{k\+\_\+start }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Unpacks data from a 1D receive buffer into the state\textquotesingle{}s halo region. 
+
+The wall-\/clock time is captured by the NVTX range {\ttfamily }\+:unpack\+\_\+strip. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em buffer} & The 1D communication buffer received from a neighbor. \\
+\hline
+\mbox{\texttt{ in,out}}  & {\em mem} & The target 3D memory block (where the halo is written). \\
+\hline
+\mbox{\texttt{ in}}  & {\em i\+\_\+start} & Starting index in the X-\/direction for the target halo. \\
+\hline
+\mbox{\texttt{ in}}  & {\em k\+\_\+start} & Starting index in the Z-\/direction for the target halo. \\
+\hline
+\end{DoxyParams}
+Here is the caller graph for this function\+:
+% FIG 2
+\Hypertarget{namespacemodule__types_afe9fa2f2b343fb57f5ccab00f23c5319}\label{namespacemodule__types_afe9fa2f2b343fb57f5ccab00f23c5319} 
+\index{module\_types@{module\_types}!update@{update}}
+\index{update@{update}!module\_types@{module\_types}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily subroutine module\+\_\+types\+::update (\begin{DoxyParamCaption}\item[{class(\mbox{\hyperlink{structmodule__types_1_1atmospheric__state}{atmospheric\+\_\+state}}), intent(inout)}]{s2,  }\item[{class(\mbox{\hyperlink{structmodule__types_1_1atmospheric__state}{atmospheric\+\_\+state}}), intent(in)}]{s0,  }\item[{class(\mbox{\hyperlink{structmodule__types_1_1atmospheric__tendency}{atmospheric\+\_\+tendency}}), intent(in)}]{tend,  }\item[{real(wp), intent(in)}]{dt }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Performs a time integration update step. 
+
+Uses a simple explicit time integration formula\+: $ S^{n+1} = S^n + \Delta t \cdot Tendency $. The wall-\/clock time is captured by the NVTX range {\ttfamily }\+:update.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em s2} & The state at the new time level ( $S^{n+1}$). \\
+\hline
+\mbox{\texttt{ in}}  & {\em s0} & The state at the current time level ( $S^n$). \\
+\hline
+\mbox{\texttt{ in}}  & {\em tend} & The calculated tendency ( $ \frac{dS}{dt} $). \\
+\hline
+\mbox{\texttt{ in}}  & {\em dt} & The time step size ( $\Delta t$). \\
+\hline
+\end{DoxyParams}
+\Hypertarget{namespacemodule__types_ab3456af815332b9f642884127999ac5f}\label{namespacemodule__types_ab3456af815332b9f642884127999ac5f} 
+\index{module\_types@{module\_types}!xtend@{xtend}}
+\index{xtend@{xtend}!module\_types@{module\_types}}
+\doxysubsubsection{\texorpdfstring{xtend()}{xtend()}}
+{\footnotesize\ttfamily subroutine module\+\_\+types\+::xtend (\begin{DoxyParamCaption}\item[{class(\mbox{\hyperlink{structmodule__types_1_1atmospheric__tendency}{atmospheric\+\_\+tendency}}), intent(inout)}]{tendency,  }\item[{class(\mbox{\hyperlink{structmodule__types_1_1atmospheric__flux}{atmospheric\+\_\+flux}}), intent(inout)}]{flux,  }\item[{class(\mbox{\hyperlink{structmodule__types_1_1reference__state}{reference\+\_\+state}}), intent(in)}]{ref,  }\item[{class(\mbox{\hyperlink{structmodule__types_1_1atmospheric__state}{atmospheric\+\_\+state}}), intent(inout)}]{atmostat,  }\item[{real(wp), intent(in)}]{dx,  }\item[{real(wp), intent(in)}]{dt }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Calculates the X-\/dimension contribution to the total tendency. 
+
+This routine involves two main steps\+: flux calculation (using a 4-\/point stencil) and tendency calculation (flux difference). It requires an X-\/halo exchange beforehand. The wall-\/clock time is captured by the NVTX range {\ttfamily }\+:xtend.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em tendency} & The resulting time tendency array. \\
+\hline
+\mbox{\texttt{ in,out}}  & {\em flux} & Temporary flux array used for calculation. \\
+\hline
+\mbox{\texttt{ in}}  & {\em ref} & Reference state data. \\
+\hline
+\mbox{\texttt{ in,out}}  & {\em atmostat} & Current atmospheric state (required for halo data). \\
+\hline
+\mbox{\texttt{ in}}  & {\em dx} & Grid spacing in the X-\/direction. \\
+\hline
+\mbox{\texttt{ in}}  & {\em dt} & Time step size (used for hyperviscosity coefficient). \\
+\hline
+\end{DoxyParams}
+\Hypertarget{namespacemodule__types_a7c4bb05550ffff832dec90f3bcffdd9f}\label{namespacemodule__types_a7c4bb05550ffff832dec90f3bcffdd9f} 
+\index{module\_types@{module\_types}!ztend@{ztend}}
+\index{ztend@{ztend}!module\_types@{module\_types}}
+\doxysubsubsection{\texorpdfstring{ztend()}{ztend()}}
+{\footnotesize\ttfamily subroutine module\+\_\+types\+::ztend (\begin{DoxyParamCaption}\item[{class(\mbox{\hyperlink{structmodule__types_1_1atmospheric__tendency}{atmospheric\+\_\+tendency}}), intent(inout)}]{tendency,  }\item[{class(\mbox{\hyperlink{structmodule__types_1_1atmospheric__flux}{atmospheric\+\_\+flux}}), intent(inout)}]{flux,  }\item[{class(\mbox{\hyperlink{structmodule__types_1_1reference__state}{reference\+\_\+state}}), intent(in)}]{ref,  }\item[{class(\mbox{\hyperlink{structmodule__types_1_1atmospheric__state}{atmospheric\+\_\+state}}), intent(inout)}]{atmostat,  }\item[{real(wp), intent(in)}]{dz,  }\item[{real(wp), intent(in)}]{dt }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Calculates the Z-\/dimension contribution to the total tendency. 
+
+This routine involves two main steps\+: flux calculation (using a 4-\/point stencil) and tendency calculation (flux difference), plus the application of gravity as a source term. It requires a Z-\/halo exchange beforehand (local boundary condition setting). The wall-\/clock time is captured by the NVTX range {\ttfamily }\+:ztend.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em tendency} & The resulting time tendency array. \\
+\hline
+\mbox{\texttt{ in,out}}  & {\em flux} & Temporary flux array used for calculation. \\
+\hline
+\mbox{\texttt{ in}}  & {\em ref} & Reference state data. \\
+\hline
+\mbox{\texttt{ in,out}}  & {\em atmostat} & Current atmospheric state (required for halo data). \\
+\hline
+\mbox{\texttt{ in}}  & {\em dz} & Grid spacing in the Z-\/direction. \\
+\hline
+\mbox{\texttt{ in}}  & {\em dt} & Time step size (used for hyperviscosity coefficient). \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Variable Documentation}
+\Hypertarget{namespacemodule__types_a8ed31509d12e1e8b4d4731b35e9bce8a}\label{namespacemodule__types_a8ed31509d12e1e8b4d4731b35e9bce8a} 
+\index{module\_types@{module\_types}!recv\_left@{recv\_left}}
+\index{recv\_left@{recv\_left}!module\_types@{module\_types}}
+\doxysubsubsection{\texorpdfstring{recv\_left}{recv\_left}}
+{\footnotesize\ttfamily real(wp), dimension(\+:), allocatable, public module\+\_\+types\+::recv\+\_\+left}
+
+\Hypertarget{namespacemodule__types_aa50946d459c40ef67efead9b3b54a4ef}\label{namespacemodule__types_aa50946d459c40ef67efead9b3b54a4ef} 
+\index{module\_types@{module\_types}!recv\_right@{recv\_right}}
+\index{recv\_right@{recv\_right}!module\_types@{module\_types}}
+\doxysubsubsection{\texorpdfstring{recv\_right}{recv\_right}}
+{\footnotesize\ttfamily real(wp), dimension(\+:), allocatable, public module\+\_\+types\+::recv\+\_\+right}
+
+\Hypertarget{namespacemodule__types_a73f80f27cfea22d2fc25092f73b15b34}\label{namespacemodule__types_a73f80f27cfea22d2fc25092f73b15b34} 
+\index{module\_types@{module\_types}!send\_left@{send\_left}}
+\index{send\_left@{send\_left}!module\_types@{module\_types}}
+\doxysubsubsection{\texorpdfstring{send\_left}{send\_left}}
+{\footnotesize\ttfamily real(wp), dimension(\+:), allocatable, public module\+\_\+types\+::send\+\_\+left}
+
+\Hypertarget{namespacemodule__types_a11bf980fdae338b3bb8c12fd1ba15851}\label{namespacemodule__types_a11bf980fdae338b3bb8c12fd1ba15851} 
+\index{module\_types@{module\_types}!send\_right@{send\_right}}
+\index{send\_right@{send\_right}!module\_types@{module\_types}}
+\doxysubsubsection{\texorpdfstring{send\_right}{send\_right}}
+{\footnotesize\ttfamily real(wp), dimension(\+:), allocatable, public module\+\_\+types\+::send\+\_\+right}
+

@@ -1,0 +1,56 @@
+\doxysection{module\+\_\+physics.\+f90 File Reference}
+\hypertarget{module__physics_8f90}{}\label{module__physics_8f90}\index{module\_physics.f90@{module\_physics.f90}}
+
+
+Implements the core physics, time integration loop, and initialization/finalization routines.  
+
+
+\doxysubsubsection*{Modules}
+\begin{DoxyCompactItemize}
+\item 
+module \mbox{\hyperlink{namespacemodule__physics}{module\+\_\+physics}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions/\+Subroutines}
+\begin{DoxyCompactItemize}
+\item 
+subroutine, public \mbox{\hyperlink{namespacemodule__physics_ae1fe02f4b28a385c8f831662384972d3}{module\+\_\+physics\+::init}} (etime, output\+\_\+counter, \mbox{\hyperlink{namespacemodule__physics_a413f15d16ee499387862601f2e2b25bb}{dt}})
+\begin{DoxyCompactList}\small\item\em Initializes the MPI/\+Open\+ACC environment, grid dimensions, and initial atmospheric state. \end{DoxyCompactList}\item 
+subroutine, public \mbox{\hyperlink{namespacemodule__physics_abb9976555d993ec55ec0b23022d3ca37}{module\+\_\+physics\+::rungekutta}} (s0, s1, fl, \mbox{\hyperlink{namespacemodule__physics_a0e6fdf56a4ae644676d8ddf7d423a937}{tend}}, \mbox{\hyperlink{namespacemodule__physics_a413f15d16ee499387862601f2e2b25bb}{dt}})
+\begin{DoxyCompactList}\small\item\em Performs the 6-\/stage Runge-\/\+Kutta time integration using a dimensionally split approach. \end{DoxyCompactList}\item 
+subroutine \mbox{\hyperlink{namespacemodule__physics_a9aab24d98317aae97cc902837ccf0356}{module\+\_\+physics\+::step}} (s0, s1, s2, \mbox{\hyperlink{namespacemodule__physics_a413f15d16ee499387862601f2e2b25bb}{dt}}, dir, fl, \mbox{\hyperlink{namespacemodule__physics_a0e6fdf56a4ae644676d8ddf7d423a937}{tend}})
+\begin{DoxyCompactList}\small\item\em Calculates the tendency (RHS) for a given direction and updates the state. \end{DoxyCompactList}\item 
+subroutine \mbox{\hyperlink{namespacemodule__physics_a98d11a39c948a714560500cef9252995}{module\+\_\+physics\+::thermal}} (x, z, r, u, w, t, hr, ht)
+\begin{DoxyCompactList}\small\item\em Calculates the state variables and reference state at a given physical point ({\ttfamily x}, {\ttfamily z}). \end{DoxyCompactList}\item 
+subroutine \mbox{\hyperlink{namespacemodule__physics_ade9df465551218b4998ab68a01de8c15}{module\+\_\+physics\+::hydrostatic\+\_\+const\+\_\+theta}} (z, r, t)
+\begin{DoxyCompactList}\small\item\em Calculates the hydrostatic background reference state ({\ttfamily r}, {\ttfamily t}) based on constant potential temperature ( $\theta_0$). \end{DoxyCompactList}\item 
+elemental real(wp) function \mbox{\hyperlink{namespacemodule__physics_a8ce13dc780b59866bfa31412c6ed671e}{module\+\_\+physics\+::ellipse}} (x, z, \mbox{\hyperlink{namespacephysical__parameters_ab72ae4548cbef7f91312e608a332e414}{amp}}, \mbox{\hyperlink{namespacephysical__parameters_a74d4846f645c6ccdfd94ed0042ea23a6}{x0}}, \mbox{\hyperlink{namespacephysical__parameters_a3099802011e57320f78a80871f15dba6}{z0}}, x1, z1)
+\begin{DoxyCompactList}\small\item\em Calculates a thermal perturbation using a cosine-\/squared profile within an elliptical region. \end{DoxyCompactList}\item 
+subroutine, public \mbox{\hyperlink{namespacemodule__physics_a5f613f80cdbf71e8e0280a69bda19f36}{module\+\_\+physics\+::finalize}} ()
+\begin{DoxyCompactList}\small\item\em Deallocates all dynamically allocated memory and finalizes MPI/\+Open\+ACC resources. \end{DoxyCompactList}\item 
+subroutine, public \mbox{\hyperlink{namespacemodule__physics_a033eff726731ee4a14a07ba0aa50826b}{module\+\_\+physics\+::total\+\_\+mass\+\_\+energy}} (mass, te)
+\begin{DoxyCompactList}\small\item\em Calculates the total mass and total energy of the domain. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+real(wp), public \mbox{\hyperlink{namespacemodule__physics_a413f15d16ee499387862601f2e2b25bb}{module\+\_\+physics\+::dt}}
+\item 
+real(wp) \mbox{\hyperlink{namespacemodule__physics_ae32130f66fd697ae3d82a8c516c738a2}{module\+\_\+physics\+::dx}}
+\item 
+real(wp) \mbox{\hyperlink{namespacemodule__physics_a0b89ace2e1de5b96fbc54f520fac8fa1}{module\+\_\+physics\+::dz}}
+\item 
+type(\mbox{\hyperlink{structmodule__types_1_1atmospheric__state}{atmospheric\+\_\+state}}), public \mbox{\hyperlink{namespacemodule__physics_a4000e3ab50633a954576e8d9a06b0e0c}{module\+\_\+physics\+::oldstat}}
+\item 
+type(\mbox{\hyperlink{structmodule__types_1_1atmospheric__state}{atmospheric\+\_\+state}}), public \mbox{\hyperlink{namespacemodule__physics_a227af77b35bcf82aa9fd6189149081ea}{module\+\_\+physics\+::newstat}}
+\item 
+type(\mbox{\hyperlink{structmodule__types_1_1atmospheric__tendency}{atmospheric\+\_\+tendency}}), public \mbox{\hyperlink{namespacemodule__physics_a0e6fdf56a4ae644676d8ddf7d423a937}{module\+\_\+physics\+::tend}}
+\item 
+type(\mbox{\hyperlink{structmodule__types_1_1atmospheric__flux}{atmospheric\+\_\+flux}}), public \mbox{\hyperlink{namespacemodule__physics_a62aab09348cbb7eb3106858eafb0e513}{module\+\_\+physics\+::flux}}
+\item 
+type(\mbox{\hyperlink{structmodule__types_1_1reference__state}{reference\+\_\+state}}), public \mbox{\hyperlink{namespacemodule__physics_a8a0754ffd53e41419ccf888f455177e2}{module\+\_\+physics\+::ref}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Implements the core physics, time integration loop, and initialization/finalization routines. 
+
+This module manages the simulation environment, including MPI/\+Open\+ACC setup, grid geometry, initial conditions, and the Runge-\/\+Kutta time stepping algorithm. 

@@ -1,0 +1,126 @@
+\doxysection{module\+\_\+types\+::atmospheric\+\_\+flux Type Reference}
+\hypertarget{structmodule__types_1_1atmospheric__flux}{}\label{structmodule__types_1_1atmospheric__flux}\index{module\_types::atmospheric\_flux@{module\_types::atmospheric\_flux}}
+
+
+Derived type for storing calculated fluxes.  
+
+
+
+
+Collaboration diagram for module\+\_\+types\+::atmospheric\+\_\+flux\+:
+% FIG 0
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+procedure, public \mbox{\hyperlink{structmodule__types_1_1atmospheric__flux_a1ed75066910685493f3cf287c1dabb10}{new\+\_\+flux}} (flux)
+\begin{DoxyCompactList}\small\item\em Allocates memory for an atmospheric flux type instance. \end{DoxyCompactList}\item 
+procedure, public \mbox{\hyperlink{structmodule__types_1_1atmospheric__flux_a6622f83ba71ab4e16e4ec31807720369}{set\+\_\+flux}} (flux, xval)
+\begin{DoxyCompactList}\small\item\em Sets all grid points of a flux field to a scalar value. \end{DoxyCompactList}\item 
+procedure, public \mbox{\hyperlink{structmodule__types_1_1atmospheric__flux_aba4ef70db72c5de0d8f275206294baf0}{del\+\_\+flux}} (flux)
+\begin{DoxyCompactList}\small\item\em Deallocates memory for an atmospheric flux type instance. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+real(wp), dimension(\+:,\+:,\+:), pointer \mbox{\hyperlink{structmodule__types_1_1atmospheric__flux_a15e8b86c0598df661921f86ef67c89eb}{mem}} =$>$ null( )
+\item 
+real(wp), dimension(\+:,\+:), pointer \mbox{\hyperlink{structmodule__types_1_1atmospheric__flux_a8119d8c0b86d9335c8b5af8ed1cc6293}{dens}}
+\item 
+real(wp), dimension(\+:,\+:), pointer \mbox{\hyperlink{structmodule__types_1_1atmospheric__flux_a3c5bc2a134e0ad037ca8d0b7a9f8f67a}{umom}}
+\item 
+real(wp), dimension(\+:,\+:), pointer \mbox{\hyperlink{structmodule__types_1_1atmospheric__flux_a3856b73e9ce99d297148ae4c14e4c26f}{wmom}}
+\item 
+real(wp), dimension(\+:,\+:), pointer \mbox{\hyperlink{structmodule__types_1_1atmospheric__flux_ae87f43b6abde21277d479e8ec90bb430}{rhot}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Derived type for storing calculated fluxes. 
+
+Fluxes are stored on cell faces/interfaces, hence their dimensioning ({\ttfamily nx\+\_\+loc+1}, {\ttfamily nz+1}) often differs slightly from the state. 
+
+\doxysubsection{Member Function/\+Subroutine Documentation}
+\Hypertarget{structmodule__types_1_1atmospheric__flux_aba4ef70db72c5de0d8f275206294baf0}\label{structmodule__types_1_1atmospheric__flux_aba4ef70db72c5de0d8f275206294baf0} 
+\index{module\_types::atmospheric\_flux@{module\_types::atmospheric\_flux}!del\_flux@{del\_flux}}
+\index{del\_flux@{del\_flux}!module\_types::atmospheric\_flux@{module\_types::atmospheric\_flux}}
+\doxysubsubsection{\texorpdfstring{del\_flux()}{del\_flux()}}
+{\footnotesize\ttfamily procedure, public module\+\_\+types\+::atmospheric\+\_\+flux\+::del\+\_\+flux (\begin{DoxyParamCaption}\item[{class(\mbox{\hyperlink{structmodule__types_1_1atmospheric__flux}{atmospheric\+\_\+flux}}), intent(inout)}]{flux }\end{DoxyParamCaption})}
+
+
+
+Deallocates memory for an atmospheric flux type instance. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em flux} & The atmospheric flux instance. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{structmodule__types_1_1atmospheric__flux_a1ed75066910685493f3cf287c1dabb10}\label{structmodule__types_1_1atmospheric__flux_a1ed75066910685493f3cf287c1dabb10} 
+\index{module\_types::atmospheric\_flux@{module\_types::atmospheric\_flux}!new\_flux@{new\_flux}}
+\index{new\_flux@{new\_flux}!module\_types::atmospheric\_flux@{module\_types::atmospheric\_flux}}
+\doxysubsubsection{\texorpdfstring{new\_flux()}{new\_flux()}}
+{\footnotesize\ttfamily procedure, public module\+\_\+types\+::atmospheric\+\_\+flux\+::new\+\_\+flux (\begin{DoxyParamCaption}\item[{class(\mbox{\hyperlink{structmodule__types_1_1atmospheric__flux}{atmospheric\+\_\+flux}}), intent(inout)}]{flux }\end{DoxyParamCaption})}
+
+
+
+Allocates memory for an atmospheric flux type instance. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em flux} & The atmospheric flux instance. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{structmodule__types_1_1atmospheric__flux_a6622f83ba71ab4e16e4ec31807720369}\label{structmodule__types_1_1atmospheric__flux_a6622f83ba71ab4e16e4ec31807720369} 
+\index{module\_types::atmospheric\_flux@{module\_types::atmospheric\_flux}!set\_flux@{set\_flux}}
+\index{set\_flux@{set\_flux}!module\_types::atmospheric\_flux@{module\_types::atmospheric\_flux}}
+\doxysubsubsection{\texorpdfstring{set\_flux()}{set\_flux()}}
+{\footnotesize\ttfamily procedure, public module\+\_\+types\+::atmospheric\+\_\+flux\+::set\+\_\+flux (\begin{DoxyParamCaption}\item[{class(\mbox{\hyperlink{structmodule__types_1_1atmospheric__flux}{atmospheric\+\_\+flux}}), intent(inout)}]{flux,  }\item[{real(wp), intent(in)}]{xval }\end{DoxyParamCaption})}
+
+
+
+Sets all grid points of a flux field to a scalar value. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em flux} & The atmospheric flux instance. \\
+\hline
+\mbox{\texttt{ in}}  & {\em xval} & The scalar value to set. \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{structmodule__types_1_1atmospheric__flux_a8119d8c0b86d9335c8b5af8ed1cc6293}\label{structmodule__types_1_1atmospheric__flux_a8119d8c0b86d9335c8b5af8ed1cc6293} 
+\index{module\_types::atmospheric\_flux@{module\_types::atmospheric\_flux}!dens@{dens}}
+\index{dens@{dens}!module\_types::atmospheric\_flux@{module\_types::atmospheric\_flux}}
+\doxysubsubsection{\texorpdfstring{dens}{dens}}
+{\footnotesize\ttfamily real(wp), dimension(\+:,\+:), pointer module\+\_\+types\+::atmospheric\+\_\+flux\+::dens}
+
+\Hypertarget{structmodule__types_1_1atmospheric__flux_a15e8b86c0598df661921f86ef67c89eb}\label{structmodule__types_1_1atmospheric__flux_a15e8b86c0598df661921f86ef67c89eb} 
+\index{module\_types::atmospheric\_flux@{module\_types::atmospheric\_flux}!mem@{mem}}
+\index{mem@{mem}!module\_types::atmospheric\_flux@{module\_types::atmospheric\_flux}}
+\doxysubsubsection{\texorpdfstring{mem}{mem}}
+{\footnotesize\ttfamily real(wp), dimension(\+:,\+:,\+:), pointer module\+\_\+types\+::atmospheric\+\_\+flux\+::mem =$>$ null( )}
+
+\Hypertarget{structmodule__types_1_1atmospheric__flux_ae87f43b6abde21277d479e8ec90bb430}\label{structmodule__types_1_1atmospheric__flux_ae87f43b6abde21277d479e8ec90bb430} 
+\index{module\_types::atmospheric\_flux@{module\_types::atmospheric\_flux}!rhot@{rhot}}
+\index{rhot@{rhot}!module\_types::atmospheric\_flux@{module\_types::atmospheric\_flux}}
+\doxysubsubsection{\texorpdfstring{rhot}{rhot}}
+{\footnotesize\ttfamily real(wp), dimension(\+:,\+:), pointer module\+\_\+types\+::atmospheric\+\_\+flux\+::rhot}
+
+\Hypertarget{structmodule__types_1_1atmospheric__flux_a3c5bc2a134e0ad037ca8d0b7a9f8f67a}\label{structmodule__types_1_1atmospheric__flux_a3c5bc2a134e0ad037ca8d0b7a9f8f67a} 
+\index{module\_types::atmospheric\_flux@{module\_types::atmospheric\_flux}!umom@{umom}}
+\index{umom@{umom}!module\_types::atmospheric\_flux@{module\_types::atmospheric\_flux}}
+\doxysubsubsection{\texorpdfstring{umom}{umom}}
+{\footnotesize\ttfamily real(wp), dimension(\+:,\+:), pointer module\+\_\+types\+::atmospheric\+\_\+flux\+::umom}
+
+\Hypertarget{structmodule__types_1_1atmospheric__flux_a3856b73e9ce99d297148ae4c14e4c26f}\label{structmodule__types_1_1atmospheric__flux_a3856b73e9ce99d297148ae4c14e4c26f} 
+\index{module\_types::atmospheric\_flux@{module\_types::atmospheric\_flux}!wmom@{wmom}}
+\index{wmom@{wmom}!module\_types::atmospheric\_flux@{module\_types::atmospheric\_flux}}
+\doxysubsubsection{\texorpdfstring{wmom}{wmom}}
+{\footnotesize\ttfamily real(wp), dimension(\+:,\+:), pointer module\+\_\+types\+::atmospheric\+\_\+flux\+::wmom}
+
+
+
+The documentation for this type was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{module__types_8F90}{module\+\_\+types.\+F90}}\end{DoxyCompactItemize}
