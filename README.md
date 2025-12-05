@@ -1,4 +1,4 @@
-
+<img src="media/Powerpuff-Girls.gif" width="200">
 
 # 🌬️ Atmospheric Transport Model - SpiceGirlsSoftware
 
